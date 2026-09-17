@@ -1,0 +1,25 @@
+{
+  "name": "@scaff/ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./styles/theme.css": "./src/styles/theme.css"
+  },
+  "scripts": {
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@scaff/config": "*"
+  },
+  "devDependencies": {
+    "@types/react": "latest",
+    "react": "latest",
+    "typescript": "latest"
+  },
+  "peerDependencies": {
+    "react": "latest"
+  }
+}

@@ -1,0 +1,38 @@
+/*
+ * Design token Scaff — dipakai oleh apps/web dan apps/admin.
+ * Di-import dari globals.css masing-masing app via:
+ *   @import "@scaff/ui/styles/theme.css";
+ *
+ * Sumber kebenaran: docs/16-design-system-ui-guideline.md
+ */
+
+:root {
+  --background: #0a0a0b;
+  --background-secondary: #131316;
+  --border: #26262b;
+  --foreground: #fafafa;
+  --foreground-muted: #a1a1aa;
+  --accent: #8b5cf6;
+  --accent-hover: #7c3aed;
+  --accent-muted: #8b5cf633;
+  --success: #22c55e;
+  --error: #ef4444;
+  --warning: #eab308;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+  --color-border: var(--border);
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-muted: var(--accent-muted);
+  --color-success: var(--success);
+  --color-error: var(--error);
+  --color-warning: var(--warning);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}

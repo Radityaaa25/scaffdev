@@ -1,0 +1,4 @@
+{
+  "extends": "@scaff/config/tsconfig/react-library.json",
+  "include": ["src"]
+}

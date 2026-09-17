@@ -1,0 +1,20 @@
+{
+  "name": "scaff-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Platform web + CLI untuk generate project boilerplate dengan tampilan visual jadi dan kurasi integrasi konteks Indonesia.",
+  "packageManager": "npm@11.4.2",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck"
+  },
+  "devDependencies": {
+    "turbo": "latest"
+  }
+}

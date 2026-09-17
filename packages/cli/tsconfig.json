@@ -1,0 +1,4 @@
+{
+  "extends": "@scaff/config/tsconfig/node.json",
+  "include": ["src"]
+}

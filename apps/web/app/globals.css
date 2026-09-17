@@ -1,0 +1,11 @@
+@import "tailwindcss";
+@import "@scaff/ui/styles/theme.css";
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
