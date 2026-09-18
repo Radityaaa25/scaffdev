@@ -59,7 +59,7 @@ Folder/halaman minimal: `app/projects/`, `app/about/`, komponen `ProjectCard.tsx
 Karena template dibuat dengan bantuan AI (Claude/ChatGPT) oleh anggota tim berbeda:
 1. Gunakan checklist di file ini sebagai instruksi/prompt awal ke AI saat meminta bantuan generate boilerplate.
 2. WAJIB review manual hasil generate AI sebelum dianggap template final — cek semua poin checklist di atas satu per satu.
-3. Setelah lolos review, baru boleh di-push ke GitHub Organization dan didaftarkan lewat admin panel.
+3. Setelah lolos review, baru boleh di-push ke repo GitHub publik dan didaftarkan lewat admin panel.
 
 ## Proses Verifikasi Sebelum Publish
 Sebelum admin men-set `is_published = true` untuk template baru:

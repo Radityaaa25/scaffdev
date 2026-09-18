@@ -137,3 +137,287 @@ create policy integrasi_admin_all
   with check (public.is_admin());
 
 -- admin_users — TANPA policy apapun (default deny). Hanya service role.
+
+-- ============================================================
+-- Migrasi 001 — Statistik generate via CLI
+-- downloads_count naik setiap CLI mengambil detail template
+-- (GET /api/templates/:slug?source=cli). Kolom ini BOLEH
+-- ditambah (increment) oleh role anon/authenticated lewat RPC
+-- aman di bawah; read mengikuti policy templates yang sudah ada.
+-- ============================================================
+alter table public.templates
+  add column if not exists downloads_count integer not null default 0;
+
+-- Optimasi performa RLS (Supabase best practice): bungkus auth.uid()
+-- dalam SELECT agar dievaluasi sekali per query, bukan per baris.
+create or replace function public.is_admin()
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select exists (
+    select 1
+    from public.admin_users
+    where id = (select auth.uid())
+  );
+$$;
+
+-- RPC increment yang aman dipanggil publik/CLI tanpa auth:
+-- hanya menambah counter, tidak membaca/menulis data lain.
+-- Dibuat SECURITY DEFINER agar melewati RLS (hanya UPDATE kolom
+-- counter pada baris yang sudah terpublikasi), dan granted ke anon.
+create or replace function public.increment_template_downloads(p_slug text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  update public.templates
+  set downloads_count = downloads_count + 1
+  where slug = p_slug
+    and is_published = true;
+end;
+$$;
+
+revoke all on function public.increment_template_downloads(text) from public;
+grant execute on function public.increment_template_downloads(text) to anon, authenticated;
+
+-- ============================================================
+-- Seed 001 — Data referensi integrasi (konteks Indonesia)
+-- Dipakai admin (toggle integrasi di form) dan CLI (generate
+-- .env.example + SETUP.md). Idempotent: aman di-run ulang.
+-- ============================================================
+insert into public.integrasi (kode, nama_tampilan, kategori_integrasi, daftar_env_var, instruksi_setup)
+values
+  ('supabase', 'Supabase', 'database',
+   '[{"key": "NEXT_PUBLIC_SUPABASE_URL", "deskripsi": "URL project Supabase"}, {"key": "NEXT_PUBLIC_SUPABASE_ANON_KEY", "deskripsi": "Anon key project Supabase"}]'::jsonb,
+   '## Setup Supabase
+1. Buat project gratis di https://supabase.com/dashboard
+2. Buka Settings → API, salin URL dan anon key
+3. Tempel ke file `.env.local`'),
+  ('midtrans', 'Midtrans', 'payment',
+   '[{"key": "MIDTRANS_SERVER_KEY", "deskripsi": "Server key Midtrans"}, {"key": "MIDTRANS_CLIENT_KEY", "deskripsi": "Client key Midtrans"}]'::jsonb,
+   '## Setup Midtrans
+1. Daftar di https://dashboard.midtrans.com
+2. Ambil Server Key & Client Key (mode Sandbox untuk testing)
+3. Tempel ke file `.env.local`'),
+  ('xendit', 'Xendit', 'payment',
+   '[{"key": "XENDIT_SECRET_KEY", "deskripsi": "Secret key Xendit"}]'::jsonb,
+   '## Setup Xendit
+1. Daftar di https://dashboard.xendit.co
+2. Ambil Secret Key (mode test untuk pengembangan)
+3. Tempel ke file `.env.local`'),
+  ('rajaongkir', 'RajaOngkir', 'shipping',
+   '[{"key": "RAJAONGKIR_API_KEY", "deskripsi": "API key RajaOngkir"}]'::jsonb,
+   '## Setup RajaOngkir
+1. Daftar di https://rajaongkir.com
+2. Ambil API key dari dashboard
+3. Tempel ke file `.env.local`')
+on conflict (kode) do update set
+  nama_tampilan   = excluded.nama_tampilan,
+  kategori_integrasi = excluded.kategori_integrasi,
+  daftar_env_var  = excluded.daftar_env_var,
+  instruksi_setup = excluded.instruksi_setup;
+
+-- ============================================================
+-- Migrasi 002 — Log aktivitas + helper manajemen admin
+-- activity_log: jejak siapa melakukan apa (create/update/delete)
+-- pada template/integrasi/admin. Write HANYA via SECURITY DEFINER
+-- log_activity() (tidak ada policy insert) agar actor tercatat
+-- dari session terverifikasi server-side, bukan input client.
+-- ============================================================
+create table if not exists public.activity_log (
+  id          uuid        primary key default gen_random_uuid(),
+  actor_email text        not null,
+  action      text        not null,   -- contoh: template.create, integrasi.delete
+  entity      text        not null,   -- template | integrasi | admin
+  entity_ref  text        not null default '',
+  detail      text,
+  created_at  timestamptz not null default now()
+);
+
+alter table public.activity_log enable row level security;
+
+drop policy if exists activity_log_admin_read on public.activity_log;
+create policy activity_log_admin_read
+  on public.activity_log
+  for select
+  using (public.is_admin());
+
+create index if not exists idx_activity_log_created on public.activity_log (created_at desc);
+
+create or replace function public.log_activity(
+  p_actor_email text,
+  p_action text,
+  p_entity text,
+  p_entity_ref text,
+  p_detail text default null
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  -- Hanya admin yang boleh mencatat (dipanggil server-side pasca mutasi).
+  if not public.is_admin() then
+    raise exception 'forbidden: bukan admin';
+  end if;
+  insert into public.activity_log (actor_email, action, entity, entity_ref, detail)
+  values (p_actor_email, p_action, p_entity, p_entity_ref, p_detail);
+end;
+$$;
+
+revoke all on function public.log_activity(text, text, text, text, text) from public;
+grant execute on function public.log_activity(text, text, text, text, text) to authenticated;
+
+-- ============================================================
+-- Helper manajemen admin (dipakai halaman Admin).
+-- Dieksekusi sebagai definer agar bisa membaca auth.users &
+-- menulis admin_users; setiap fungsi memverifikasi is_admin()
+-- terlebih dahulu — aman walau EXECUTE dibuka ke authenticated.
+-- ============================================================
+create or replace function public.admin_list()
+returns table (id uuid, email text, role text)
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select a.id, a.email, a.role
+  from public.admin_users a
+  where public.is_admin()
+  order by a.email;
+$$;
+
+revoke all on function public.admin_list() from public;
+grant execute on function public.admin_list() to authenticated;
+
+create or replace function public.admin_add_by_email(p_email text)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_id uuid;
+begin
+  if not public.is_admin() then
+    raise exception 'forbidden: bukan admin';
+  end if;
+  select u.id into v_id
+  from auth.users u
+  where lower(u.email) = lower(trim(p_email));
+  if v_id is null then
+    raise exception 'user dengan email tersebut belum terdaftar di Authentication — buat dulu lewat dashboard';
+  end if;
+  insert into public.admin_users (id, email, role)
+  values (v_id, lower(trim(p_email)), 'admin')
+  on conflict (id) do update set email = excluded.email;
+  return v_id;
+end;
+$$;
+
+revoke all on function public.admin_add_by_email(text) from public;
+grant execute on function public.admin_add_by_email(text) to authenticated;
+
+create or replace function public.admin_remove(p_user_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'forbidden: bukan admin';
+  end if;
+  if p_user_id = (select auth.uid()) then
+    raise exception 'tidak bisa menghapus akun sendiri';
+  end if;
+  if (select count(*) from public.admin_users) <= 1 then
+    raise exception 'tidak bisa menghapus admin terakhir';
+  end if;
+  delete from public.admin_users where id = p_user_id;
+end;
+$$;
+
+revoke all on function public.admin_remove(uuid) from public;
+grant execute on function public.admin_remove(uuid) to authenticated;
+
+-- ============================================================
+-- Migrasi 003 — Riwayat chat AI admin (retensi 30 hari)
+-- Sesi kedaluwarsa 30 hari setelah aktivitas terakhir (sliding).
+-- Pembersihan dilakukan malas (lazy purge) di endpoint daftar sesi —
+-- tanpa cron/extension tambahan. Hapus sesi = cascade ke pesannya.
+-- RLS: hanya admin (baca/tulis penuh), tanpa akses publik.
+-- ============================================================
+create table if not exists public.ai_chat_sessions (
+  id         uuid        primary key default gen_random_uuid(),
+  title      text        not null default 'Percakapan baru',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  expires_at timestamptz not null default (now() + interval '30 days')
+);
+
+create table if not exists public.ai_chat_messages (
+  id         uuid        primary key default gen_random_uuid(),
+  session_id uuid        not null references public.ai_chat_sessions (id) on delete cascade,
+  role       text        not null check (role in ('user', 'assistant')),
+  content    text        not null,
+  created_at timestamptz not null default now()
+);
+
+alter table public.ai_chat_sessions enable row level security;
+alter table public.ai_chat_messages enable row level security;
+
+drop policy if exists ai_chat_sessions_admin_all on public.ai_chat_sessions;
+create policy ai_chat_sessions_admin_all
+  on public.ai_chat_sessions
+  for all
+  using (public.is_admin())
+  with check (public.is_admin());
+
+drop policy if exists ai_chat_messages_admin_all on public.ai_chat_messages;
+create policy ai_chat_messages_admin_all
+  on public.ai_chat_messages
+  for all
+  using (public.is_admin())
+  with check (public.is_admin());
+
+create index if not exists idx_ai_chat_messages_session on public.ai_chat_messages (session_id, created_at);
+create index if not exists idx_ai_chat_sessions_expires on public.ai_chat_sessions (expires_at);
+
+-- ============================================================
+-- Migrasi 004 — Log pemakaian AI (monitoring token & error)
+-- Satu baris per request ke Groq, dari admin maupun user (nanti).
+-- Kolom scope + model disiapkan agar pemisahan AI admin vs user
+-- (key/model berbeda) tinggal konfigurasi, tanpa ubah skema.
+-- RLS: hanya admin.
+-- ============================================================
+create table if not exists public.ai_usage_log (
+  id                uuid        primary key default gen_random_uuid(),
+  scope             text        not null default 'admin' check (scope in ('admin', 'user')),
+  model             text        not null default '',
+  prompt_tokens     integer     not null default 0,
+  completion_tokens integer     not null default 0,
+  total_tokens      integer     not null default 0,
+  latency_ms        integer     not null default 0,
+  status            text        not null default 'ok' check (status in ('ok', 'error')),
+  error             text,
+  session_ref       text        not null default '',
+  created_at        timestamptz not null default now()
+);
+
+alter table public.ai_usage_log enable row level security;
+
+drop policy if exists ai_usage_log_admin_all on public.ai_usage_log;
+create policy ai_usage_log_admin_all
+  on public.ai_usage_log
+  for all
+  using (public.is_admin())
+  with check (public.is_admin());
+
+create index if not exists idx_ai_usage_log_created on public.ai_usage_log (created_at desc);

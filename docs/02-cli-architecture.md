@@ -34,10 +34,10 @@ Tidak perlu instalasi permanen. `npx` mengunduh versi terbaru dari npm registry 
 ### Mode 2 — Install Permanen (Global)
 ```bash
 npm install -g scaffdev
-scaff create
-scaff list-templates
+scaffdev                                    # interactive prompt
+scaffdev my-app --template=ecommerce-basic-nextjs
 ```
-Setelah instalasi, tersedia banyak sub-command. Mode ini untuk user yang sering pakai tool ini berulang kali.
+Setelah instalasi, command `scaffdev` bisa dipanggil kapan saja. Tanpa argumen, CLI menampilkan interactive prompt; dengan flag `--template=<slug>` (dan opsional nama folder), project langsung di-generate.
 
 ## Alur Kerja `index.ts` (Logic Utama)
 
@@ -46,7 +46,7 @@ Setelah instalasi, tersedia banyak sub-command. Mode ini untuk user yang sering 
    - Tampilkan visual banner menggunakan `intro()`.
    - Gunakan `spinner()` saat memanggil `GET /api/templates` (endpoint publik yang sama dipakai web builder, lihat `04-api-backend-architecture.md`) untuk mengambil daftar template aktif secara real-time. TIDAK BOLEH hardcode daftar template di kode CLI (konsisten dengan `07-template-slug-system.md`).
    - Prompt 1 (`select()`): Pilih kategori (`ecommerce`, `landing-page`, `portfolio`) dengan label dan hint deskripsi singkat.
-   - Prompt 2 (`select()`): Pilih framework yang tersedia untuk kategori tersebut (Next.js aktif, Laravel dengan hint "Segera Hadir").
+    - Prompt 2 (`select()`): Pilih framework yang tersedia untuk kategori tersebut berdasarkan data API (Next.js dan/atau Laravel — opsi Laravel hanya muncul jika sudah ada template Laravel terdaftar).
    - Prompt 3 (`select()`): Pilih varian/kombinasi template (menampilkan badge integrasi pada label).
    - Prompt 4 (`text()`): Masukkan nama folder target project dengan validasi input.
    - Pada setiap prompt, gunakan `isCancel()` dan `cancel()` untuk menangani pembatalan (Ctrl+C) secara anggun.
@@ -68,7 +68,7 @@ Setelah instalasi, tersedia banyak sub-command. Mode ini untuk user yang sering 
 - **TIDAK BOLEH** menyimpan daftar template secara hardcoded di dalam kode CLI. Semua data template HARUS diambil dari API secara real-time. Ini prinsip inti supaya penambahan template baru tidak memerlukan republish CLI (lihat `07-template-slug-system.md`).
 - **TIDAK BOLEH** menyimpan credential/API key apapun di dalam kode CLI.
 - Semua pesan yang ditampilkan ke user harus dalam Bahasa Indonesia yang jelas, termasuk pesan error.
-- Setiap perubahan pada `src/` WAJIB diikuti `npm run build` sebelum publish (lihat `11-npm-publishing-guide.md`).
+- Setiap perubahan pada `src/` WAJIB diikuti `pnpm build` (dari dalam `packages/cli/`) sebelum publish (lihat `11-npm-publishing-guide.md`).
 
 ## Dependency Utama
 - `execa` — menjalankan child process

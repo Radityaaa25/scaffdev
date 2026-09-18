@@ -4,7 +4,11 @@
 Memungkinkan admin (anggota tim) menambah, mengedit, dan mengelola metadata template TANPA menyentuh database secara langsung atau menulis kode.
 
 ## Lokasi Kode
-`apps/web/app/admin/`
+`apps/admin/` — aplikasi Next.js terpisah (port 3001) dari web publik. Write ke
+database TIDAK langsung dari browser, melainkan via API Routes di `apps/web`
+(`POST/PUT/DELETE /api/templates`) dengan session dibawa sebagai header
+`Authorization: Bearer` (cookie tidak lintas origin/port). Keputusan: admin
+terpisah, bukan route di dalam `apps/web`.
 
 ## Autentikasi
 - Menggunakan Supabase Auth (email/password).
@@ -24,9 +28,10 @@ Form email + password sederhana, memanggil Supabase Auth sign-in.
 ### `/admin/templates/new`
 Form dengan field:
 - Nama template (text input)
-- Framework (dropdown: Next.js, Laravel — Laravel bisa disabled dulu jika belum ada template Laravel di MVP)
+- Slug (opsional — otomatis dari nama + framework; immutable setelah dibuat)
+- Framework (dropdown setara: Next.js, Laravel)
 - Kategori (dropdown: E-commerce, Landing Page, Portfolio)
-- Link repo GitHub (text input, validasi harus berupa URL GitHub valid dan diakhiri `.git`)
+- Link repo GitHub publik di akun pribadi (text input, validasi `https://github.com/owner/repo[.git]`)
 - Deskripsi (textarea)
 - Screenshot: input URL langsung (text input) — KEPUTUSAN MVP: tidak menggunakan upload ke Supabase Storage di tahap ini karena menambah kompleksitas (setup bucket, policy, upload handler) yang tidak krusial untuk kebutuhan lomba. Admin mengunggah gambar ke layanan hosting gambar manapun (imgur, atau serupa) secara manual, lalu menempelkan URL-nya ke form. Migrasi ke Supabase Storage bisa menjadi peningkatan pasca-MVP jika dibutuhkan.
 - Opsi integrasi (checkbox multi-select, diambil dari tabel `integrasi` — lihat `03-database-architecture.md`)

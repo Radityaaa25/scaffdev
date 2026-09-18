@@ -1,7 +1,8 @@
 ---
 title: Daftar Integrasi yang Didukung
 description: Ringkasan layanan pihak ketiga dan integrasi lokal Indonesia yang didukung oleh template Scaff.
-order: 2
+order: 5
+section: Panduan
 ---
 
 # Daftar Integrasi yang Didukung
@@ -72,8 +73,11 @@ Scaff **tidak pernah** membuatkan akun atau menagih biaya langganan layanan di a
 1. `.env.example` — format kerangka variable yang wajib diisi.
 2. `SETUP.md` — panduan terperinci cara mendapatkan API key dari masing-masing dashboard.
 
-Anda cukup menyalin `.env.example` menjadi `.env.local`, kemudian mengisi nilai key Anda sendiri:
+Anda cukup menyalin `.env.example` menjadi file env aktif, kemudian mengisi nilai key Anda sendiri:
 
 ```bash
-cp .env.example .env.local
+cp .env.example .env.local   # Next.js
+cp .env.example .env         # Laravel (+ php artisan key:generate)
 ```
+
+> Catatan: daftar key persis mengikuti data tiap template (lihat halaman detail template) — contoh di atas adalah bentuk umumnya. Panduan lengkap ada di [Environment & SETUP.md](/docs/env-dan-setup).

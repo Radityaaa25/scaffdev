@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { CheckIcon } from "./DocsIcons";
 
 interface CommandBoxProps {
   command: string;
@@ -32,10 +33,16 @@ export function CommandBox({ command, className = "" }: CommandBoxProps) {
       <button
         onClick={handleCopy}
         type="button"
-        className="shrink-0 text-xs font-medium px-2.5 py-1 rounded bg-[#26262B] hover:bg-[#8B5CF6] text-[#FAFAFA] transition-colors focus:outline-none focus:ring-1 focus:ring-[#8B5CF6]"
+        className="flex shrink-0 items-center gap-1.5 rounded px-2.5 py-1 text-xs font-medium text-[#FAFAFA] transition-all bg-[#26262B] hover:bg-[#8B5CF6] active:scale-95 focus:outline-none focus:ring-1 focus:ring-[#8B5CF6]"
         title="Salin ke clipboard"
       >
-        {copied ? "✓ Tersalin!" : "Salin"}
+        {copied ? (
+          <>
+            <CheckIcon /> Tersalin!
+          </>
+        ) : (
+          "Salin"
+        )}
       </button>
     </div>
   );

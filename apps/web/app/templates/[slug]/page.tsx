@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getTemplateBySlug } from "@/lib/data";
 import { IntegrationBadge } from "@/components/IntegrationBadge";
 import { TemplateActionBox } from "@/components/TemplateActionBox";
+import { AskAI } from "@/components/AskAI";
 
 interface TemplateDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -19,6 +20,7 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
 
   return (
     <div className="container mx-auto px-4 py-10 max-w-5xl">
+      <AskAI />
       {/* Breadcrumbs */}
       <nav className="flex items-center gap-2 text-xs text-zinc-500 mb-6 font-mono">
         <Link href="/templates" className="hover:text-zinc-300 transition-colors">

@@ -1,7 +1,8 @@
 ---
 title: Panduan Kontribusi Template
 description: Standar kualitas, struktur folder, dan panduan bagi developer eksternal yang ingin berkontribusi membuat template baru untuk Scaff.
-order: 4
+order: 8
+section: Referensi
 ---
 
 # Panduan Kontribusi Template
@@ -60,7 +61,7 @@ Sebelum mengajukan template:
 
 1. **Buat Template**: Bangun project template di repository GitHub publik Anda sendiri.
 2. **Uji Coba Mandiri**: Lakukan clone ke folder baru, jalankan `npm install && npm run build`, pastikan build berhasil tanpa peringatan kritis.
-3. **Hubungi Tim Scaff**: Ajukan submission melalui issue di [GitHub Organization Scaff](https://github.com/scaff) dengan menyertakan:
+3. **Hubungi Tim Scaffdev**: Kirimkan submission Anda dengan menyertakan:
    - Link repository publik
    - Deskripsi singkat dan target kategori (E-commerce, Landing Page, atau Portfolio)
    - Screenshot preview tampilan utama (rasio 16:9 disarankan)

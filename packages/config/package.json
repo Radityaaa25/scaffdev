@@ -9,9 +9,10 @@
     "./eslint": "./eslint/index.js"
   },
   "dependencies": {
-    "@eslint/js": "latest",
-    "eslint": "latest",
+    "@eslint/js": "^9",
+    "eslint": "^9",
     "globals": "latest",
+    "typescript": "^5.9.3",
     "typescript-eslint": "latest"
   }
 }

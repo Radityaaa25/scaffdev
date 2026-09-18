@@ -14,7 +14,7 @@ Menyatukan istilah yang dipakai di seluruh dokumentasi dan kode, agar tidak ada 
 | **Integrasi** | Opsi tambahan yang bisa disertakan dalam template, contoh: `supabase` (database), `midtrans` (payment). Lihat tabel `integrasi` di `03-database-architecture.md`. |
 | **Kombinasi Terbatas** | Pendekatan MVP di mana user memilih dari daftar kombinasi template yang sudah dibuat sebelumnya (pre-built), BUKAN merakit bebas dari opsi-opsi terpisah. Lawan dari "Custom Combination Engine". |
 | **Base Template** | (Konsep roadmap, belum diimplementasikan) Template dasar tanpa integrasi apapun, digunakan sebagai fondasi untuk sistem kustomisasi bebas di masa depan. Lihat `17-roadmap-custom-combination-engine.md`. |
-| **Repo Template** | Repository GitHub yang berisi isi kode satu template, disimpan di dalam GitHub Organization. |
+| **Repo Template** | Repository GitHub publik berisi isi kode satu template, disimpan di akun GitHub pribadi pembuatnya (lihat keputusan MVP di `10-github-repo-management.md`). |
 | **CLI** | Package Node.js yang dipublish ke npm, dijalankan user di terminal untuk generate project dari template. |
 | **Builder** (halaman) | Halaman web tempat user memilih kategori, framework, dan kombinasi template secara visual. |
 | **Admin Panel** | Halaman web internal untuk tim mengelola metadata template (tambah, edit, hapus). |

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useTransition, Suspense } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Template } from "@scaff/database";
 import { TemplateCard } from "@/components/TemplateCard";
+import { AskAI } from "@/components/AskAI";
 import { fetchTemplates } from "@/lib/api";
 
 const KATEGORI_OPTIONS = [
@@ -175,6 +176,7 @@ export default function TemplatesPage() {
       }
     >
       <TemplatesContent />
+      <AskAI />
     </Suspense>
   );
 }

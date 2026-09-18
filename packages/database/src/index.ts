@@ -29,6 +29,7 @@ export interface Template {
   screenshot_url?: string | null;
   opsi_integrasi: string[];
   is_published: boolean;
+  downloads_count: number;
   created_at: string;
   updated_at: string;
 }

@@ -12,14 +12,15 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@scaff/config": "*"
+    "@scaff/config": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "latest",
+    "eslint": "^9",
     "react": "latest",
-    "typescript": "latest"
+    "typescript": "^5.9.3"
   },
   "peerDependencies": {
-    "react": "latest"
+    "react": "^19"
   }
 }

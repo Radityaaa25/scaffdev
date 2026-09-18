@@ -8,10 +8,10 @@
 ## Struktur `package.json` di `packages/cli/`
 ```json
 {
-  "name": "scaff",
+  "name": "scaffdev",
   "version": "1.0.0",
   "bin": {
-    "scaff": "./dist/index.js"
+    "scaffdev": "./dist/index.js"
   },
   "files": ["dist"],
   "scripts": {
@@ -44,30 +44,30 @@ Tanpa baris ini, sistem operasi tidak tahu harus menjalankan file tersebut mengg
 ```bash
 cd packages/cli
 
-# 1. Install dependency
-npm install
+# 1. Install dependency (dari root monorepo: pnpm install)
+pnpm install
 
 # 2. Compile TypeScript (src/index.ts) menjadi JavaScript (dist/index.js)
-npm run build
+pnpm build
 
 # 3. Login (hanya perlu sekali per sesi/komputer)
-npm login
+pnpm login
 
-# 4. Publish ke npm registry
-npm publish
+# 4. Publish ke npm registry (registry tetap npmjs, walau monorepo memakai pnpm)
+pnpm publish
 ```
 
 ## Update Versi Selanjutnya
 Setiap kali ada perubahan kode setelah publish pertama:
 ```bash
-npm version patch   # untuk bug fix kecil, contoh: 1.0.0 -> 1.0.1
+pnpm version patch   # untuk bug fix kecil, contoh: 1.0.0 -> 1.0.1
 # atau
-npm version minor   # untuk fitur baru non-breaking, contoh: 1.0.0 -> 1.1.0
+pnpm version minor   # untuk fitur baru non-breaking, contoh: 1.0.0 -> 1.1.0
 # atau
-npm version major   # untuk perubahan besar/breaking change, contoh: 1.0.0 -> 2.0.0
+pnpm version major   # untuk perubahan besar/breaking change, contoh: 1.0.0 -> 2.0.0
 
-npm run build
-npm publish
+pnpm build
+pnpm publish
 ```
 
 ## PENTING: Kapan CLI Perlu Di-Publish Ulang, Kapan Tidak
@@ -77,9 +77,9 @@ npm publish
 ## Testing Lokal Sebelum Publish
 Sebelum publish ke npm registry, test CLI secara lokal menggunakan:
 ```bash
-npm link
+pnpm link --global
 ```
-Ini membuat command CLI bisa dipanggil secara global di komputer development tanpa harus publish dulu. Setelah selesai testing, jalankan `npm unlink` untuk membersihkan.
+Ini membuat command CLI bisa dipanggil secara global di komputer development tanpa harus publish dulu. Setelah selesai testing, jalankan `pnpm unlink --global` untuk membersihkan.
 
 ## Referensi Silang
 - Struktur folder lengkap `packages/cli`: `02-cli-architecture.md`

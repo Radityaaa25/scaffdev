@@ -2,12 +2,20 @@ import fs from "fs";
 import path from "path";
 import { IntegrasiDetail } from "../types";
 
-export function generateEnvExample(targetDir: string, integrasi: IntegrasiDetail[]): void {
+export function generateEnvExample(
+  targetDir: string,
+  integrasi: IntegrasiDetail[],
+  framework: string
+): void {
+  const isLaravel = framework.toLowerCase() === "laravel";
+  const envFileName = isLaravel ? ".env" : ".env.local";
   const lines: string[] = [
     "# ============================================================",
     "# Environment Variables — Di-generate otomatis oleh Scaffdev CLI",
-    "# Salin file ini menjadi .env.local lalu isi kredensial Anda:",
-    "#   cp .env.example .env.local",
+    `# Salin file ini menjadi ${envFileName} lalu isi kredensial Anda:`,
+    isLaravel
+      ? "#   cp .env.example .env"
+      : "#   cp .env.example .env.local",
     "# ============================================================",
     "",
   ];
@@ -32,8 +40,44 @@ export function generateEnvExample(targetDir: string, integrasi: IntegrasiDetail
 export function generateSetupDoc(
   targetDir: string,
   integrasi: IntegrasiDetail[],
-  templateName: string
+  templateName: string,
+  framework: string
 ): void {
+  const isLaravel = framework.toLowerCase() === "laravel";
+  const quickSteps = isLaravel
+    ? [
+        "```bash",
+        "# Masuk ke direktori project",
+        "cd .",
+        "",
+        "# Install seluruh dependensi PHP",
+        "composer install",
+        "",
+        "# Buat file .env dari contoh",
+        "cp .env.example .env",
+        "",
+        "# Generate application key Laravel",
+        "php artisan key:generate",
+        "",
+        "# Jalankan server development lokal",
+        "php artisan serve",
+        "```",
+      ]
+    : [
+        "```bash",
+        "# Masuk ke direktori project",
+        "cd .",
+        "",
+        "# Install seluruh dependensi",
+        "npm install",
+        "",
+        "# Buat file .env.local",
+        "cp .env.example .env.local",
+        "",
+        "# Jalankan server development lokal",
+        "npm run dev",
+        "```",
+      ];
   const lines: string[] = [
     `# Panduan Setup Project — ${templateName}`,
     "",
@@ -42,19 +86,7 @@ export function generateSetupDoc(
     "Ikuti langkah-langkah di bawah ini untuk mengonfigurasi environment variable dan menjalankan aplikasi:",
     "",
     "## 1. Langkah Cepat",
-    "```bash",
-    "# Masuk ke direktori project",
-    "cd .",
-    "",
-    "# Install seluruh dependensi",
-    "npm install",
-    "",
-    "# Buat file .env.local",
-    "cp .env.example .env.local",
-    "",
-    "# Jalankan server development lokal",
-    "npm run dev",
-    "```",
+    ...quickSteps,
     "",
   ];
 

@@ -13,7 +13,7 @@
   "author": "Scaffdev Team",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/scaff-dev/scaffdev.git"
+    "url": "git+https://github.com/Radityaaa25/scaffdev.git"
   },
   "homepage": "https://scaff.dev",
   "license": "MIT",
@@ -35,7 +35,9 @@
     "execa": "^9.5.2"
   },
   "devDependencies": {
+    "@scaff/config": "workspace:*",
     "@types/node": "^22.13.0",
+    "eslint": "^9",
     "tsup": "^8.3.6",
     "typescript": "^5.7.3"
   },

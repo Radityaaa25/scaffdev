@@ -15,7 +15,7 @@
 ```json
 {
   "slug": "ecommerce-supabase-midtrans-nextjs",
-  "repo_url": "https://github.com/scaff/ecommerce-supabase-midtrans-nextjs.git",
+  "repo_url": "https://github.com/username/ecommerce-supabase-midtrans-nextjs.git",
   "framework": "nextjs",
   "integrasi": [
     {
@@ -86,7 +86,7 @@
   "nama": "E-commerce Basic",
   "framework": "nextjs",
   "kategori": "ecommerce",
-  "repo_url": "https://github.com/scaff/ecommerce-basic-nextjs.git",
+  "repo_url": "https://github.com/username/ecommerce-basic-nextjs.git",
   "deskripsi": "...",
   "screenshot_url": "...",
   "opsi_integrasi": []

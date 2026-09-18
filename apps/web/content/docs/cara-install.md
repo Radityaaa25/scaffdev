@@ -1,7 +1,8 @@
 ---
 title: Cara Install & Penggunaan CLI
 description: Panduan lengkap memulai project baru menggunakan Scaff CLI via npx atau instalasi global.
-order: 1
+order: 2
+section: Mulai
 ---
 
 # Cara Install & Penggunaan CLI
@@ -40,6 +41,37 @@ Jika Anda sudah memilih template dari website [scaff.dev/templates](/templates),
 npx scaffdev@latest --template=ecommerce-supabase-midtrans-nextjs
 ```
 
+Untuk menentukan nama folder sekaligus:
+
+```bash
+npx scaffdev@latest toko-saya --template=ecommerce-supabase-midtrans-nextjs
+```
+
+> Penting: flag-nya `--template=<slug>` (dengan tanda `=`). Tanpa flag ini CLI masuk mode interaktif.
+
+### Langkah Lanjutan per Framework
+
+Setelah generate selesai, CLI menampilkan langkah yang sesuai framework:
+
+**Next.js:**
+```bash
+cd nama-project
+npm install
+cp .env.example .env.local   # lalu isi API key
+npm run dev
+```
+
+**Laravel:**
+```bash
+cd nama-project
+composer install
+cp .env.example .env         # lalu isi API key
+php artisan key:generate
+php artisan serve
+```
+
+Detail pengisian key ada di [Environment & SETUP.md](/docs/env-dan-setup). Kalau menemui error, lihat [Troubleshooting](/docs/troubleshooting).
+
 ---
 
 ## 2. Mode Instalasi Global
@@ -50,17 +82,14 @@ Bagi developer yang sering membuat project baru, Scaff CLI dapat diinstall secar
 npm install -g scaffdev
 ```
 
-Setelah terinstall secara global, Anda dapat menggunakan sub-command berikut kapan saja:
+Setelah terinstall secara global, Anda dapat memanggilnya kapan saja:
 
 ```bash
 # Membuat project baru lewat interactive prompt
-scaff create
-
-# Melihat daftar template aktif dari terminal
-scaff list-templates
+scaffdev
 
 # Membuat project dengan template spesifik
-scaff create --template=landingpage-basic-nextjs
+scaffdev nama-folder --template=landingpage-basic-nextjs
 ```
 
 ---

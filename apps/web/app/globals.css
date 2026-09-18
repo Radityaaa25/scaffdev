@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "@scaff/ui/styles/theme.css";
+@import "highlight.js/styles/github-dark.css";
 
 :root {
   color-scheme: dark;
@@ -8,4 +9,327 @@
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+/* FORCE STYLING untuk Article Body */
+article.docs-article {
+  color: #d4d4d8 !important;
+  line-height: 2 !important;
+}
+
+/* Paragraphs */
+article.docs-article p {
+  margin: 2rem 0 !important;
+  font-size: 18px !important;
+  line-height: 2 !important;
+  color: #d4d4d8 !important;
+}
+
+/* Headings */
+article.docs-article h1 {
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  margin: 0 0 2.5rem 0 !important;
+  padding-bottom: 2rem !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+article.docs-article h2 {
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  margin: 5rem 0 2rem 0 !important;
+}
+
+article.docs-article h2:first-child {
+  margin-top: 0 !important;
+}
+
+article.docs-article h3 {
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  color: #a78bfa !important;
+  margin: 4rem 0 1.5rem 0 !important;
+}
+
+article.docs-article h4 {
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+  color: #e4e4e7 !important;
+  margin: 3rem 0 1.25rem 0 !important;
+}
+
+/* Strong (Bold) */
+article.docs-article strong {
+  font-weight: 800 !important;
+  color: #ffffff !important;
+}
+
+/* Links */
+article.docs-article a {
+  color: #a78bfa !important;
+  text-decoration: none !important;
+  font-weight: 500 !important;
+  transition: all 0.2s !important;
+}
+
+article.docs-article a:hover {
+  color: #8b5cf6 !important;
+  text-decoration: underline !important;
+  text-underline-offset: 4px !important;
+}
+
+/* Lists */
+article.docs-article ul,
+article.docs-article ol {
+  margin: 2.5rem 0 !important;
+  padding-left: 2rem !important;
+  font-size: 18px !important;
+  line-height: 2 !important;
+  color: #d4d4d8 !important;
+}
+
+article.docs-article ul {
+  list-style-type: disc !important;
+}
+
+article.docs-article ol {
+  list-style-type: decimal !important;
+}
+
+article.docs-article li {
+  margin: 1.25rem 0 !important;
+  padding-left: 1rem !important;
+}
+
+article.docs-article li::marker {
+  color: #8b5cf6 !important;
+  font-weight: 700 !important;
+}
+
+article.docs-article li p {
+  margin: 1rem 0 !important;
+}
+
+/* Inline Code - BACKGROUND JELAS DENGAN !important */
+article.docs-article code {
+  background: rgba(139, 92, 246, 0.25) !important;
+  border: 2px solid rgba(139, 92, 246, 0.5) !important;
+  border-radius: 6px !important;
+  padding: 4px 10px !important;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: #ddd6fe !important;
+}
+
+/* Code Blocks - BACKGROUND SOLID dengan MIN HEIGHT */
+article.docs-article pre {
+  background: #0d1117 !important;
+  border: 2px solid rgba(139, 92, 246, 0.3) !important;
+  border-radius: 16px !important;
+  margin: 2.5rem 0 !important;
+  padding: 0 !important;
+  position: relative !important;
+  overflow: hidden !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6) !important;
+  min-height: 80px !important;
+}
+
+article.docs-article pre code {
+  background: transparent !important;
+  border: none !important;
+  padding: 56px 24px 24px 24px !important;
+  display: block !important;
+  overflow-x: auto !important;
+  font-size: 15px !important;
+  line-height: 1.8 !important;
+  color: #e6edf3 !important;
+  font-weight: 400 !important;
+  min-height: 80px !important;
+}
+
+/* Blockquotes */
+article.docs-article blockquote {
+  margin: 2.5rem 0 !important;
+  padding: 1.5rem 2rem !important;
+  border-left: 6px solid #8b5cf6 !important;
+  background: rgba(139, 92, 246, 0.1) !important;
+  border-radius: 0 16px 16px 0 !important;
+  color: #d4d4d8 !important;
+}
+
+article.docs-article blockquote p {
+  margin: 0.75rem 0 !important;
+}
+
+/* HR */
+article.docs-article hr {
+  margin: 4rem 0 !important;
+  border: none !important;
+  border-top: 2px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Override highlight.js */
+.hljs {
+  background: transparent !important;
+  padding: 0 !important;
+  color: #e6edf3 !important;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #8b949e !important;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-subst {
+  color: #ff7b72 !important;
+  font-weight: 600;
+}
+
+.hljs-number,
+.hljs-literal,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag .hljs-attr {
+  color: #79c0ff !important;
+}
+
+.hljs-string,
+.hljs-doctag {
+  color: #a5d6ff !important;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-selector-id {
+  color: #d2a8ff !important;
+  font-weight: 700;
+}
+
+.hljs-type,
+.hljs-class .hljs-title {
+  color: #ffa657 !important;
+  font-weight: 600;
+}
+
+.hljs-tag,
+.hljs-name,
+.hljs-attribute {
+  color: #7ee787 !important;
+}
+
+/* Code block scrollbar */
+article.docs-article pre code::-webkit-scrollbar {
+  height: 10px;
+}
+
+article.docs-article pre code::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+article.docs-article pre code::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.4);
+  border-radius: 4px;
+}
+
+article.docs-article pre code::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.6);
+}
+
+@keyframes docs-popup {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-docs-popup {
+  animation: docs-popup 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Tombol copy - SELALU TERLIHAT */
+.docs-copy-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: #a8a8b3;
+  background: rgba(13, 17, 23, 0.95);
+  border: 1.5px solid rgba(139, 92, 246, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+article.docs-article pre:hover .docs-copy-btn {
+  opacity: 1;
+}
+
+.docs-copy-btn:focus-visible {
+  opacity: 1;
+  outline: 2px solid rgba(139, 92, 246, 0.5);
+  outline-offset: 2px;
+}
+
+.docs-copy-btn:hover {
+  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.5);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.3);
+}
+
+.docs-copy-btn:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.docs-copy-btn.copied {
+  color: #7ee787;
+  background: rgba(126, 231, 135, 0.15);
+  border-color: rgba(126, 231, 135, 0.5);
+  box-shadow: 0 4px 12px rgba(126, 231, 135, 0.3);
+}
+
+.docs-copy-btn svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+@media (hover: none) {
+  .docs-copy-btn {
+    opacity: 0.9;
+  }
+}
+
+@media (max-width: 640px) {
+  .docs-copy-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  
+  .docs-copy-btn svg {
+    width: 13px;
+    height: 13px;
+  }
 }

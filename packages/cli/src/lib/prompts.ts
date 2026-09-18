@@ -54,20 +54,26 @@ export async function runInteractivePrompt(
     new Set(templatesForCategory.map((t) => t.framework))
   );
 
+  const frameworkLabels: Record<string, string> = {
+    nextjs: "Next.js (App Router)",
+    laravel: "Laravel (PHP)",
+  };
+
   const frameworkOptions = [
     ...availableFrameworks.map((fw) => ({
       value: fw,
-      label: fw === "nextjs" ? "Next.js (App Router)" : fw,
-      hint: "Rekomendasi resmi Scaff",
+      label: frameworkLabels[fw] || fw,
+      hint: "Rekomendasi resmi Scaffdev",
     })),
   ];
 
-  // If Laravel is not yet in templates, show disabled/hint option for clarity
+  // Jika belum ada template Laravel terdaftar, tampilkan opsi non-aktif sebagai info.
+  // Opsi ini hilang otomatis begitu template Laravel pertama didaftarkan via admin.
   if (!availableFrameworks.includes("laravel")) {
     frameworkOptions.push({
       value: "laravel-disabled",
       label: "Laravel (PHP)",
-      hint: "Segera Hadir di roadmap berikutnya",
+      hint: "Belum ada template Laravel — daftarkan via halaman admin",
     });
   }
 
@@ -83,7 +89,7 @@ export async function runInteractivePrompt(
   }
 
   if (framework === "laravel-disabled") {
-    p.cancel("Dukungan Laravel sedang dalam tahap roadmap aktif. Silakan pilih Next.js untuk saat ini.");
+    p.cancel("Belum ada template Laravel yang terdaftar. Daftarkan dulu lewat halaman admin.");
     return null;
   }
 

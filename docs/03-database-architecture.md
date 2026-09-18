@@ -16,11 +16,12 @@ Database ini HANYA menyimpan **metadata** template (slug, url repo, deskripsi, d
 | `nama` | text, not null | Nama tampilan, contoh: "E-commerce Basic" |
 | `framework` | text, not null | Contoh: `nextjs`, `laravel` |
 | `kategori` | text, not null | Contoh: `ecommerce`, `landing-page`, `portfolio` |
-| `repo_url` | text, not null | URL GitHub, contoh: `https://github.com/scaff/ecommerce-basic-nextjs.git`. HARUS repo public untuk MVP. |
+| `repo_url` | text, not null | URL GitHub, contoh: `https://github.com/username/ecommerce-basic-nextjs.git`. HARUS repo public untuk MVP. |
 | `deskripsi` | text | |
 | `screenshot_url` | text | Untuk preview visual di web |
 | `opsi_integrasi` | text[] (array) | Contoh: `['supabase', 'midtrans']`. Kosong array jika template basic tanpa integrasi. Merujuk ke `kode` di tabel `integrasi`. |
 | `is_published` | boolean, default false | Kontrol apakah template tampil di web/bisa diakses CLI. Admin bisa simpan draft tanpa langsung publish. |
+| `downloads_count` | integer, default 0 | Jumlah project di-generate via CLI (naik tiap `GET /api/templates/:slug?source=cli`). Ditambah via RPC `increment_template_downloads`, bukan write langsung. |
 | `created_at` | timestamptz, default now() | |
 | `updated_at` | timestamptz, default now() | |
 

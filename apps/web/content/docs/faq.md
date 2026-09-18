@@ -1,7 +1,8 @@
 ---
 title: Pertanyaan yang Sering Diajukan (FAQ)
 description: Jawaban atas pertanyaan umum seputar penggunaan, keamanan, dan batasan Scaff.
-order: 3
+order: 7
+section: Panduan
 ---
 
 # Pertanyaan yang Sering Diajukan (FAQ)
@@ -22,7 +23,7 @@ order: 3
 ---
 
 ### 3. Apakah repository template Scaff bersifat publik?
-**Ya.** Di tahap MVP, seluruh template starter kit disimpan di GitHub Organization publik (`github.com/scaff`). Hal ini memungkinkan proses `git clone` berjalan cepat tanpa memerlukan login ataupun personal access token. Pastikan Anda **tidak pernah** meng-commit file `.env.local` yang berisi secret key asli Anda ke repository publik.
+**Ya.** Di tahap MVP, seluruh template starter kit disimpan sebagai repository GitHub publik di akun masing-masing pembuatnya (tanpa GitHub Organization). Hal ini memungkinkan proses `git clone` berjalan cepat tanpa memerlukan login ataupun personal access token. Pastikan Anda **tidak pernah** meng-commit file `.env.local` yang berisi secret key asli Anda ke repository publik.
 
 ---
 
@@ -33,9 +34,9 @@ order: 3
 ---
 
 ### 5. Apakah Scaff mendukung Laravel?
-Dukungan untuk framework **Laravel** saat ini berada dalam roadmap aktif. Pada rilis MVP awal, fokus utama kami adalah ekosistem Next.js (App Router).
+**Ya.** Selain Next.js (App Router), katalog Scaff juga menyediakan template **Laravel**. Pilih framework Laravel saat browsing katalog atau lewat interactive prompt CLI — CLI otomatis memeriksa prasyarat PHP & Composer di komputer Anda.
 
 ---
 
 ### 6. Bagaimana jika saya menemukan bug pada template?
-Silakan laporkan kendala atau buat pull request di repository GitHub template terkait atau hubungi tim pengembang via GitHub Organization [github.com/scaff](https://github.com/scaff).
+Silakan laporkan kendala atau buat pull request di repository GitHub template terkait.

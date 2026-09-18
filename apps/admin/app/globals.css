@@ -9,3 +9,232 @@ body {
   background: var(--background);
   color: var(--foreground);
 }
+
+/* ---- Liquid glass / glassmorphism utilities (khusus admin) ---- */
+.glass-panel {
+  background: linear-gradient(
+    135deg,
+    rgb(255 255 255 / 0.08),
+    rgb(255 255 255 / 0.02)
+  );
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgb(255 255 255 / 0.09);
+  box-shadow: 0 8px 32px rgb(0 0 0 / 0.35);
+}
+
+.glass-input {
+  background: rgb(10 10 11 / 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  color: var(--foreground);
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: rgb(139 92 246 / 0.6);
+  box-shadow: 0 0 0 3px rgb(139 92 246 / 0.15);
+}
+
+.glass-input::placeholder {
+  color: var(--foreground-muted);
+  opacity: 0.6;
+}
+
+/* ---- Animasi modern (admin) ---- */
+@keyframes admin-fade-slide-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes admin-scale-in {
+  from { opacity: 0; transform: scale(0.94) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes admin-toast-in {
+  from { opacity: 0; transform: translateX(32px) scale(0.97); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes admin-toast-out {
+  to { opacity: 0; transform: translateX(24px) scale(0.97); }
+}
+
+@keyframes admin-shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+@keyframes admin-typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+  30% { transform: translateY(-5px); opacity: 1; }
+}
+
+@keyframes admin-bar-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes admin-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-admin-enter {
+  animation: admin-fade-slide-up 0.45s cubic-bezier(0.21, 0.9, 0.35, 1) both;
+}
+
+.animate-admin-popup {
+  animation: admin-scale-in 0.22s cubic-bezier(0.21, 0.9, 0.35, 1) both;
+}
+
+.animate-admin-backdrop {
+  animation: admin-backdrop-in 0.2s ease-out both;
+}
+
+.animate-admin-toast {
+  animation: admin-toast-in 0.3s cubic-bezier(0.21, 0.9, 0.35, 1) both;
+}
+
+.animate-admin-toast-leaving {
+  animation: admin-toast-out 0.25s ease-in both;
+}
+
+.animate-admin-bar {
+  transform-origin: left;
+  animation: admin-bar-grow 0.7s cubic-bezier(0.21, 0.9, 0.35, 1) both;
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgb(255 255 255 / 0.04) 25%,
+    rgb(255 255 255 / 0.09) 50%,
+    rgb(255 255 255 / 0.04) 75%
+  );
+  background-size: 800px 100%;
+  animation: admin-shimmer 1.4s linear infinite;
+}
+
+.typing-dot {
+  animation: admin-typing-bounce 1.2s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.typing-dot:nth-child(3) { animation-delay: 0.3s; }
+
+/* ---- Ikon & progress toast ---- */
+@keyframes toast-icon-pop {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+@keyframes toast-icon-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-3px); }
+  40% { transform: translateX(3px); }
+  60% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+}
+
+@keyframes toast-check-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes toast-progress-shrink {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+@keyframes toast-pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgb(139 92 246 / 0.5); }
+  70% { box-shadow: 0 0 0 7px rgb(139 92 246 / 0); }
+  100% { box-shadow: 0 0 0 0 rgb(139 92 246 / 0); }
+}
+
+.animate-toast-icon-pop {
+  animation: toast-icon-pop 0.35s cubic-bezier(0.21, 0.9, 0.35, 1) both;
+}
+
+.animate-toast-icon-shake {
+  animation: toast-icon-shake 0.45s ease-in-out both;
+}
+
+.animate-toast-icon-pulse {
+  animation: toast-pulse-ring 1.6s ease-out infinite;
+}
+
+.toast-check-circle {
+  stroke-dasharray: 63;
+  stroke-dashoffset: 63;
+  animation: toast-check-draw 0.5s ease-out 0.1s forwards;
+}
+
+.toast-check-mark {
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  animation: toast-check-draw 0.3s ease-out 0.35s forwards;
+}
+
+.animate-toast-progress {
+  animation: toast-progress-shrink 4s linear both;
+}
+
+/* ---- Tombol delete expand (ikon → pil merah) ---- */
+.btn-delete {
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  background-color: rgb(20, 20, 20);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition-duration: 0.3s;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.btn-delete svg {
+  width: 13px;
+  transition-duration: 0.3s;
+  fill: white;
+}
+
+.btn-delete::before {
+  position: absolute;
+  top: -20px;
+  content: "Delete";
+  color: white;
+  font-size: 2px;
+  font-weight: 600;
+  transition-duration: 0.3s;
+  white-space: nowrap;
+}
+
+.btn-delete:hover:not(:disabled) {
+  width: 108px;
+  background-color: rgb(255, 69, 69);
+  border-color: transparent;
+  box-shadow: 0 8px 24px rgb(255 69 69 / 0.35);
+}
+
+.btn-delete:hover:not(:disabled) svg {
+  width: 38px;
+  transform: translateY(60%);
+}
+
+.btn-delete:hover:not(:disabled)::before {
+  font-size: 12px;
+  transform: translateY(30px);
+}
+
+.btn-delete:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

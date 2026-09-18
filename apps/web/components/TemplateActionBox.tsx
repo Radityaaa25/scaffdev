@@ -10,7 +10,7 @@ interface TemplateActionBoxProps {
 
 export function TemplateActionBox({ slug, framework }: TemplateActionBoxProps) {
   const [showCommand, setShowCommand] = useState(false);
-  const command = `npx scaff@latest --template=${slug}`;
+  const command = `npx scaffdev@latest --template=${slug}`;
 
   const isNextjs = framework.toLowerCase() === "nextjs";
 

@@ -11,14 +11,8 @@ export function middleware(request: NextRequest) {
   const isPreflight = request.method === "OPTIONS";
   const path = request.nextUrl.pathname;
 
-  // Protect admin routes
-  if (path.startsWith("/admin") && path !== "/admin/login") {
-    const adminSession = request.cookies.get("admin_session")?.value;
-    // VERY simple password check via cookie for MVP
-    if (adminSession !== "authenticated") {
-      return NextResponse.redirect(new URL("/admin/login", request.url));
-    }
-  }
+  // Admin panel lives in apps/admin (port 3001) dengan Supabase Auth sendiri.
+  // Tidak ada route /admin di app ini — hanya CORS untuk /api.
 
   if (isPreflight) {
     return NextResponse.json(
@@ -43,5 +37,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/api/:path*", "/admin/:path*"],
+  matcher: ["/api/:path*"],
 };

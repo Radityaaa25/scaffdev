@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@scaff/ui": "*",
+    "@scaff/database": "workspace:*",
+    "@scaff/ui": "workspace:*",
+    "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "latest",
     "geist": "latest",
     "next": "latest",
@@ -22,9 +24,9 @@
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
-    "eslint": "latest",
+    "eslint": "^9",
     "eslint-config-next": "latest",
     "tailwindcss": "latest",
-    "typescript": "latest"
+    "typescript": "^5.9.3"
   }
 }

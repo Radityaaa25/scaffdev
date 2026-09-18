@@ -153,11 +153,12 @@ Opsi:
   genSpinner.start("Men-generate .env.example dan SETUP.md...");
 
   try {
-    generateEnvExample(targetDir, templateDetail.integrasi);
+    generateEnvExample(targetDir, templateDetail.integrasi, templateDetail.framework);
     generateSetupDoc(
       targetDir,
       templateDetail.integrasi,
-      templateDetail.nama || templateDetail.slug
+      templateDetail.nama || templateDetail.slug,
+      templateDetail.framework
     );
     genSpinner.stop("Dokumentasi setup & environment variables siap.");
   } catch (err: unknown) {
@@ -166,14 +167,24 @@ Opsi:
     p.log.warn(`Peringatan: ${error.message}`);
   }
 
+  // Langkah lanjutan yang sesuai framework (Next.js vs Laravel)
+  const isLaravel = templateDetail.framework.toLowerCase() === "laravel";
+  const nextSteps = isLaravel
+    ? `  1. cd ${targetFolder}\n` +
+      "  2. composer install\n" +
+      "  3. cp .env.example .env && php artisan key:generate\n" +
+      "  4. Buka SETUP.md untuk panduan pengisian .env\n" +
+      "  5. php artisan serve"
+    : `  1. cd ${targetFolder}\n` +
+      "  2. npm install\n" +
+      "  3. Buka SETUP.md untuk panduan pengisian .env.local\n" +
+      "  4. npm run dev";
+
   // Outro Success Box
   p.outro(
     `🎉 Project "${targetFolder}" berhasil dibuat!\n\n` +
     "Langkah selanjutnya:\n" +
-    `  1. cd ${targetFolder}\n` +
-    "  2. npm install\n" +
-    "  3. Buka SETUP.md untuk panduan pengisian .env.local\n" +
-    "  4. npm run dev\n\n" +
+    `${nextSteps}\n\n` +
     "Dokumentasi lengkap: https://scaff.dev/docs"
   );
 }

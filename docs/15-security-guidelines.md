@@ -15,7 +15,7 @@ Proyek ini secara sadar TIDAK mengklaim menyediakan penyimpanan credential/secre
 ## Aturan Wajib — Autentikasi & Akses
 1. Semua endpoint yang melakukan perubahan data (`POST`, `PUT`, `DELETE` pada `/api/templates`) WAJIB memvalidasi session admin di sisi server sebelum memproses request (lihat `04-api-backend-architecture.md` dan `06-admin-panel-architecture.md`).
 2. Supabase Service Role Key TIDAK BOLEH pernah diekspos ke kode sisi client (browser). Semua operasi yang membutuhkan service role harus dilakukan di server (API Route).
-3. 2FA WAJIB diaktifkan di akun GitHub pribadi setiap anggota tim yang memiliki akses ke GitHub Organization (lihat `10-github-repo-management.md`).
+3. 2FA WAJIB diaktifkan di akun GitHub pribadi setiap pemilik repo template (lihat `10-github-repo-management.md`).
 
 ## Aturan Wajib — AI Features
 1. AI (LLM) TIDAK PERNAH diizinkan men-generate kode integrasi security-critical (payment, auth, database credential) secara real-time untuk langsung dipakai user. Lihat penjelasan lengkap di `13-ai-recommendation-assistant.md`.
@@ -34,7 +34,7 @@ Sebagai catatan histori keputusan, ide-ide berikut sempat dipertimbangkan namun 
 ## Checklist Keamanan Sebelum Rilis/Demo
 - [ ] Tidak ada secret di repository manapun (cek dengan tools seperti `git-secrets` atau pemeriksaan manual sebelum push)
 - [ ] Semua endpoint admin sudah diverifikasi memerlukan autentikasi
-- [ ] 2FA aktif di akun GitHub Organization
+- [ ] 2FA aktif di akun GitHub setiap pemilik repo template
 - [ ] `.env.example` di setiap template tidak berisi nilai yang menyerupai key asli
 
 ## Referensi Silang

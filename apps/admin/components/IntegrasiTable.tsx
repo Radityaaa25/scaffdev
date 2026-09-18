@@ -1,0 +1,120 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import type { Integrasi } from "@scaff/database";
+import { apiFetch } from "@/lib/api";
+import { useUI } from "@/components/UIProvider";
+
+export function IntegrasiTable({ initial }: { initial: Integrasi[] }) {
+  const router = useRouter();
+  const { toast, confirm } = useUI();
+  const [rows, setRows] = useState<Integrasi[]>(initial);
+  const [q, setQ] = useState("");
+  const [deleting, setDeleting] = useState<string | null>(null);
+
+  const filtered = useMemo(() => {
+    const needle = q.trim().toLowerCase();
+    if (!needle) return rows;
+    return rows.filter((r) =>
+      `${r.nama_tampilan} ${r.kode} ${r.kategori_integrasi ?? ""}`.toLowerCase().includes(needle)
+    );
+  }, [rows, q]);
+
+  async function handleDelete(r: Integrasi) {
+    const ok = await confirm({
+      title: "Hapus integrasi?",
+      message: `"${r.nama_tampilan}" (${r.kode}) akan dihapus. Ditolak bila masih dipakai template.`,
+      confirmLabel: "Ya, hapus",
+      danger: true,
+    });
+    if (!ok) return;
+    setDeleting(r.kode);
+    const res = await apiFetch<{ success: boolean }>(
+      `/api/integrasi/${encodeURIComponent(r.kode)}`,
+      { method: "DELETE" }
+    );
+    if (!res.ok) {
+      setDeleting(null);
+      toast.error(res.error || "Gagal menghapus integrasi.");
+      return;
+    }
+    setRows((prev) => prev.filter((x) => x.kode !== r.kode));
+    setDeleting(null);
+    toast.success(`Integrasi "${r.nama_tampilan}" dihapus.`);
+    router.refresh();
+  }
+
+  return (
+    <div className="animate-admin-enter">
+      <div className="glass-panel mt-6 rounded-2xl p-4">
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Cari nama atau kode…"
+          className="glass-input w-full rounded-xl px-4 py-2 text-sm sm:max-w-sm"
+        />
+      </div>
+
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {filtered.map((r, i) => (
+          <div
+            key={r.kode}
+            className={`glass-panel animate-admin-enter group rounded-2xl p-5 transition-all duration-300 hover:-translate-y-1 hover:border-white/15 ${deleting === r.kode ? "pointer-events-none scale-95 opacity-0" : ""}`}
+            style={{ animationDelay: `${Math.min(i, 8) * 50}ms` }}
+          >
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <h3 className="truncate font-semibold text-white">{r.nama_tampilan}</h3>
+                <p className="font-mono text-xs text-zinc-500">{r.kode}</p>
+              </div>
+              {r.kategori_integrasi && (
+                <span className="shrink-0 rounded-full bg-[#8B5CF6]/15 px-2.5 py-0.5 text-xs font-medium text-[#A78BFA]">
+                  {r.kategori_integrasi}
+                </span>
+              )}
+            </div>
+            <p className="mt-3 font-mono text-xs text-zinc-500">
+              {(r.daftar_env_var ?? []).length} env var
+            </p>
+            <div className="mt-4 flex gap-2">
+              <Link
+                href={`/integrasi/${encodeURIComponent(r.kode)}/edit`}
+                className="flex-1 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-center text-xs font-medium text-zinc-300 transition-all hover:bg-white/10 hover:text-white active:scale-95"
+              >
+                Edit
+              </Link>
+              <button
+                type="button"
+                onClick={() => handleDelete(r)}
+                disabled={deleting !== null}
+                title={`Hapus ${r.nama_tampilan}`}
+                aria-label={`Hapus ${r.nama_tampilan}`}
+                className="btn-delete"
+              >
+                {deleting === r.kode ? (
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                ) : (
+                  <svg viewBox="0 0 448 512" aria-hidden="true"><path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z" /></svg>
+                )}
+              </button>
+            </div>
+          </div>
+        ))}
+        {filtered.length === 0 && (
+          <div className="glass-panel col-span-full rounded-2xl p-10 text-center">
+            <p className="text-sm text-zinc-400">
+              {rows.length === 0 ? "Belum ada integrasi." : "Tidak cocok dengan pencarian."}
+            </p>
+            {rows.length === 0 && (
+              <Link href="/integrasi/new" className="mt-3 inline-block rounded-lg bg-[#8B5CF6] px-4 py-2 text-xs font-semibold text-white transition-all hover:bg-[#7C3AED] active:scale-95">
+                + Tambah yang pertama
+              </Link>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

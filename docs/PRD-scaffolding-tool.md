@@ -150,13 +150,13 @@ B2C (developer individu, gratis di tahap MVP) dengan potensi ekspansi B2B (tim/p
 | F-10 | Sistem dapat menambah template baru tanpa perlu update CLI yang sudah dipublish | Wajib |
 | F-11 | AI dapat merekomendasikan kombinasi template dari input bahasa natural | Wajib |
 | F-12 | AI dapat menjawab pertanyaan troubleshooting berdasarkan dokumentasi setup | Sebaiknya Ada |
-| F-13 | Repo template disimpan di GitHub Organization, dapat di-clone tanpa autentikasi (public) | Wajib |
+| F-13 | Repo template disimpan di akun GitHub pribadi masing-masing (public), dapat di-clone tanpa autentikasi | Wajib |
 
 ---
 
 ## 8. Kebutuhan Non-Fungsional
 
-- **Keamanan:** Tidak ada API key/secret asli yang tersimpan di dalam repo template (wajib menggunakan `.gitignore` untuk `.env` asli). 2FA aktif di akun/organization GitHub.
+- **Keamanan:** Tidak ada API key/secret asli yang tersimpan di dalam repo template (wajib menggunakan `.gitignore` untuk `.env` asli). 2FA aktif di akun GitHub pemilik repo.
 - **Skalabilitas:** Penambahan template baru tidak boleh memerlukan perubahan kode CLI atau republish ke npm.
 - **Performa:** Proses `git clone` dan generate file tambahan (`.env.example`, `SETUP.md`) idealnya selesai dalam hitungan detik untuk template berskala kecil-menengah.
 - **Ketersediaan:** Web dan API di-deploy di infrastruktur gratis (Vercel + Supabase) yang cukup andal untuk skala demo/awal.
@@ -196,7 +196,7 @@ CLI tetap berupa satu package Node.js/npm. Untuk framework berbasis Composer (La
 | CLI process execution | `execa` | Menjalankan child process (git, composer) dengan lebih rapi dari `child_process` bawaan |
 | AI/LLM | Groq API | Gratis dengan limit memadai, kecepatan tinggi |
 | AI SDK | Vercel AI SDK | Streaming response untuk chatbot, integrasi native dengan Next.js |
-| Repository template | GitHub (Organization) | Gratis, standar industri, mendukung `git clone` publik tanpa autentikasi |
+| Repository template | GitHub (repo publik di akun pribadi) | Gratis, standar industri, mendukung `git clone` publik tanpa autentikasi |
 | Package registry | npm | Gratis untuk package publik |
 | Deployment web & API | Vercel | Dukungan native untuk monorepo Turborepo, gratis untuk skala MVP |
 
@@ -267,4 +267,4 @@ Table: integrasi (referensi untuk generate .env.example & SETUP.md)
 ## 15. Lampiran
 
 - Detail eksplorasi arsitektur kustomisasi penuh ("base template + modular injection") dan alasan penundaannya ke roadmap tersedia di dokumen referensi ide terpisah (`ide-ai-agent-lomba.md`, bagian ide starter kit generator).
-- Detail langkah teknis (publish npm, membuat GitHub Organization, struktur file CLI) tersedia di dokumen yang sama.
+- Detail langkah teknis (publish npm, mengelola repo template GitHub, struktur file CLI) tersedia di dokumen yang sama.

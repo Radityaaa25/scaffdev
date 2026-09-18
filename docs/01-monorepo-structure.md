@@ -6,14 +6,18 @@ Turborepo (dipilih karena native untuk ekosistem Next.js/Vercel, caching build c
 ## Struktur Folder Lengkap
 
 ```
-scaff/                             (root monorepo)
+scaffdev/                          (root monorepo)
 ├── apps/
-│   └── web/                       → Aplikasi Next.js utama (landing, builder UI, admin panel, API routes)
-│       ├── app/
-│       │   ├── (marketing)/       → halaman landing/marketing publik
-│       │   ├── builder/           → halaman pilih template (kategori, framework, preview, opsi)
-│       │   ├── admin/             → halaman admin panel (CRUD template)
-│       │   └── api/               → API routes (lihat 04-api-backend-architecture.md)
+│   ├── web/                       → Aplikasi Next.js utama (landing, builder UI, katalog, API routes; port 3000)
+│   │   ├── app/
+│   │   │   ├── (marketing)/       → halaman landing/marketing publik
+│   │   │   ├── builder/           → halaman pilih template (kategori, framework, preview, opsi)
+│   │   │   └── api/               → API routes (lihat 04-api-backend-architecture.md)
+│   │   ├── components/
+│   │   ├── lib/
+│   │   └── package.json
+│   └── admin/                     → Admin panel terpisah (login, dashboard, CRUD template; port 3001)
+│       ├── app/                   → login, dashboard bento, templates (list/new/edit)
 │       ├── components/
 │       ├── lib/
 │       └── package.json
@@ -36,16 +40,23 @@ scaff/                             (root monorepo)
 
 ## Command Dasar (Root)
 ```bash
-npm install          # install semua dependency di seluruh monorepo
-npx turbo dev         # jalankan dev server semua apps yang punya script "dev"
-npx turbo build        # build semua apps/packages sesuai dependency graph
-npx turbo lint         # jalankan lint di semua package
+pnpm install           # install semua dependency di seluruh monorepo
+pnpm dev               # jalankan dev server semua apps yang punya script "dev"
+pnpm build             # build semua apps/packages sesuai dependency graph
+pnpm lint              # jalankan lint di semua package
+pnpm typecheck         # jalankan typecheck di semua package
 ```
+
+> Catatan: package manager monorepo ini adalah **pnpm** (lihat `pnpm-workspace.yaml`
+> dan field `packageManager` di root `package.json`). Command `npx scaffdev@latest`
+> yang dilihat end-user TIDAK berubah — package CLI tetap di-publish ke npm registry,
+> jadi user tetap install via `npx`/`npm` seperti biasa.
 
 ## Kapan Menambah Package Baru
 Jika ada fitur besar yang perlu dipisah (misal `packages/email` untuk notifikasi email), buat folder baru di `packages/`, ikuti pola `package.json` yang sama seperti `packages/ui`, dan daftarkan sebagai dependency di `apps/web/package.json` menggunakan workspace protocol (`"@repo/nama-package": "workspace:*"`).
 
 ## Referensi Silang
-- Detail isi `apps/web`: lihat `05-web-frontend-architecture.md` dan `06-admin-panel-architecture.md`
+- Detail isi `apps/web`: lihat `05-web-frontend-architecture.md`
+- Detail isi `apps/admin`: lihat `06-admin-panel-architecture.md`
 - Detail isi `packages/cli`: lihat `02-cli-architecture.md`
 - Detail isi `packages/database` (skema): lihat `03-database-architecture.md`

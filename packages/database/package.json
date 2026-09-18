@@ -9,8 +9,8 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@scaff/config": "*",
-    "typescript": "latest"
+    "@scaff/config": "workspace:*",
+    "typescript": "^5.9.3"
   },
   "files": [
     "schema.sql",
