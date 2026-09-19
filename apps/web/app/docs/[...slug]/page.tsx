@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -6,6 +7,13 @@ import { TocNav } from "@/components/TocNav";
 import { ArticleBody } from "@/components/ArticleBody";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { ChevronRightIcon } from "@/components/DocsIcons";
+import { JsonLd } from "@/components/JsonLd";
+import {
+  absoluteUrl,
+  baseMetadata,
+  articleJsonLd,
+  breadcrumbJsonLd,
+} from "@/lib/seo";
 
 interface DocArticlePageProps {
   params: Promise<{ slug: string[] }>;
@@ -16,6 +24,29 @@ export async function generateStaticParams() {
   return docs.map((doc) => ({
     slug: [doc.slug],
   }));
+}
+
+export async function generateMetadata({ params }: DocArticlePageProps): Promise<Metadata> {
+  const resolvedParams = await params;
+  const slugPath = resolvedParams.slug.join("/");
+  const doc = await getDocBySlug(slugPath);
+  if (!doc) {
+    return baseMetadata({ title: "Dokumentasi tidak ditemukan" });
+  }
+  const title = `${doc.title} — Dokumentasi Scaffdev`;
+  const description = doc.description || `Panduan ${doc.title} — dokumentasi Scaffdev berbahasa Indonesia.`;
+  return baseMetadata({
+    title,
+    description,
+    keywords: [doc.title, doc.section, "dokumentasi scaffdev", "panduan scaffdev"],
+    alternates: { canonical: absoluteUrl(`/docs/${slugPath}`) },
+    openGraph: {
+      type: "article",
+      url: absoluteUrl(`/docs/${slugPath}`),
+      title,
+      description,
+    },
+  });
 }
 
 export default async function DocArticlePage({ params }: DocArticlePageProps) {
@@ -35,6 +66,19 @@ export default async function DocArticlePage({ params }: DocArticlePageProps) {
   return (
     <>
       <ReadingProgress />
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Dokumentasi", path: "/docs" },
+          { name: doc.title, path: `/docs/${slugPath}` },
+        ])}
+      />
+      <JsonLd
+        data={articleJsonLd({
+          headline: doc.title,
+          description: doc.description || `Panduan ${doc.title}.`,
+          urlPath: `/docs/${slugPath}`,
+        })}
+      />
       
       <div className="mx-auto grid max-w-[1440px] gap-8 lg:grid-cols-[1fr_280px]">
         {/* Main Content */}

@@ -36,3 +36,8 @@ yarn-error.log*
 
 # CLI build artifacts
 packages/cli/dist/
+
+# Local-only: AI agent skills & internal dev docs (jangan push ke GitHub)
+.agents/
+docs/
+skills-lock.json

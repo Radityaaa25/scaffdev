@@ -18,6 +18,31 @@ export interface Integrasi {
   created_at: string;
 }
 
+export interface Framework {
+  id: string;
+  kode: string;
+  nama_tampilan: string;
+  created_at: string;
+}
+
+export interface Kategori {
+  id: string;
+  kode: string;
+  nama_tampilan: string;
+  created_at: string;
+}
+
+export interface Laporan {
+  id: string;
+  kategori: "bug" | "saran" | "lainnya";
+  judul: string;
+  isi: string;
+  kontak: string;
+  gambar_url: string;
+  status: "baru" | "diproses" | "selesai";
+  created_at: string;
+}
+
 export interface Template {
   id: string;
   slug: string;

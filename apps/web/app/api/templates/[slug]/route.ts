@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTemplateBySlug } from "@/lib/data";
 import { createSupabaseServerClient, requireAdmin } from "@/lib/supabase-server";
+import { isRateLimited, ADMIN_WRITE_LIMIT, ADMIN_WRITE_WINDOW_MS, STATS_LIMIT, STATS_WINDOW_MS } from "@/lib/rate-limit";
 import { validateTemplateInput } from "@/lib/template-validation";
 import { logActivity } from "@/lib/activity";
 
@@ -21,13 +22,19 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
   // Statistik generate: hanya dihitung untuk request dari CLI (?source=cli),
   // bukan kunjungan halaman web. Kegagalan increment tidak menggagalkan response.
+  // Guard anti-gelembung: maks 1 hitungan/menit/IP agar angka dashboard tidak
+  // bisa dimanipulasi publik via curl berulang.
   const { searchParams } = new URL(request.url);
   if (searchParams.get("source") === "cli") {
-    try {
-      const supabase = await createSupabaseServerClient();
-      await supabase.rpc("increment_template_downloads", { p_slug: slug });
-    } catch {
-      /* abaikan — statistik tidak boleh merusak response utama */
+    const forwarded = request.headers.get("x-forwarded-for");
+    const ip = forwarded ? forwarded.split(",")[0].trim() : (request.headers.get("x-real-ip") ?? "unknown");
+    if (!isRateLimited(`dl:${slug}:${ip}`, STATS_LIMIT, STATS_WINDOW_MS)) {
+      try {
+        const supabase = await createSupabaseServerClient();
+        await supabase.rpc("increment_template_downloads", { p_slug: slug });
+      } catch {
+        /* abaikan — statistik tidak boleh merusak response utama */
+      }
     }
   }
 
@@ -39,6 +46,13 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   const auth = await requireAdmin(request);
   if (!auth.ok) return auth.response;
   const { supabase, email } = auth.ctx;
+
+  if (isRateLimited(`admin-write:${auth.ctx.userId}`, ADMIN_WRITE_LIMIT, ADMIN_WRITE_WINDOW_MS)) {
+    return NextResponse.json(
+      { error: "Terlalu banyak perubahan. Tunggu ±10 menit lalu coba lagi." },
+      { status: 429 }
+    );
+  }
 
   // Slug immutable — diidentifikasi dari path, tidak boleh diganti via body.
   const { data: existing } = await supabase
@@ -73,8 +87,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
   const { data: integrasiRows } = await supabase.from("integrasi").select("kode");
   const allowedIntegrasi = (integrasiRows ?? []).map((r) => r.kode as string);
+  const { data: frameworkRows, error: fwErr } = await supabase.from("frameworks").select("kode");
+  const allowedFrameworks = fwErr ? null : (frameworkRows ?? []).map((r) => r.kode as string);
+  const { data: kategoriRows, error: katErr } = await supabase.from("kategoris").select("kode");
+  const allowedKategoris = katErr ? null : (kategoriRows ?? []).map((r) => r.kode as string);
 
-  const validated = validateTemplateInput(body, { partial: true, allowedIntegrasi });
+  const validated = validateTemplateInput(body, { partial: true, allowedIntegrasi, allowedFrameworks, allowedKategoris });
   if (!validated.ok) {
     return NextResponse.json({ error: validated.error }, { status: 400 });
   }
@@ -105,6 +123,13 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
   const auth = await requireAdmin(request);
   if (!auth.ok) return auth.response;
   const { supabase, email } = auth.ctx;
+
+  if (isRateLimited(`admin-write:${auth.ctx.userId}`, ADMIN_WRITE_LIMIT, ADMIN_WRITE_WINDOW_MS)) {
+    return NextResponse.json(
+      { error: "Terlalu banyak perubahan. Tunggu ±10 menit lalu coba lagi." },
+      { status: 429 }
+    );
+  }
 
   const { data: existing } = await supabase
     .from("templates")

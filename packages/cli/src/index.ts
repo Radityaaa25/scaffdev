@@ -3,7 +3,7 @@
 import path from "path";
 import fs from "fs";
 import * as p from "@clack/prompts";
-import { fetchTemplatesFromApi, fetchTemplateDetailFromApi } from "./lib/api-client";
+import { fetchTemplatesFromApi, fetchTemplateDetailFromApi, apiBaseUrl } from "./lib/api-client";
 import { checkPrerequisites } from "./lib/prerequisite-check";
 import { cloneRepository } from "./lib/git";
 import { generateEnvExample, generateSetupDoc } from "./lib/env-generator";
@@ -31,7 +31,7 @@ Opsi:
   }
 
   if (args.includes("--version") || args.includes("-v")) {
-    console.log("scaffdev v0.1.0");
+    console.log("scaffdev v0.1.2");
     process.exit(0);
   }
 
@@ -60,7 +60,7 @@ Opsi:
   if (!slug) {
     // Mode Interactive Prompt (tanpa flag --template)
     const spinner = p.spinner();
-    spinner.start("Mengambil daftar template aktif dari API...");
+    spinner.start(`Mengambil daftar template aktif dari API (${apiBaseUrl()})...`);
 
     const templates = await fetchTemplatesFromApi();
     spinner.stop(`Berhasil memuat ${templates.length} template aktif.`);
@@ -185,7 +185,7 @@ Opsi:
     `🎉 Project "${targetFolder}" berhasil dibuat!\n\n` +
     "Langkah selanjutnya:\n" +
     `${nextSteps}\n\n` +
-    "Dokumentasi lengkap: https://scaff.dev/docs"
+    "Dokumentasi lengkap: https://scaffdev.vercel.app/docs"
   );
 }
 

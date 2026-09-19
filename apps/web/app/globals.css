@@ -6,6 +6,17 @@
   color-scheme: dark;
 }
 
+/* Navigasi anchor (mis. #katalog, #pakai-template) bergulir halus */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -171,6 +182,76 @@ article.docs-article hr {
   border-top: 2px solid rgba(255, 255, 255, 0.1) !important;
 }
 
+/* Tables — wrapper + card rapi, code chip kecil nowrap */
+article.docs-article .docs-table-wrapper {
+  margin: 2.5rem 0 !important;
+  overflow-x: auto !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+article.docs-article table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  min-width: 560px !important;
+}
+
+article.docs-article thead th {
+  background: rgba(139, 92, 246, 0.12) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  text-align: left !important;
+  padding: 14px 18px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  white-space: nowrap !important;
+}
+
+article.docs-article thead th:first-child {
+  border-top-left-radius: 12px !important;
+}
+
+article.docs-article thead th:last-child {
+  border-top-right-radius: 12px !important;
+}
+
+article.docs-article tbody td {
+  padding: 13px 18px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  color: #d4d4d8 !important;
+  vertical-align: middle !important;
+}
+
+article.docs-article tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+article.docs-article tbody tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+article.docs-article tbody tr:hover td {
+  background: rgba(139, 92, 246, 0.06) !important;
+}
+
+article.docs-article tbody td:first-child {
+  font-weight: 600 !important;
+  color: #e4e4e7 !important;
+  white-space: nowrap !important;
+}
+
+/* code chip di dalam tabel: kecil, tidak bikin baris jangkung */
+article.docs-article td code,
+article.docs-article th code {
+  padding: 2px 8px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  white-space: nowrap !important;
+  display: inline-block !important;
+}
+
 /* Override highlight.js */
 .hljs {
   background: transparent !important;
@@ -257,79 +338,708 @@ article.docs-article pre code::-webkit-scrollbar-thumb:hover {
   animation: docs-popup 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* Tombol copy - SELALU TERLIHAT */
-.docs-copy-btn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 10;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  font-size: 13px;
-  font-weight: 600;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  color: #a8a8b3;
-  background: rgba(13, 17, 23, 0.95);
-  border: 1.5px solid rgba(139, 92, 246, 0.3);
-  border-radius: 8px;
+/* Terminal Card untuk code block docs — di-generate dari ArticleBody */
+.terminal-card {
+  background: #000 !important;
+  color: #fff !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  margin: 2.5rem 0 !important;
+  overflow: hidden !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6) !important;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace !important;
+}
+
+.terminal-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 12px 16px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+.terminal-dots {
+  display: flex !important;
+  gap: 8px !important;
+}
+
+.terminal-dot {
+  width: 12px !important;
+  height: 12px !important;
+  border-radius: 9999px !important;
+  display: block !important;
+}
+
+.terminal-dot-red { background: #ff5f57 !important; }
+.terminal-dot-yellow { background: #febc2e !important; }
+.terminal-dot-green { background: #28c840 !important; }
+
+.terminal-meta {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.terminal-lang {
+  margin: 0 !important;
+  font-size: 13px !important;
+  line-height: 1 !important;
+  color: #a1a1aa !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+}
+
+/* pre di dalam terminal-card: transparan, tanpa border ganda.
+   Specificity sengaja dibuat lebih tinggi dari `article.docs-article pre`
+   agar menang walau sama-sama pakai !important. */
+article.docs-article .terminal-card pre {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  min-height: auto !important;
+  position: static !important;
+  overflow: visible !important;
+}
+
+article.docs-article .terminal-card pre code {
+  padding: 20px 24px 24px 24px !important;
+  min-height: auto !important;
+  border: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+}
+
+/* Tombol copy tooltip — port dari desain styled-components ke CSS biasa */
+.terminal-copy.copy {
+  /* button */
+  --button-bg: #353434;
+  --button-hover-bg: #464646;
+  --button-text-color: #cccccc;
+  --button-hover-text-color: #8bb9fe;
+  --button-border-radius: 10px;
+  --button-diameter: 36px;
+  --button-outline-width: 1px;
+  --button-outline-color: rgb(141, 141, 141);
+  /* tooltip */
+  --tooltip-bg: #f4f3f3;
+  --toolptip-border-radius: 4px;
+  --tooltip-font-family: Menlo, Roboto Mono, monospace;
+  --tooltip-font-size: 12px;
+  --tootip-text-color: rgb(50, 50, 50);
+  --tooltip-padding-x: 7px;
+  --tooltip-padding-y: 7px;
+  --tooltip-offset: 8px;
+}
+
+.terminal-copy.copy {
+  box-sizing: border-box;
+  width: var(--button-diameter);
+  height: var(--button-diameter);
+  border-radius: var(--button-border-radius);
+  background-color: var(--button-bg);
+  color: var(--button-text-color);
+  border: none;
   cursor: pointer;
-  opacity: 0.75;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-}
-
-article.docs-article pre:hover .docs-copy-btn {
-  opacity: 1;
-}
-
-.docs-copy-btn:focus-visible {
-  opacity: 1;
-  outline: 2px solid rgba(139, 92, 246, 0.5);
-  outline-offset: 2px;
-}
-
-.docs-copy-btn:hover {
-  background: rgba(139, 92, 246, 0.15);
-  border-color: rgba(139, 92, 246, 0.5);
-  color: #ffffff;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.3);
-}
-
-.docs-copy-btn:active {
-  transform: translateY(0) scale(0.96);
-}
-
-.docs-copy-btn.copied {
-  color: #7ee787;
-  background: rgba(126, 231, 135, 0.15);
-  border-color: rgba(126, 231, 135, 0.5);
-  box-shadow: 0 4px 12px rgba(126, 231, 135, 0.3);
-}
-
-.docs-copy-btn svg {
-  width: 15px;
-  height: 15px;
+  position: relative;
+  outline: none;
   flex-shrink: 0;
+  padding: 0;
+}
+
+.terminal-copy .tooltip {
+  position: absolute;
+  opacity: 0;
+  visibility: hidden;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--tooltip-font-family);
+  font-size: var(--tooltip-font-size);
+  color: var(--tootip-text-color);
+  background: var(--tooltip-bg);
+  padding: var(--tooltip-padding-y) var(--tooltip-padding-x);
+  border-radius: var(--toolptip-border-radius);
+  pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  z-index: 20;
+}
+
+.terminal-copy .tooltip::before {
+  content: attr(data-text-initial);
+}
+
+.terminal-copy.copied .tooltip::before {
+  content: attr(data-text-end);
+}
+
+.terminal-copy .tooltip::after {
+  content: "";
+  position: absolute;
+  bottom: calc(var(--tooltip-padding-y) / 2 * -1);
+  width: var(--tooltip-padding-y);
+  height: var(--tooltip-padding-y);
+  background: inherit;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.terminal-copy .terminal-copy-icons {
+  position: static;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.terminal-copy svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.terminal-copy .checkmark {
+  display: none;
+}
+
+.terminal-copy.copied .clipboard {
+  display: none;
+}
+
+.terminal-copy.copied .checkmark {
+  display: block;
+}
+
+/* actions */
+.terminal-copy:hover .tooltip,
+.terminal-copy:focus-visible .tooltip,
+.terminal-copy.copied .tooltip {
+  opacity: 1;
+  visibility: visible;
+  top: calc((100% + var(--tooltip-offset)) * -1);
+}
+
+.terminal-copy:hover,
+.terminal-copy:focus-visible {
+  background-color: var(--button-hover-bg);
+}
+
+.terminal-copy:active {
+  outline: var(--button-outline-width) solid var(--button-outline-color);
+}
+
+.terminal-copy:hover svg {
+  color: var(--button-hover-text-color);
 }
 
 @media (hover: none) {
-  .docs-copy-btn {
-    opacity: 0.9;
+  .terminal-copy {
+    opacity: 0.95;
   }
 }
 
 @media (max-width: 640px) {
-  .docs-copy-btn {
-    padding: 6px 10px;
-    font-size: 12px;
+  .terminal-header {
+    padding: 10px 12px !important;
   }
-  
-  .docs-copy-btn svg {
-    width: 13px;
-    height: 13px;
+  .terminal-card pre code {
+    padding: 16px 16px 20px 16px !important;
+  }
+}
+
+/* Kartu terminal animasi ketik untuk hero katalog (namespace hero-term-*) */
+.hero-term-card {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  background: rgba(10, 10, 11, 0.72);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55), 0 0 60px rgba(139, 92, 246, 0.12);
+}
+.hero-term-glow {
+  position: absolute;
+  inset: -1px;
+  border-radius: 16px;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.5), transparent 35%, transparent 65%, rgba(236, 72, 153, 0.35));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.hero-term-wrap {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 10;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.hero-term-terminal {
+  display: flex;
+  flex-direction: column;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+.hero-term-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+  min-height: 46px;
+  padding-inline: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+.hero-term-dots {
+  display: flex;
+  gap: 7px;
+}
+.hero-term-dots span {
+  width: 11px;
+  height: 11px;
+  border-radius: 9999px;
+  display: block;
+}
+.hero-term-dots span:nth-child(1) { background: #ff5f57; }
+.hero-term-dots span:nth-child(2) { background: #febc2e; }
+.hero-term-dots span:nth-child(3) { background: #28c840; }
+.hero-term-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+  font-weight: 500;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #a1a1aa;
+  margin: 0;
+}
+.hero-term-title > svg {
+  height: 15px;
+  width: 15px;
+  color: #8b5cf6;
+}
+.hero-term-copy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-left: auto;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #a1a1aa;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.hero-term-copy > svg {
+  width: 15px;
+  height: 15px;
+}
+.hero-term-copy:hover {
+  color: #fff;
+  border-color: rgba(139, 92, 246, 0.5);
+  background: rgba(139, 92, 246, 0.12);
+}
+.hero-term-copy.copied {
+  color: #7ee787;
+  border-color: rgba(126, 231, 135, 0.5);
+  background: rgba(126, 231, 135, 0.08);
+}
+.hero-term-body {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-x: auto;
+  padding: 22px 20px 24px;
+  line-height: 22px;
+  color: white;
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(139, 92, 246, 0.09), transparent 60%),
+    #050507;
+  white-space: nowrap;
+}
+.hero-term-pre {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  white-space: pre;
+  background-color: transparent;
+  overflow: hidden;
+  box-sizing: border-box;
+  font-size: 15px;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+.hero-term-pre code:nth-child(1) {
+  color: #52525b;
+}
+.hero-term-pre code:nth-child(2) {
+  color: #a78bfa;
+  font-weight: 600;
+}
+.hero-term-cmd {
+  height: 22px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  color: #fafafa;
+}
+.hero-term-cmd::before {
+  content: attr(data-cmd);
+  position: relative;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  background-color: transparent;
+  width: 0;
+  animation: hero-term-inputs 7s steps(16) infinite;
+}
+.hero-term-cmd::after {
+  content: "";
+  position: relative;
+  display: block;
+  height: 100%;
+  overflow: hidden;
+  background-color: transparent;
+  border-right: 0.15em solid #8b5cf6;
+  animation: hero-term-cursor 0.5s step-end infinite alternate, hero-term-blinking 0.5s infinite;
+}
+
+/* Output baris kedua terminal */
+.hero-term-out {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #7ee787;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.hero-term-out .dim {
+  color: #52525b;
+}
+
+/* Badge melayang di sekitar terminal hero */
+.hero-term-float {
+  position: absolute;
+  z-index: 20;
+  display: none;
+  align-items: center;
+  gap: 7px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(10, 10, 11, 0.85);
+  backdrop-filter: blur(12px);
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fafafa;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  animation: hero-term-float 5s ease-in-out infinite;
+}
+@media (min-width: 1024px) {
+  .hero-term-float {
+    display: flex;
+  }
+}
+.hero-term-float .dot {
+  height: 7px;
+  width: 7px;
+  border-radius: 9999px;
+}
+/* Badge menempel di tepi kartu terminal (tidak menutup teks, tidak kepotong) */
+.hero-term-float-1 {
+  top: -28px;
+  left: -10px;
+}
+.hero-term-float-2 {
+  bottom: -15px;
+  right: 6px;
+  animation-delay: 2.5s;
+}
+@keyframes hero-term-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes hero-term-blinking {
+  20%,
+  80% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0);
+  }
+}
+@keyframes hero-term-cursor {
+  50% {
+    border-right-color: transparent;
+  }
+}
+/* "scaffdev@latest" = 16 karakter → steps(16), lebar 16ch */
+@keyframes hero-term-inputs {
+  0%,
+  100% {
+    width: 0;
+  }
+  20%,
+  80% {
+    width: 16ch;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-term-cmd::before,
+  .hero-term-cmd::after {
+    animation: none;
+  }
+  .hero-term-cmd::before {
+    width: 16ch;
+  }
+  .hero-enter {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+  .hero-term-float {
+    animation: none;
+  }
+  .hero-marquee-track {
+    animation: none;
+  }
+}
+
+/* Entrance animation hero katalog */
+.hero-enter {
+  opacity: 0;
+  transform: translateY(18px);
+  animation: hero-enter-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.hero-enter-1 { animation-delay: 0.05s; }
+.hero-enter-2 { animation-delay: 0.14s; }
+.hero-enter-3 { animation-delay: 0.23s; }
+.hero-enter-4 { animation-delay: 0.32s; }
+.hero-enter-5 { animation-delay: 0.41s; }
+.hero-enter-6 { animation-delay: 0.5s; }
+@keyframes hero-enter-up {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Marquee pills "Terintegrasi dengan" — loop mulus nonstop */
+.hero-marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 4%, black 96%, transparent);
+  mask-image: linear-gradient(90deg, transparent, black 4%, black 96%, transparent);
+}
+.hero-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: hero-marquee-scroll 30s linear infinite;
+  will-change: transform;
+}
+.hero-marquee-group {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 16px;
+  padding-right: 16px;
+}
+@keyframes hero-marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Tombol gooey hero (efek blob naik saat hover) */
+.btn-gooey {
+  color: #a78bfa;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  padding: 0.9em 1.6em;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  z-index: 1;
+  border: 2px solid #8b5cf6;
+  border-radius: 12px;
+  background: rgba(139, 92, 246, 0.08);
+  transition: color 700ms ease, background 700ms ease, box-shadow 700ms ease;
+}
+
+.btn-gooey .btn-gooey__blobs {
+  height: 100%;
+  filter: url(#btn-gooey-filter);
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: -3px;
+  right: -1px;
+  z-index: -1;
+  border-radius: 10px;
+}
+
+.btn-gooey .btn-gooey__blobs div {
+  background-color: #8b5cf6;
+  width: 34%;
+  height: 100%;
+  border-radius: 100%;
+  position: absolute;
+  transform: scale(1.4) translateY(125%) translateZ(0);
+  transition: transform 700ms ease;
+}
+
+.btn-gooey .btn-gooey__blobs div:nth-child(1) {
+  left: -5%;
+}
+
+.btn-gooey .btn-gooey__blobs div:nth-child(2) {
+  left: 30%;
+  transition-delay: 60ms;
+}
+
+.btn-gooey .btn-gooey__blobs div:nth-child(3) {
+  left: 66%;
+  transition-delay: 25ms;
+}
+
+.btn-gooey:hover {
+  color: #fff;
+  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.35);
+}
+
+.btn-gooey:hover .btn-gooey__blobs div {
+  transform: scale(1.4) translateY(0) translateZ(0);
+}
+
+.btn-gooey:active {
+  transform: scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-gooey,
+  .btn-gooey .btn-gooey__blobs div {
+    transition: none;
+  }
+}
+
+/* Tombol bubbles hero (lingkaran mengembang dari sudut saat hover) */
+.btn-bubbles {
+  --c1: #0a0a0b;
+  --c2: #8b5cf6;
+  --size-letter: 14px;
+  padding: 0.9em 1.6em;
+  font-size: var(--size-letter);
+  font-weight: 500;
+
+  background-color: transparent;
+  border: calc(var(--size-letter) / 7) solid var(--c2);
+  border-radius: 12px;
+  cursor: pointer;
+
+  overflow: hidden;
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  text-decoration: none;
+  transition: 300ms cubic-bezier(0.83, 0, 0.17, 1);
+}
+
+.btn-bubbles > .text {
+  font-weight: 600;
+  color: #d4d4d8;
+  position: relative;
+  z-index: 1;
+  transition: color 700ms cubic-bezier(0.83, 0, 0.17, 1);
+}
+
+.btn-bubbles::before {
+  top: 0;
+  left: 0;
+}
+
+.btn-bubbles::after {
+  top: 100%;
+  left: 100%;
+}
+
+.btn-bubbles::before,
+.btn-bubbles::after {
+  content: "";
+  width: 150%;
+  aspect-ratio: 1/1;
+  scale: 0;
+  transition: scale 1000ms cubic-bezier(0.76, 0, 0.24, 1);
+
+  background-color: var(--c2);
+  border-radius: 50%;
+
+  position: absolute;
+  translate: -50% -50%;
+}
+
+.btn-bubbles:hover > .text {
+  color: #fff;
+}
+
+.btn-bubbles:hover::before,
+.btn-bubbles:hover::after {
+  scale: 1;
+}
+
+.btn-bubbles:active {
+  scale: 0.98;
+  filter: brightness(0.9);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-bubbles,
+  .btn-bubbles > .text,
+  .btn-bubbles::before,
+  .btn-bubbles::after {
+    transition: none;
+  }
+}
+
+/* Responsif: terminal mengecil mengikuti layar */
+@media (max-width: 640px) {
+  .hero-term-body {
+    padding: 16px 14px 18px;
+  }
+  .hero-term-pre {
+    font-size: 13px;
+  }
+  .hero-term-cmd {
+    height: 19px;
+  }
+  .hero-term-out {
+    font-size: 12px;
   }
 }

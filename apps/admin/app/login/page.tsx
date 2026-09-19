@@ -3,6 +3,17 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
+import { apiFetch } from "@/lib/api";
+
+/** Catat upaya login untuk audit brute force — fire-and-forget, tanpa ubah UX. */
+function auditLogin(email: string, success: boolean): void {
+  void apiFetch("/api/auth/login-audit", {
+    method: "POST",
+    body: JSON.stringify({ email, success }),
+  }).catch(() => {
+    /* audit tidak boleh mengganggu login */
+  });
+}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -22,16 +33,19 @@ export default function LoginPage() {
         password,
       });
       if (signInError) {
+        auditLogin(email.trim(), false);
         setError("Email atau password salah.");
         return;
       }
       // Pastikan akun ini terdaftar sebagai admin — jika bukan, cabut session.
       const { data: isAdmin } = await supabase.rpc("is_admin");
       if (!isAdmin) {
+        auditLogin(email.trim(), false);
         await supabase.auth.signOut();
         setError("Akun ini tidak terdaftar sebagai admin Scaffdev.");
         return;
       }
+      auditLogin(email.trim(), true);
       router.push("/");
       router.refresh();
     } catch {
@@ -54,10 +68,19 @@ export default function LoginPage() {
       />
 
       <div className="glass-panel relative w-full max-w-md rounded-2xl p-8">
-        <div className="mb-8 text-center">
-          <span className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] text-xl font-bold text-white shadow-lg shadow-[#8B5CF6]/30">
-            S
-          </span>
+        <div className="mb-8 flex flex-col items-center text-center">
+          <img
+            src="/logo-full.png"
+            alt="Scaffdev"
+            className="mb-4 hidden h-12 w-auto sm:block"
+            loading="eager"
+          />
+          <img
+            src="/logo-icon.png"
+            alt="Scaffdev"
+            className="mb-4 h-12 w-12 sm:hidden"
+            loading="eager"
+          />
           <h1 className="text-xl font-bold text-white">Admin Scaffdev</h1>
           <p className="mt-1 text-sm text-zinc-400">
             Masuk dengan akun admin yang terdaftar

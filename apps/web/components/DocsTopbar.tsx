@@ -32,12 +32,20 @@ export function DocsTopbar({ docs }: { docs: SpotlightDoc[] }) {
     <>
       <div className="flex w-full items-center gap-4">
         {/* Brand Section */}
-        <Link href="/docs" className="flex shrink-0 items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#8B5CF6] to-[#7C3AED] text-base font-bold text-white shadow-lg shadow-[#8B5CF6]/25">
-            S
-          </span>
+        <Link href="/docs" className="flex shrink-0 items-center gap-2.5" aria-label="Scaffdev Docs">
+          <img
+            src="/logo-full.png"
+            alt="Scaffdev"
+            className="hidden h-10 w-auto sm:block"
+            loading="eager"
+          />
+          <img
+            src="/logo-icon.png"
+            alt="Scaffdev"
+            className="h-9 w-9 sm:hidden"
+            loading="eager"
+          />
           <div className="hidden items-baseline gap-1.5 sm:flex">
-            <span className="text-base font-semibold text-[#FAFAFA]">Scaffdev</span>
             <span className="text-sm font-normal text-zinc-500">Docs</span>
           </div>
         </Link>

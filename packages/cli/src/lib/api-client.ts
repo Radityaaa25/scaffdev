@@ -4,11 +4,11 @@ import { Template, TemplateDetailResponse } from "../types";
 //   SCAFF_API_BASE_URL=http://localhost:3000
 // Default menunjuk ke deployment produksi apps/web.
 const DEFAULT_API_URL =
-  process.env.SCAFF_API_BASE_URL || "https://scaff.dev";
+  process.env.SCAFF_API_BASE_URL || "https://scaffdev.vercel.app";
 
 const REQUEST_TIMEOUT_MS = 8000;
 
-function apiBaseUrl(): string {
+export function apiBaseUrl(): string {
   return DEFAULT_API_URL.replace(/\/+$/, "");
 }
 

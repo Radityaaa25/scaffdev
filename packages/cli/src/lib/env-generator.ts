@@ -109,7 +109,7 @@ export function generateSetupDoc(
   }
 
   lines.push("---");
-  lines.push("Dokumentasi resmi Scaff: [https://scaff.dev/docs](https://scaff.dev/docs)");
+  lines.push("Dokumentasi resmi Scaff: [https://scaffdev.vercel.app/docs](https://scaffdev.vercel.app/docs)");
 
   const filePath = path.join(targetDir, "SETUP.md");
   fs.writeFileSync(filePath, lines.join("\n"), "utf-8");

@@ -1,47 +1,76 @@
 ---
-title: Panduan Builder Visual
-description: Memilih template lewat web — dari kategori, framework, preview, sampai mendapatkan command generate.
+title: Panduan Builder (Coming Soon)
+description: Memahami konsep Builder Scaffdev — rancang sendiri kombinasi template dan integrasi. Fitur dalam pengembangan.
 order: 3
 section: Mulai
 ---
 
-# Panduan Builder Visual
+# Panduan Builder (Coming Soon)
 
-Builder adalah cara visual memilih template tanpa harus menebak-nebak slug. Alurnya selalu sama, empat langkah.
+> **Status: Coming Soon.** Builder belum bisa dipakai saat ini. Halaman ini menjelaskan
+> konsepnya agar kamu tahu apa yang sedang disiapkan — untuk generate project
+> hari ini, gunakan [Katalog Template](/templates) yang sudah live.
 
-## Langkah 1 — Pilih Kategori
+## Builder vs Katalog Template — Jangan Tertukar
 
-Buka halaman builder dan pilih jenis project: **E-commerce** (toko online, katalog, keranjang, payment), **Landing Page** (promosi produk/SaaS), atau **Portfolio** (showcase karya personal).
+Scaffdev punya dua cara mendapatkan project. Pahami bedanya:
 
-## Langkah 2 — Pilih Framework
+| | Katalog Template (`/templates`) | Builder (`/builder`) |
+|---|---|---|
+| Konsep | **Bundel fix** — apa yang terlihat di preview = apa yang di-generate | **Rancang-sendiri** — pilih template base + centang integrasi favoritmu |
+| Status | **Live sekarang**, command langsung jalan | **Coming Soon**, belum bisa dipakai |
+| Contoh hasil | `npx scaffdev@latest --template=ecommerce-supabase-midtrans-nextjs` | Nanti: base + `--with=midtrans,supabase` (format final ditentukan saat launch) |
 
-Dua framework didukung penuh:
+Kalau kamu butuh project **sekarang**, tutup halaman ini dan buka [Katalog Template](/templates).
+Kalau kamu penasaran Builder akan seperti apa, lanjut baca.
 
-- **Next.js (App Router)** — butuh **Node.js v18+** di komputermu ([nodejs.org](https://nodejs.org)).
-- **Laravel (PHP)** — butuh **PHP 8.2+ dan Composer** ([getcomposer.org](https://getcomposer.org)).
+## Cara Kerja Builder (Saat Launch Nanti)
 
-CLI memeriksa prasyarat ini otomatis sebelum meng-clone, jadi kamu diberi tahu lebih awal bila ada yang kurang.
+Alurnya selalu tiga langkah:
 
-## Langkah 3 — Lihat Preview & Detail
+### Langkah 1 — Pilih Template Base
 
-Setiap template punya halaman detail berisi: screenshot besar, deskripsi, spesifikasi repo, dan daftar integrasi beserta environment variable yang dibutuhkan. Baca bagian integrasi dulu — di sanalah kamu tahu API key apa saja yang nanti harus disiapkan.
+Pilih satu template sebagai fondasi (sama seperti memilih di katalog): kategori
+(E-commerce, Landing Page, Portfolio) dan framework (Next.js atau Laravel).
+Base menentukan struktur halaman, tampilan, dan prasyarat runtime.
 
-## Langkah 4 — Copy Command & Generate
+### Langkah 2 — Centang Integrasi (Maks 1 per Kategori)
 
-Klik **Pakai Template Ini** untuk memunculkan command, contoh:
+Inilah bedanya dengan katalog: kamu mencentang sendiri layanan yang dibutuhkan,
+dikelompokkan per kategori — payment (Midtrans *atau* Xendit), database
+(Supabase), autentikasi, ongkir (RajaOngkir). **Maksimal 1 pilihan per kategori**,
+karena dua payment atau dua database dalam satu project bikin alur ambigu
+(checkout pakai yang mana? data truth-nya di mana?).
 
-```bash
-npx scaffdev@latest --template=ecommerce-supabase-midtrans-nextjs
-```
+Aturan maks-1 ini **hanya berlaku saat Builder launch** — bukan aturan yang
+berlaku hari ini, karena Builder-nya sendiri belum ada.
 
-Jalankan di terminal. Untuk menentukan nama folder sendiri, tambahkan di depan slug:
+### Langkah 3 — Dapat Command Custom & Generate
 
-```bash
-npx scaffdev@latest toko-saya --template=ecommerce-supabase-midtrans-nextjs
-```
+Builder meracik satu command custom dari pilihanmu. CLI kemudian meng-clone
+repo template base, lalu **menyuntikkan modul integrasi** yang kamu centang
+(setiap integrasi adalah repo modul ramping berisi file kodenya + panduan),
+menggabungkan dependency, `.env.example`, dan `SETUP.md` secara otomatis.
 
-Tanpa flag `--template`, CLI menampilkan interactive prompt (pilih kategori → framework → varian → nama folder) — berguna kalau kamu belum memilih di web.
+## Yang Bisa Dilakukan Sekarang
 
-## Setelah Generate
+1. **Pakai katalog** — pilih template yang bundel integrasinya paling dekat dengan
+   kebutuhanmu (lihat daftar integrasi di halaman detail tiap template).
+2. **Pelajari daftar integrasi** di [Daftar Integrasi](/docs/daftar-integrasi)
+   agar saat Builder launch kamu sudah tahu mau mencentang apa.
+3. **Pahami setup env** di [Environment & Setup](/docs/env-dan-setup) — alur isi
+   API key-nya sama, baik via katalog maupun nanti via Builder.
 
-Masuk ke folder project dan ikuti `SETUP.md` yang baru dibuat CLI. Detail pengisian environment variable ada di panduan [Environment & Setup](/docs/env-dan-setup).
+## Pertanyaan Umum tentang Builder
+
+**Apakah Builder sudah bisa dipakai?**
+Belum. Masih Coming Soon. Semua command generate yang berfungsi hari ini
+berasal dari katalog.
+
+**Apakah aturan maks-1 sudah berlaku?**
+Belum — aturan itu bagian dari Builder dan baru berlaku saat launch.
+Template katalog tidak terpengaruh (isinya fix dari admin).
+
+**Apakah saya perlu menyiapkan sesuatu?**
+Tidak. Saat launch, Builder memakai akun dan alur yang sama — tidak ada
+migrasi atau langkah khusus.

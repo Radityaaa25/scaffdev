@@ -11,6 +11,17 @@ export function getApiBaseUrl(): string {
   return (process.env.NEXT_PUBLIC_API_BASE_URL || "").replace(/\/+$/, "");
 }
 
+/** Ambil access token session browser (untuk request non-JSON seperti upload file). */
+export async function getAccessToken(): Promise<string | null> {
+  try {
+    const supabase = createSupabaseBrowserClient();
+    const { data } = await supabase.auth.getSession();
+    return data.session?.access_token ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export interface ApiResult<T> {
   ok: boolean;
   data?: T;

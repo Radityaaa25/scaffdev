@@ -1,18 +1,45 @@
+import type { Metadata } from "next";
 import React from "react";
 import { getAllDocs } from "@/lib/docs";
 import { DocsSearch } from "@/components/DocsSearch";
 import { CommandBox } from "@/components/CommandBox";
+import { JsonLd } from "@/components/JsonLd";
+import { absoluteUrl, baseMetadata, itemListJsonLd } from "@/lib/seo";
 
-export const metadata = {
-  title: "Dokumentasi Pengguna — Scaff",
-  description: "Panduan lengkap penggunaan CLI, integrasi layanan, FAQ, dan kontribusi template Scaff.",
-};
+export const metadata: Metadata = baseMetadata({
+  title: "Dokumentasi Scaffdev — Panduan CLI, Template & Integrasi",
+  description:
+    "Panduan lengkap Scaffdev berbahasa Indonesia: cara install CLI, konsep dasar, builder, environment & setup, integrasi Midtrans/Xendit/Supabase, troubleshooting, dan FAQ.",
+  keywords: [
+    "dokumentasi scaffdev",
+    "cara install scaffdev",
+    "panduan CLI scaffdev",
+    "setup Midtrans Supabase",
+    "troubleshooting scaffdev",
+  ],
+  alternates: { canonical: absoluteUrl("/docs") },
+  openGraph: {
+    type: "website",
+    url: absoluteUrl("/docs"),
+    title: "Dokumentasi Scaffdev — Panduan CLI, Template & Integrasi",
+    description:
+      "Panduan lengkap Scaffdev: CLI, template, environment, integrasi lokal, troubleshooting, FAQ.",
+  },
+});
 
 export default function DocsPage() {
   const docs = getAllDocs();
 
   return (
     <div className="mx-auto max-w-5xl">
+      <JsonLd
+        data={itemListJsonLd(
+          "Dokumentasi Scaffdev",
+          "Panduan CLI, template, integrasi, dan troubleshooting Scaffdev.",
+          "/docs",
+          docs.map((d) => ({ name: d.title, path: `/docs/${d.slug}` }))
+        )}
+      />
       {/* Hero Header */}
       <div className="relative mb-12">
         <div
@@ -30,10 +57,11 @@ export default function DocsPage() {
           <h1 className="mb-4 text-4xl font-bold tracking-tight text-[#FAFAFA] sm:text-5xl lg:text-6xl">
             Dokumentasi Scaffdev
           </h1>
-          <p className="mb-6 max-w-2xl text-lg leading-relaxed text-zinc-400">
-            Pelajari cara menggunakan CLI, memahami integrasi layanan lokal (Midtrans, Xendit, Supabase), 
-            serta standar membuat template baru untuk project Anda.
-          </p>
+            <p className="mb-6 max-w-2xl text-lg leading-relaxed text-zinc-400">
+              Pelajari cara menggunakan CLI, memilih template yang tepat, mengatur environment,
+              hingga berkontribusi template baru untuk project Anda.
+              Hemat token AI-mu, cukup setup dengan Scaffdev.
+            </p>
           <div className="flex flex-wrap items-center gap-3">
             <span className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-zinc-300">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4 text-[#8B5CF6]">

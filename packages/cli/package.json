@@ -1,6 +1,6 @@
 {
   "name": "scaffdev",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "CLI untuk generate project boilerplate Scaffdev dengan tampilan visual jadi dan kurasi integrasi konteks Indonesia.",
   "keywords": [
     "scaffolding",
@@ -15,7 +15,7 @@
     "type": "git",
     "url": "git+https://github.com/Radityaaa25/scaffdev.git"
   },
-  "homepage": "https://scaff.dev",
+  "homepage": "https://scaffdev.vercel.app",
   "license": "MIT",
   "bin": {
     "scaffdev": "dist/index.js"

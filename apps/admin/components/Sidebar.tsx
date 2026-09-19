@@ -27,13 +27,37 @@ const NAV_ITEMS = [
       </svg>
     ),
   },
-  // Menu Integrasi DITUNDA (fitur berbayar: repo per integrasi + code injection).
-  // Halaman + API tetap ada, hanya disembunyikan dari navigasi.
-  // {
-  //   href: "/integrasi",
-  //   label: "Integrasi",
-  //   icon: (...),
-  // },
+  // Menu Integrasi: CRUD daftar integrasi (dipakai form template + filter katalog web).
+  {
+    href: "/integrasi",
+    label: "Integrasi",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-5 w-5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M11 4H6a2 2 0 00-2 2v5m16 0V6a2 2 0 00-2-2h-5m-6 9H4v5a2 2 0 002 2h5m6-7h4v5a2 2 0 01-2 2h-2" />
+        <circle cx="12" cy="12" r="2.5" />
+      </svg>
+    ),
+  },
+  {
+    href: "/framework-kategori",
+    label: "Framework & Kategori",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-5 w-5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h10M7 7v10m0-10v10m10-10v10M4 4h16v16H4z" />
+        <path strokeLinecap="round" d="M10 11h4" />
+      </svg>
+    ),
+  },
+  {
+    href: "/laporan",
+    label: "Laporan",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-5 w-5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M22 12h-5l-2 3h-6l-2-3H2" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5.5 5.5L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.5-6.5A2 2 0 0016.7 4H7.3a2 2 0 00-1.8 1.5z" />
+      </svg>
+    ),
+  },
   {
     href: "/aktivitas",
     label: "Aktivitas",
@@ -100,12 +124,21 @@ export function Sidebar({ email }: { email: string }) {
 
   const nav = (
     <div className="flex h-full flex-col">
-      <Link href="/" className="flex items-center gap-2.5 px-2 py-1" onClick={() => setMobileOpen(false)}>
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] text-base font-bold text-white shadow-lg shadow-[#8B5CF6]/30">
-          S
-        </span>
-        <span className="text-sm font-semibold text-white">
-          Scaffdev <span className="font-normal text-zinc-500">Admin</span>
+      <Link href="/" className="flex items-center gap-2.5 px-2 py-1" onClick={() => setMobileOpen(false)} aria-label="Scaffdev Admin">
+        <img
+          src="/logo-full.png"
+          alt="Scaffdev"
+          className="hidden h-9 w-auto sm:block"
+          loading="eager"
+        />
+        <img
+          src="/logo-icon.png"
+          alt="Scaffdev"
+          className="h-9 w-9 sm:hidden"
+          loading="eager"
+        />
+        <span className="hidden text-sm font-semibold text-white sm:inline">
+          <span className="font-normal text-zinc-500">Admin</span>
         </span>
       </Link>
 
@@ -136,6 +169,15 @@ export function Sidebar({ email }: { email: string }) {
       <div className="glass-panel mt-4 rounded-xl p-3.5">
         <p className="max-w-full truncate font-mono text-xs text-zinc-300">{email || "…"}</p>
         <p className="mt-0.5 text-[11px] text-zinc-500">Administrator</p>
+        <p className="mt-2 text-[11px] leading-relaxed text-zinc-500">
+          Butuh bantuan atau ingin bekerjasama/berkontribusi?{" "}
+          <a
+            href="mailto:scaffdev.support@gmail.com"
+            className="text-zinc-300 transition-colors hover:text-white"
+          >
+            scaffdev.support@gmail.com
+          </a>
+        </p>
         <button
           type="button"
           onClick={handleLogout}
@@ -153,9 +195,12 @@ export function Sidebar({ email }: { email: string }) {
       {/* Topbar mobile */}
       <div className="sticky top-0 z-30 flex items-center justify-between border-b border-white/5 bg-[#0A0A0B]/85 px-4 py-3 backdrop-blur-xl lg:hidden">
         <span className="flex items-center gap-2 text-sm font-semibold text-white">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] text-xs font-bold">
-            S
-          </span>
+          <img
+            src="/logo-icon.png"
+            alt="Scaffdev"
+            className="h-7 w-7"
+            loading="eager"
+          />
           Scaffdev Admin
         </span>
         <button

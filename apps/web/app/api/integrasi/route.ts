@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, createSupabaseServerClient } from "@/lib/supabase-server";
+import { isRateLimited, ADMIN_WRITE_LIMIT, ADMIN_WRITE_WINDOW_MS } from "@/lib/rate-limit";
 import { validateIntegrasiInput } from "@/lib/integrasi-validation";
 import { logActivity } from "@/lib/activity";
 
@@ -24,6 +25,13 @@ export async function POST(request: NextRequest) {
   const auth = await requireAdmin(request);
   if (!auth.ok) return auth.response;
   const { supabase, email } = auth.ctx;
+
+  if (isRateLimited(`admin-write:${auth.ctx.userId}`, ADMIN_WRITE_LIMIT, ADMIN_WRITE_WINDOW_MS)) {
+    return NextResponse.json(
+      { error: "Terlalu banyak perubahan. Tunggu ±10 menit lalu coba lagi." },
+      { status: 429 }
+    );
+  }
 
   let body: unknown;
   try {

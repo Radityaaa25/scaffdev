@@ -8,7 +8,7 @@ export async function logActivity(
   supabase: SupabaseClient,
   actorEmail: string | undefined,
   action: string,
-  entity: "template" | "integrasi" | "admin",
+  entity: "template" | "integrasi" | "referensi" | "admin",
   entityRef: string,
   detail?: string
 ): Promise<void> {

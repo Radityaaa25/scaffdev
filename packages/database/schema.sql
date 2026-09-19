@@ -421,3 +421,217 @@ create policy ai_usage_log_admin_all
   with check (public.is_admin());
 
 create index if not exists idx_ai_usage_log_created on public.ai_usage_log (created_at desc);
+
+-- ============================================================
+-- Migrasi 005 — Bucket Storage untuk screenshot template
+-- Dipakai form admin (upload file gambar). CARA PAKAI: jalankan
+-- blok ini sekali di Supabase SQL Editor, lalu upload dari
+-- halaman admin Templates. Tanpa blok ini, upload gagal dengan
+-- pesan "bucket belum siap" dan admin tetap bisa isi URL manual.
+-- ============================================================
+insert into storage.buckets (id, name, public)
+values ('template-screenshots', 'template-screenshots', true)
+on conflict (id) do nothing;
+
+drop policy if exists screenshots_public_read on storage.objects;
+create policy screenshots_public_read
+  on storage.objects
+  for select
+  using (bucket_id = 'template-screenshots');
+
+drop policy if exists screenshots_admin_write on storage.objects;
+create policy screenshots_admin_write
+  on storage.objects
+  for insert
+  to authenticated
+  with check (
+    bucket_id = 'template-screenshots'
+    and public.is_admin()
+  );
+
+drop policy if exists screenshots_admin_update on storage.objects;
+create policy screenshots_admin_update
+  on storage.objects
+  for update
+  to authenticated
+  using (bucket_id = 'template-screenshots' and public.is_admin())
+  with check (bucket_id = 'template-screenshots');
+
+drop policy if exists screenshots_admin_delete on storage.objects;
+create policy screenshots_admin_delete
+  on storage.objects
+  for delete
+  to authenticated
+  using (bucket_id = 'template-screenshots' and public.is_admin());
+
+-- ============================================================
+-- Migrasi 006 — Referensi framework & kategori (dikelola admin)
+-- Form template HANYA boleh memilih dari tabel ini (tidak ada
+-- ketik bebas). CLI/web/validasi membaca daftar yang sama.
+-- CARA PAKAI: jalankan blok ini sekali di Supabase SQL Editor.
+-- ============================================================
+create table if not exists public.frameworks (
+  id            uuid        primary key default gen_random_uuid(),
+  kode          text        not null unique,   -- contoh: 'nextjs', 'laravel'
+  nama_tampilan text        not null,          -- contoh: 'Next.js'
+  created_at    timestamptz not null default now()
+);
+
+create table if not exists public.kategoris (
+  id            uuid        primary key default gen_random_uuid(),
+  kode          text        not null unique,   -- contoh: 'ecommerce'
+  nama_tampilan text        not null,          -- contoh: 'E-commerce'
+  created_at    timestamptz not null default now()
+);
+
+alter table public.frameworks enable row level security;
+alter table public.kategoris enable row level security;
+
+-- Read publik (filter katalog web + dropdown CLI honest).
+drop policy if exists frameworks_publik_read on public.frameworks;
+create policy frameworks_publik_read
+  on public.frameworks
+  for select
+  using (true);
+
+drop policy if exists kategoris_publik_read on public.kategoris;
+create policy kategoris_publik_read
+  on public.kategoris
+  for select
+  using (true);
+
+-- Write hanya admin.
+drop policy if exists frameworks_admin_all on public.frameworks;
+create policy frameworks_admin_all
+  on public.frameworks
+  for all
+  using (public.is_admin())
+  with check (public.is_admin());
+
+drop policy if exists kategoris_admin_all on public.kategoris;
+create policy kategoris_admin_all
+  on public.kategoris
+  for all
+  using (public.is_admin())
+  with check (public.is_admin());
+
+-- Seed nilai yang sudah dipakai selama ini. Idempotent.
+insert into public.frameworks (kode, nama_tampilan)
+values
+  ('nextjs', 'Next.js'),
+  ('laravel', 'Laravel')
+on conflict (kode) do nothing;
+
+insert into public.kategoris (kode, nama_tampilan)
+values
+  ('ecommerce', 'E-commerce'),
+  ('landing-page', 'Landing Page'),
+  ('portfolio', 'Portfolio')
+on conflict (kode) do nothing;
+
+-- ============================================================
+-- Migrasi 007 — Laporan/pengaduan user (bug, saran, lainnya)
+-- Form publik di /lapor (tanpa login). Baca/ubah/hapus HANYA admin.
+-- CARA PAKAI: jalankan blok ini sekali di Supabase SQL Editor.
+-- ============================================================
+create table if not exists public.laporan (
+  id         uuid        primary key default gen_random_uuid(),
+  kategori   text        not null check (kategori in ('bug', 'saran', 'lainnya')),
+  judul      text        not null,
+  isi        text        not null,
+  kontak     text        not null default '',
+  status     text        not null default 'baru' check (status in ('baru', 'diproses', 'selesai')),
+  created_at timestamptz not null default now()
+);
+
+alter table public.laporan enable row level security;
+
+-- Publik: hanya boleh INSERT (melapor). Tidak bisa baca/ubah/hapus.
+drop policy if exists laporan_publik_insert on public.laporan;
+create policy laporan_publik_insert
+  on public.laporan
+  for insert
+  to anon, authenticated
+  with check (true);
+
+-- Admin: akses penuh.
+drop policy if exists laporan_admin_all on public.laporan;
+create policy laporan_admin_all
+  on public.laporan
+  for all
+  to authenticated
+  using (public.is_admin())
+  with check (public.is_admin());
+
+create index if not exists idx_laporan_status on public.laporan (status, created_at desc);
+
+-- ============================================================
+-- Migrasi 008 — Kolom gambar bukti laporan user (opsional)
+-- CARA PAKAI: jalankan blok ini sekali di Supabase SQL Editor.
+-- ============================================================
+alter table public.laporan
+  add column if not exists gambar_url text not null default '';
+
+-- Upload bukti laporan oleh publik (tanpa login): anon hanya boleh INSERT
+-- ke folder laporan/ — tidak bisa baca/ubah/hapus, tidak bisa tulis ke
+-- folder lain (mis. screenshot template milik admin).
+drop policy if exists screenshots_laporan_anon_insert on storage.objects;
+create policy screenshots_laporan_anon_insert
+  on storage.objects
+  for insert
+  to anon, authenticated
+  with check (
+    bucket_id = 'template-screenshots'
+    and (storage.foldername(name))[1] = 'laporan'
+  );
+
+-- ============================================================
+-- Migrasi 009 — Audit login admin (sukses+gagal, W5)
+-- Read HANYA admin via dashboard/SQL. Write via SECURITY DEFINER
+-- log_login_attempt() agar bisa dipanggil publik tanpa login
+-- (dengan guard anti-spam di dalam fungsi).
+-- CARA PAKAI: jalankan blok ini sekali di Supabase SQL Editor.
+-- ============================================================
+create table if not exists public.login_audit (
+  id         uuid        primary key default gen_random_uuid(),
+  email      text        not null,
+  success    boolean     not null,
+  created_at timestamptz not null default now()
+);
+
+alter table public.login_audit enable row level security;
+
+-- TANPA policy publik: default deny. Baca hanya admin:
+drop policy if exists login_audit_admin_read on public.login_audit;
+create policy login_audit_admin_read
+  on public.login_audit
+  for select
+  to authenticated
+  using (public.is_admin());
+
+create index if not exists idx_login_audit_created on public.login_audit (created_at desc);
+create index if not exists idx_login_audit_email on public.login_audit (email, created_at desc);
+
+create or replace function public.log_login_attempt(p_email text, p_success boolean)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  -- Validasi minimal + anti-spam per email (20/menit) agar tabel
+  -- tidak bisa dibanjiri dari endpoint publik.
+  if p_email is null or p_email = '' or length(p_email) > 320 then
+    raise exception 'bad email';
+  end if;
+  if (select count(*) from public.login_audit
+      where email = p_email and created_at > now() - interval '1 minute') > 20 then
+    return;
+  end if;
+  insert into public.login_audit (email, success)
+  values (lower(trim(p_email)), p_success);
+end;
+$$;
+
+revoke all on function public.log_login_attempt(text, boolean) from public;
+grant execute on function public.log_login_attempt(text, boolean) to anon, authenticated;

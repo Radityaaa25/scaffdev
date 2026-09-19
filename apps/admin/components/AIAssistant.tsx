@@ -205,9 +205,12 @@ export function AIAssistant() {
           {/* Header + pemilih sesi */}
           <div className="relative border-b border-white/5 bg-gradient-to-r from-[#8B5CF6]/20 to-transparent px-4 py-3">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] text-sm">
-                ✦
-              </span>
+              <img
+                src="/logo-icon.png"
+                alt="Asisten Scaffdev"
+                className="h-8 w-8 shrink-0 rounded-lg"
+                loading="lazy"
+              />
               <button
                 type="button"
                 onClick={() => { setMenuOpen((v) => !v); if (!menuOpen) void fetchSessions(); }}

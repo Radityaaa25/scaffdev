@@ -20,10 +20,23 @@ export default async function NewTemplatePage() {
     .order("nama_tampilan");
   const integrasiOptions = (data ?? []) as { kode: string; nama_tampilan: string }[];
 
-  // Nilai framework & kategori yang sudah ada — jadi saran input (boleh ketik baru).
-  const { data: existing } = await supabase.from("templates").select("framework,kategori");
-  const frameworkOptions = [...new Set((existing ?? []).map((r) => r.framework as string).filter(Boolean))].sort();
-  const kategoriOptions = [...new Set((existing ?? []).map((r) => r.kategori as string).filter(Boolean))].sort();
+  // Opsi resmi dari tabel referensi (dikelola di menu Framework & Kategori).
+  // Fallback bila tabel belum ada (migrasi 006 belum jalan): nilai dari template + bawaan.
+  const { data: frameworkRows, error: fwErr } = await supabase.from("frameworks").select("kode").order("kode");
+  const { data: kategoriRows, error: katErr } = await supabase.from("kategoris").select("kode").order("kode");
+  let frameworkOptions = (frameworkRows ?? []).map((r) => r.kode as string);
+  let kategoriOptions = (kategoriRows ?? []).map((r) => r.kode as string);
+  if (fwErr || katErr || frameworkOptions.length === 0 || kategoriOptions.length === 0) {
+    const { data: existing } = await supabase.from("templates").select("framework,kategori");
+    const fromTpl = (k: "framework" | "kategori") =>
+      [...new Set((existing ?? []).map((r) => r[k] as string).filter(Boolean))].sort();
+    if (frameworkOptions.length === 0) {
+      frameworkOptions = [...new Set([...fromTpl("framework"), "nextjs", "laravel"])].sort();
+    }
+    if (kategoriOptions.length === 0) {
+      kategoriOptions = [...new Set([...fromTpl("kategori"), "ecommerce", "landing-page", "portfolio"])].sort();
+    }
+  }
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">

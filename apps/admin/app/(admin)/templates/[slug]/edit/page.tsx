@@ -34,9 +34,22 @@ export default async function EditTemplatePage({
     .select("kode, nama_tampilan")
     .order("nama_tampilan");
 
-  const { data: existingRows } = await supabase.from("templates").select("framework,kategori");
-  const frameworkOptions = [...new Set((existingRows ?? []).map((r) => r.framework as string).filter(Boolean))].sort();
-  const kategoriOptions = [...new Set((existingRows ?? []).map((r) => r.kategori as string).filter(Boolean))].sort();
+  // Opsi resmi dari tabel referensi; fallback bila tabel belum ada (migrasi 006 belum jalan).
+  const { data: frameworkRows, error: fwErr } = await supabase.from("frameworks").select("kode").order("kode");
+  const { data: kategoriRows, error: katErr } = await supabase.from("kategoris").select("kode").order("kode");
+  let frameworkOptions = (frameworkRows ?? []).map((r) => r.kode as string);
+  let kategoriOptions = (kategoriRows ?? []).map((r) => r.kode as string);
+  if (fwErr || katErr || frameworkOptions.length === 0 || kategoriOptions.length === 0) {
+    const { data: existingRows } = await supabase.from("templates").select("framework,kategori");
+    const fromTpl = (k: "framework" | "kategori") =>
+      [...new Set((existingRows ?? []).map((r) => r[k] as string).filter(Boolean))].sort();
+    if (frameworkOptions.length === 0) {
+      frameworkOptions = [...new Set([...fromTpl("framework"), "nextjs", "laravel"])].sort();
+    }
+    if (kategoriOptions.length === 0) {
+      kategoriOptions = [...new Set([...fromTpl("kategori"), "ecommerce", "landing-page", "portfolio"])].sort();
+    }
+  }
 
   const initial: TemplateFormInitial = {
     nama: template.nama,

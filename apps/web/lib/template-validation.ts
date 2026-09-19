@@ -4,9 +4,9 @@
  */
 
 /**
- * Framework & kategori bersifat TERBUKA (free-form): admin bisa mengetik
- * nilai baru (mis. "astro", "company-profile"). Satu-satunya syarat adalah
- * format URL-safe karena dipakai di slug + filter URL.
+ * Framework & kategori WAJIB terdaftar di tabel frameworks/kategoris
+ * (dikelola admin via menu "Framework & Kategori"). Tidak ada ketik bebas:
+ * API menolak nilai di luar daftar agar katalog/CLI/filter selalu konsisten.
  */
 export const FREE_VALUE_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export const ALLOWED_FRAMEWORKS = ["nextjs", "laravel"] as const;
@@ -50,7 +50,7 @@ function asString(v: unknown): string | null {
 
 export function validateTemplateInput(
   body: unknown,
-  opts: { partial: boolean; allowedIntegrasi: string[] }
+  opts: { partial: boolean; allowedIntegrasi: string[]; allowedFrameworks: string[] | null; allowedKategoris: string[] | null }
 ): { ok: true; data: Partial<NormalizedTemplateInput> } | { ok: false; error: string } {
   if (typeof body !== "object" || body === null) {
     return { ok: false, error: "Body harus berupa JSON object." };
@@ -66,20 +66,27 @@ export function validateTemplateInput(
     out.nama = nama;
   }
 
-  // framework (bebas, format URL-safe)
+  // framework (wajib terdaftar bila tabel referensi tersedia;
+  // bila tabel belum ada (migrasi 006 belum jalan), lolos sebagai legacy).
   if ("framework" in b || !opts.partial) {
     const framework = asString(b.framework)?.toLowerCase() ?? "";
     if (!framework || framework.length > 40 || !FREE_VALUE_RE.test(framework)) {
-      return { ok: false, error: "Field 'framework' hanya boleh huruf kecil, angka, dan dash (contoh: nextjs, laravel, astro)." };
+      return { ok: false, error: "Field 'framework' hanya boleh huruf kecil, angka, dan dash (contoh: nextjs, laravel)." };
+    }
+    if (opts.allowedFrameworks !== null && !opts.allowedFrameworks.includes(framework)) {
+      return { ok: false, error: `Framework "${framework}" belum terdaftar. Tambahkan dulu via menu Framework & Kategori.` };
     }
     out.framework = framework;
   }
 
-  // kategori (bebas, format URL-safe)
+  // kategori (aturan sama seperti framework).
   if ("kategori" in b || !opts.partial) {
     const kategori = asString(b.kategori)?.toLowerCase() ?? "";
     if (!kategori || kategori.length > 40 || !FREE_VALUE_RE.test(kategori)) {
-      return { ok: false, error: "Field 'kategori' hanya boleh huruf kecil, angka, dan dash (contoh: ecommerce, company-profile)." };
+      return { ok: false, error: "Field 'kategori' hanya boleh huruf kecil, angka, dan dash (contoh: ecommerce)." };
+    }
+    if (opts.allowedKategoris !== null && !opts.allowedKategoris.includes(kategori)) {
+      return { ok: false, error: `Kategori "${kategori}" belum terdaftar. Tambahkan dulu via menu Framework & Kategori.` };
     }
     out.kategori = kategori;
   }

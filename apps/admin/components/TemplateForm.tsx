@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, getApiBaseUrl, getAccessToken } from "@/lib/api";
 import { useUI } from "@/components/UIProvider";
 
 export interface IntegrasiOption {
@@ -64,8 +65,18 @@ export function TemplateForm({
   const { toast } = useUI();
   const [nama, setNama] = useState(initial?.nama ?? "");
   const [slugInput, setSlugInput] = useState(initial?.slug ?? "");
-  const [framework, setFramework] = useState(initial?.framework ?? "nextjs");
-  const [kategori, setKategori] = useState(initial?.kategori ?? "ecommerce");
+  // Framework & kategori HANYA pilihan dari daftar resmi
+  // (dikelola di menu Framework & Kategori). Tidak ada ketik bebas.
+  const [framework, setFramework] = useState(initial?.framework ?? frameworkOptions[0] ?? "");
+  const [kategori, setKategori] = useState(initial?.kategori ?? kategoriOptions[0] ?? "");
+  // Pengaman data lama: nilai initial yang tidak ada di daftar tetap tampil
+  // agar tidak hilang saat edit (API tetap menolak nilai tak terdaftar).
+  const frameworkChoices = frameworkOptions.includes(framework) || !framework
+    ? frameworkOptions
+    : [...frameworkOptions, framework];
+  const kategoriChoices = kategoriOptions.includes(kategori) || !kategori
+    ? kategoriOptions
+    : [...kategoriOptions, kategori];
   const [repoUrl, setRepoUrl] = useState(initial?.repo_url ?? "");
   const [deskripsi, setDeskripsi] = useState(initial?.deskripsi ?? "");
   const [screenshotUrl, setScreenshotUrl] = useState(initial?.screenshot_url ?? "");
@@ -73,6 +84,9 @@ export function TemplateForm({
   const [isPublished, setIsPublished] = useState(initial?.is_published ?? false);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const autoSlug = useMemo(() => slugPreview(nama, framework), [nama, framework]);
   const repoValid = repoUrl.trim() === "" || REPO_URL_RE.test(repoUrl.trim());
@@ -81,6 +95,48 @@ export function TemplateForm({
     setOpsiIntegrasi((prev) =>
       prev.includes(kode) ? prev.filter((k) => k !== kode) : [...prev, kode]
     );
+  }
+
+  async function handleScreenshotFile(file: File) {
+    setUploadError(null);
+    // Pra-cek cepat di client; validasi ASLI (magic bytes + 2MB) di server
+    // via POST /api/templates/screenshot agar tidak bisa dilewati.
+    if (!file.type.startsWith("image/")) {
+      setUploadError("File harus gambar (png/jpg/webp).");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setUploadError("Ukuran maksimal 2MB.");
+      return;
+    }
+    const base = getApiBaseUrl();
+    if (!base) {
+      setUploadError("NEXT_PUBLIC_API_BASE_URL belum di-set di apps/admin.");
+      return;
+    }
+    setUploading(true);
+    try {
+      const token = await getAccessToken();
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch(`${base}/api/templates/screenshot`, {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: form,
+      });
+      const payload = (await res.json().catch(() => null)) as { url?: string; error?: string } | null;
+      if (!res.ok || !payload?.url) {
+        setUploadError(payload?.error || `Upload gagal (HTTP ${res.status}).`);
+        return;
+      }
+      setScreenshotUrl(payload.url);
+      toast.success("Screenshot terupload.");
+    } catch {
+      setUploadError("Tidak dapat menghubungi API. Coba lagi.");
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
   }
 
   const FW_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -170,39 +226,35 @@ export function TemplateForm({
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label htmlFor="framework" className={labelCls}>Framework *</label>
-            <input
+            <select
               id="framework"
               value={framework}
               onChange={(e) => setFramework(e.target.value)}
-              placeholder="nextjs, laravel, astro…"
-              list="framework-suggestions"
-              className={`${inputCls} font-mono`}
-              maxLength={40}
-            />
-            <datalist id="framework-suggestions">
-              {frameworkOptions.map((f) => (
-                <option key={f} value={f} />
+              className={`${inputCls} font-mono [&>option]:bg-[#131316]`}
+            >
+              {frameworkChoices.map((f) => (
+                <option key={f} value={f}>{f}</option>
               ))}
-            </datalist>
-            <p className="mt-1.5 text-xs text-zinc-500">Ketik baru atau pilih yang sudah ada.</p>
+            </select>
+            <p className="mt-1.5 text-xs text-zinc-500">
+              Hanya pilihan resmi. <Link href="/framework-kategori" className="text-[#A78BFA] hover:underline">Kelola di sini →</Link>
+            </p>
           </div>
           <div>
             <label htmlFor="kategori" className={labelCls}>Kategori *</label>
-            <input
+            <select
               id="kategori"
               value={kategori}
               onChange={(e) => setKategori(e.target.value)}
-              placeholder="ecommerce, company-profile…"
-              list="kategori-suggestions"
-              className={`${inputCls} font-mono`}
-              maxLength={40}
-            />
-            <datalist id="kategori-suggestions">
-              {kategoriOptions.map((k) => (
-                <option key={k} value={k} />
+              className={`${inputCls} font-mono [&>option]:bg-[#131316]`}
+            >
+              {kategoriChoices.map((k) => (
+                <option key={k} value={k}>{k}</option>
               ))}
-            </datalist>
-            <p className="mt-1.5 text-xs text-zinc-500">Ketik baru atau pilih yang sudah ada.</p>
+            </select>
+            <p className="mt-1.5 text-xs text-zinc-500">
+              Hanya pilihan resmi. <Link href="/framework-kategori" className="text-[#A78BFA] hover:underline">Kelola di sini →</Link>
+            </p>
           </div>
         </div>
       </Section>
@@ -227,7 +279,45 @@ export function TemplateForm({
           </p>
         </div>
         <div className="sm:col-span-2">
-          <label htmlFor="screenshot_url" className={labelCls}>Screenshot URL (opsional)</label>
+          <span className={labelCls}>Screenshot (opsional)</span>
+          {screenshotUrl.trim().startsWith("https://") ? (
+            <div className="relative mb-3 overflow-hidden rounded-xl border border-white/10">
+              <img src={screenshotUrl} alt="Preview screenshot template" className="aspect-video w-full object-cover" />
+              <button
+                type="button"
+                onClick={() => setScreenshotUrl("")}
+                className="absolute right-2 top-2 rounded-lg bg-black/70 px-2.5 py-1 text-xs font-medium text-zinc-300 backdrop-blur transition-all hover:bg-red-500/70 hover:text-white"
+              >
+                Hapus
+              </button>
+            </div>
+          ) : null}
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              disabled={uploading}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) void handleScreenshotFile(file);
+              }}
+              className="hidden"
+              aria-label="Upload file gambar"
+            />
+            <button
+              type="button"
+              disabled={uploading}
+              onClick={() => fileRef.current?.click()}
+              className="rounded-xl border border-[#8B5CF6]/40 bg-[#8B5CF6]/10 px-4 py-2.5 text-sm font-medium text-[#A78BFA] transition-all hover:bg-[#8B5CF6]/20 active:scale-95 disabled:opacity-60"
+            >
+              {uploading ? "Mengupload…" : "⬆ Upload file gambar (maks 2MB)"}
+            </button>
+          </div>
+          {uploadError && (
+            <p className="mt-2 text-xs text-red-400">{uploadError}</p>
+          )}
+          <label htmlFor="screenshot_url" className={`${labelCls} mt-3`}>…atau tempel URL https</label>
           <input id="screenshot_url" type="url" value={screenshotUrl} onChange={(e) => setScreenshotUrl(e.target.value)} placeholder="https://…/preview.png" className={`${inputCls} font-mono`} />
         </div>
         <div className="sm:col-span-2">
@@ -238,7 +328,12 @@ export function TemplateForm({
 
       <Section title="Integrasi & Publikasi" hint="Integrasi menentukan .env.example & SETUP.md yang di-generate CLI. Publish = langsung live di web + CLI.">
         <div className="sm:col-span-2">
-          <span className={labelCls}>Integrasi yang disertakan</span>
+          <div className="flex items-center justify-between gap-2">
+            <span className={labelCls}>Integrasi yang disertakan</span>
+            <Link href="/integrasi" className="shrink-0 text-xs font-medium text-[#A78BFA] hover:underline">
+              Kelola integrasi →
+            </Link>
+          </div>
           <div className="flex flex-wrap gap-2">
             {integrasiOptions.map((opt) => {
               const active = opsiIntegrasi.includes(opt.kode);

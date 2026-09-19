@@ -3,6 +3,7 @@ import path from "path";
 import { Marked } from "marked";
 import { markedHighlight } from "marked-highlight";
 import hljs from "highlight.js";
+import DOMPurify from "isomorphic-dompurify";
 
 export interface DocMeta {
   slug: string;
@@ -144,20 +145,22 @@ export async function getDocBySlug(slug: string): Promise<DocItem | null> {
         const rel = isExternal ? ' rel="noopener noreferrer" target="_blank"' : "";
         return `<a href="${href}"${titleAttr}${rel}>${text}</a>`;
       },
-      code({ text, lang }) {
-        const language = lang || "plaintext";
-        const highlighted = hljs.getLanguage(language)
-          ? hljs.highlight(text, { language }).value
-          : text;
-        return `<pre><code class="hljs language-${language}">${highlighted}</code></pre>`;
-      },
-      codespan({ text }) {
-        return `<code>${text}</code>`;
-      },
+      // NOTE: blok kode sengaja TIDAK di-override di sini.
+      // marked-highlight di atas sudah melakukan hljs.highlight sekali
+      // via walkTokens. Override ganda menyebabkan HTML <span class="hljs-*">
+      // ke-escape dan tampil sebagai teks mentah di halaman docs.
     },
   });
 
   const html = await marked.parse(body);
+
+  // W2: marked meneruskan raw HTML apa adanya → sanitasi server-side agar
+  // <script>/<img onerror>/event-handler dari markdown (mis. via PR fork
+  // yang lolos review) tidak tereksekusi di browser pembaca docs.
+  // Allowlist default DOMPurify sudah cukup untuk konten docs + output hljs.
+  const cleanHtml = DOMPurify.sanitize(html, {
+    ADD_ATTR: ["target", "rel"],
+  });
 
   return {
     slug,
@@ -166,7 +169,7 @@ export async function getDocBySlug(slug: string): Promise<DocItem | null> {
     order: meta.order ? parseInt(meta.order, 10) : 99,
     section: meta.section || "Lainnya",
     content: body,
-    html,
+    html: cleanHtml,
     toc,
   };
 }
