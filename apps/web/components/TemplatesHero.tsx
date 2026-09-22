@@ -71,7 +71,7 @@ export function TemplatesHero() {
             ))}
           </ul>
 
-          <div className="hero-enter hero-enter-4 mt-6 sm:mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+          <div className="hero-enter hero-enter-4 mt-6 sm:mt-7 flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:items-center">
             <a
               href="#katalog"
               className="btn-gooey group"
