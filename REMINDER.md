@@ -84,14 +84,38 @@ Repo ini = 2 aplikasi terpisah → 2 project Vercel dari repo yang sama:
 - Env opsional: `GROQ_API_KEY` (asisten AI admin), sama seperti web.
 - Catatan: build admin lolos tanpa env, tapi halaman admin butuh env saat runtime.
 
-**Urutan deploy yang aman:**
+**Urutan deploy yang aman (final, jangan dibalik):**
 
-1. Deploy web dulu (dengan 2 env Supabase) → catat URL-nya.
-2. Deploy admin dengan 3 env (2 Supabase + API base = URL web).
-3. Jalankan Migrasi 005–009 yang belum jalan (cek satu per satu di Supabase).
-4. Tambah + publish 1 template via admin production → uji `npx` polos.
-5. Kalau pindah custom domain (`scaff.dev`) nanti: pasang di project WEB saja,
-   update `CORS_ALLOWED_ORIGINS`, tidak perlu ubah kode/CLI.
+1. Push GitHub ✅ (selesai).
+2. Migrasi DB 005–009 ✅ (selesai — verifikasi sekalian saat langkah 5).
+3. Tunggu landing page selesai → deploy web + admin ke Vercel + isi env.
+4. Verifikasi URL live (lihat "Cara verifikasi URL" di bawah).
+5. Tambah + publish 1 template via admin production (coba upload).
+6. Publish npm (`0.1.2` apa adanya bila kode CLI tidak berubah; butuh OTP).
+   JANGAN publish sebelum langkah 4 hijau.
+7. Uji akhir polos: `npx -y scaffdev@latest` → "Berhasil memuat N template aktif".
+
+**Cara verifikasi URL (wajib tiap deploy/ulang):**
+
+```bash
+# 1. API hidup? Harus balas JSON (walau {"templates":[]}).
+curl https://<app>.vercel.app/api/templates
+
+# 2. Halaman utama & katalog render? Buka di browser:
+#    https://<app>.vercel.app/  dan  https://<app>.vercel.app/templates
+
+# 3. Admin bisa login? Buka https://<admin>.vercel.app/login
+#    + cek halaman Pengaturan: semua env "Terisi".
+
+# 4. End-to-end: tambah 1 template via admin production → publish →
+#    curl ulang /api/templates → slug-nya muncul.
+#    Lalu: npx -y scaffdev@latest → "Berhasil memuat 1 template aktif".
+```
+
+Hasil yang benar per langkah: (1) JSON valid, bukan timeout/404/500;
+(2) halaman tampil bukan error; (3) login sukses, env Terisi;
+(4) slug muncul di API dan CLI. Kalau langkah 1 gagal → cek status
+deployment di dashboard Vercel (harus "Ready") + env sudah terisi sebelum build.
 
 ## 5. Tes bukti "CLI sesuai DB/admin" (wajib lolos tiap rilis)
 

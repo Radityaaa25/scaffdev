@@ -16,6 +16,13 @@ export interface IntegrasiFormInitial {
   kategori_integrasi: string;
   daftar_env_var: EnvVarRow[];
   instruksi_setup: string;
+  repo_url: string;
+  framework_compat: string[];
+}
+
+export interface FrameworkOption {
+  kode: string;
+  nama_tampilan: string;
 }
 
 const KATEGORI = ["database", "payment", "auth", "shipping", "other"];
@@ -29,10 +36,12 @@ export function IntegrasiForm({
   mode,
   kode,
   initial,
+  frameworkOptions,
 }: {
   mode: "new" | "edit";
   kode?: string;
   initial?: IntegrasiFormInitial;
+  frameworkOptions: FrameworkOption[];
 }) {
   const router = useRouter();
   const { toast } = useUI();
@@ -43,8 +52,16 @@ export function IntegrasiForm({
     initial?.daftar_env_var?.length ? initial.daftar_env_var : [{ key: "", deskripsi: "" }]
   );
   const [instruksi, setInstruksi] = useState(initial?.instruksi_setup ?? "");
+  const [repoUrl, setRepoUrl] = useState(initial?.repo_url ?? "");
+  const [fwCompat, setFwCompat] = useState<string[]>(initial?.framework_compat ?? []);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+
+  function toggleFramework(kodeFw: string) {
+    setFwCompat((prev) =>
+      prev.includes(kodeFw) ? prev.filter((k) => k !== kodeFw) : [...prev, kodeFw]
+    );
+  }
 
   function fail(msg: string) {
     setError(msg);
@@ -83,6 +100,8 @@ export function IntegrasiForm({
       kategori_integrasi: kategori,
       daftar_env_var: cleaned,
       instruksi_setup: instruksi.trim(),
+      repo_url: repoUrl.trim(),
+      framework_compat: fwCompat,
     };
     const res = await apiFetch(
       mode === "new" ? "/api/integrasi" : `/api/integrasi/${encodeURIComponent(kode ?? "")}`,
@@ -186,6 +205,56 @@ export function IntegrasiForm({
           className={`${inputCls} mt-4 resize-y font-mono text-[13px]`}
           maxLength={8000}
         />
+      </section>
+
+      <section className="glass-panel rounded-2xl p-5 sm:p-6">
+        <div className="flex items-center gap-2">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-400">Modul Builder</h2>
+          <span className="rounded text-[10px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30 px-1.5 py-px">
+            Coming Soon
+          </span>
+        </div>
+        <p className="mt-1 text-xs text-zinc-500">
+          Repo modul yang disuntik CLI saat Builder launch. Kosongkan bila belum ada — integrasi tetap jalan sebagai bundel bawaan template.
+        </p>
+        <div className="mt-4">
+          <label htmlFor="repo_url" className={labelCls}>Link Repo Modul (opsional)</label>
+          <input
+            id="repo_url"
+            type="url"
+            value={repoUrl}
+            onChange={(e) => setRepoUrl(e.target.value)}
+            placeholder="https://github.com/username/scaff-modul-tripay.git"
+            className={`${inputCls} font-mono`}
+          />
+        </div>
+        <div className="mt-4">
+          <span className={labelCls}>Kompatibel dengan framework</span>
+          <p className="mb-2 text-xs text-zinc-500">Kosongkan = semua framework. Centang bila modul hanya jalan di framework tertentu.</p>
+          <div className="flex flex-wrap gap-2">
+            {frameworkOptions.map((opt) => {
+              const active = fwCompat.includes(opt.kode);
+              return (
+                <button
+                  key={opt.kode}
+                  type="button"
+                  onClick={() => toggleFramework(opt.kode)}
+                  aria-pressed={active}
+                  className={`rounded-full border px-3.5 py-1.5 text-xs font-medium font-mono transition-all duration-200 active:scale-95 ${
+                    active
+                      ? "border-[#8B5CF6] bg-[#8B5CF6]/20 text-white shadow-lg shadow-[#8B5CF6]/20"
+                      : "border-white/10 bg-white/5 text-zinc-400 hover:border-white/25 hover:text-zinc-200"
+                  }`}
+                >
+                  {active ? "✓ " : ""}{opt.nama_tampilan}
+                </button>
+              );
+            })}
+            {frameworkOptions.length === 0 && (
+              <p className="text-xs text-zinc-500">Belum ada framework terdaftar — kelola di menu Framework & Kategori.</p>
+            )}
+          </div>
+        </div>
       </section>
 
       {error && (

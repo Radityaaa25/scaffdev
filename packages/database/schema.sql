@@ -635,3 +635,15 @@ $$;
 
 revoke all on function public.log_login_attempt(text, boolean) from public;
 grant execute on function public.log_login_attempt(text, boolean) to anon, authenticated;
+
+-- ============================================================
+-- Migrasi 010 — Kontrak modul integrasi untuk Builder (Fase 0)
+-- repo_url: repo GitHub publik berisi file modul (mis. supabase.ts).
+-- framework_compat: daftar kode framework yang didukung modul ini
+--   (array kosong = semua framework). Dipakai CLI + Builder untuk
+--   memfilter opsi yang valid per template base.
+-- CARA PAKAI: jalankan blok ini sekali di Supabase SQL Editor.
+-- ============================================================
+alter table public.integrasi
+  add column if not exists repo_url text not null default '',
+  add column if not exists framework_compat text[] not null default '{}';

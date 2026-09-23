@@ -15,6 +15,8 @@ export interface Integrasi {
   kategori_integrasi?: string | null;
   daftar_env_var: EnvVar[];
   instruksi_setup?: string | null;
+  repo_url: string;
+  framework_compat: string[];
   created_at: string;
 }
 
