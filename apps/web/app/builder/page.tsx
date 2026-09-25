@@ -21,8 +21,8 @@ export default function BuilderPage() {
             </span>
             <div className="min-w-0">
               <p className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-zinc-300 leading-relaxed">
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30 shrink-0">
-                  Coming Soon
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shrink-0">
+                  New
                 </span>
                 <span className="text-zinc-400">
                   Builder aktif penuh saat CLI <span className="font-mono text-zinc-200">0.2.0</span> rilis.

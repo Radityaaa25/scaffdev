@@ -453,8 +453,8 @@ export function BuilderFlow() {
         <h1 className="text-2xl sm:text-3xl font-extrabold text-[#FAFAFA] tracking-tight">
           Builder — Rancang Sendiri
         </h1>
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30">
-          Coming Soon
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+          New
         </span>
       </div>
       <p className="mb-6 text-sm text-zinc-400 leading-relaxed max-w-2xl">
