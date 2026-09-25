@@ -20,6 +20,8 @@ export interface TemplateFormInitial {
   deskripsi: string;
   screenshot_url: string;
   opsi_integrasi: string[];
+  builder_hidden_kategoris: string[];
+  builder_hidden: boolean;
   is_published: boolean;
 }
 
@@ -53,6 +55,7 @@ export function TemplateForm({
   integrasiOptions,
   frameworkOptions,
   kategoriOptions,
+  kategoriList,
 }: {
   mode: "new" | "edit";
   slug?: string;
@@ -60,6 +63,7 @@ export function TemplateForm({
   integrasiOptions: IntegrasiOption[];
   frameworkOptions: string[];
   kategoriOptions: string[];
+  kategoriList: IntegrasiOption[];
 }) {
   const router = useRouter();
   const { toast } = useUI();
@@ -82,6 +86,9 @@ export function TemplateForm({
   const [screenshotUrl, setScreenshotUrl] = useState(initial?.screenshot_url ?? "");
   const [opsiIntegrasi, setOpsiIntegrasi] = useState<string[]>(initial?.opsi_integrasi ?? []);
   const [isPublished, setIsPublished] = useState(initial?.is_published ?? false);
+  const [builderHidden, setBuilderHidden] = useState(initial?.builder_hidden ?? false);
+  // Daftar HITAM kategori Builder: yang TIDAK dicentang = disembunyikan.
+  const [hiddenKats, setHiddenKats] = useState<string[]>(initial?.builder_hidden_kategoris ?? []);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -93,6 +100,12 @@ export function TemplateForm({
 
   function toggleIntegrasi(kode: string) {
     setOpsiIntegrasi((prev) =>
+      prev.includes(kode) ? prev.filter((k) => k !== kode) : [...prev, kode]
+    );
+  }
+
+  function toggleHiddenKat(kode: string) {
+    setHiddenKats((prev) =>
       prev.includes(kode) ? prev.filter((k) => k !== kode) : [...prev, kode]
     );
   }
@@ -182,6 +195,8 @@ export function TemplateForm({
       deskripsi: deskripsi.trim(),
       screenshot_url: screenshotUrl.trim(),
       opsi_integrasi: opsiIntegrasi,
+      builder_hidden_kategoris: hiddenKats,
+      builder_hidden: builderHidden,
       is_published: isPublished,
     };
 
@@ -359,11 +374,54 @@ export function TemplateForm({
           </div>
         </div>
         <div className="sm:col-span-2">
+          <div className="flex items-center justify-between gap-2">
+            <span className={labelCls}>Tampil di Builder</span>
+            <Link href="/framework-kategori" className="shrink-0 text-xs font-medium text-[#A78BFA] hover:underline">
+              Kelola kategori →
+            </Link>
+          </div>
+          <p className="mb-2 text-xs text-zinc-500">
+            Centang = kategori tampil sebagai opsi di Builder. Kosongkan untuk menyembunyikan (mis. payment untuk landing page).
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {kategoriList.map((opt) => {
+              const shown = !hiddenKats.includes(opt.kode);
+              return (
+                <button
+                  key={opt.kode}
+                  type="button"
+                  onClick={() => toggleHiddenKat(opt.kode)}
+                  aria-pressed={shown}
+                  className={`rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all duration-200 active:scale-95 ${
+                    shown
+                      ? "border-[#8B5CF6] bg-[#8B5CF6]/20 text-white shadow-lg shadow-[#8B5CF6]/20"
+                      : "border-white/10 bg-white/5 text-zinc-500 hover:border-white/25 hover:text-zinc-300"
+                  }`}
+                >
+                  {shown ? "✓ " : ""}{opt.nama_tampilan}
+                </button>
+              );
+            })}
+            {kategoriList.length === 0 && (
+              <p className="text-xs text-zinc-500">Belum ada data kategori — semua tampil secara default.</p>
+            )}
+          </div>
+        </div>
+        <div className="sm:col-span-2">
           <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-white/20">
             <input type="checkbox" checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} className="mt-0.5 h-4 w-4 accent-[#8B5CF6]" />
             <span>
               <span className="block text-sm font-medium text-zinc-200">Publish sekarang</span>
               <span className="block text-xs text-zinc-500">Template langsung muncul di katalog web & bisa di-clone via CLI.</span>
+            </span>
+          </label>
+        </div>
+        <div className="sm:col-span-2">
+          <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-white/20">
+            <input type="checkbox" checked={builderHidden} onChange={(e) => setBuilderHidden(e.target.checked)} className="mt-0.5 h-4 w-4 accent-amber-500" />
+            <span>
+              <span className="block text-sm font-medium text-zinc-200">Sembunyikan dari Builder</span>
+              <span className="block text-xs text-zinc-500">Template hilang total dari pilihan base Builder. Katalog, CLI, dan halaman lain tidak terpengaruh.</span>
             </span>
           </label>
         </div>

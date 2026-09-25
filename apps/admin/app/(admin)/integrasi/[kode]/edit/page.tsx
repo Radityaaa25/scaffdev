@@ -35,7 +35,14 @@ export default async function EditIntegrasiPage({
     kategori_integrasi: item.kategori_integrasi ?? "other",
     daftar_env_var: (item.daftar_env_var ?? []) as { key: string; deskripsi: string }[],
     instruksi_setup: item.instruksi_setup ?? "",
+    repo_url: item.repo_url ?? "",
+    framework_compat: (item.framework_compat ?? []) as string[],
   };
+
+  const { data: frameworkRows } = await supabase
+    .from("frameworks")
+    .select("kode,nama_tampilan")
+    .order("nama_tampilan");
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
@@ -43,7 +50,12 @@ export default async function EditIntegrasiPage({
       <p className="animate-admin-enter mb-6 mt-1 font-mono text-sm text-zinc-500" style={{ animationDelay: "60ms" }}>
         {item.kode}
       </p>
-      <IntegrasiForm mode="edit" kode={item.kode} initial={initial} />
+      <IntegrasiForm
+        mode="edit"
+        kode={item.kode}
+        initial={initial}
+        frameworkOptions={(frameworkRows ?? []) as { kode: string; nama_tampilan: string }[]}
+      />
     </main>
   );
 }

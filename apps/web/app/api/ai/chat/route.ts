@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAllDocs, getDocBySlug } from "@/lib/docs";
 import { getAllTemplates } from "@/lib/data";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
+import { getGroqKeys, groqChatStreamFirstOk, GroqError, type GroqMessage } from "@/lib/ai-groq";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +10,8 @@ const GROQ_MODEL = process.env.GROQ_MODEL || "qwen/qwen3.8-27b";
 const MAX_MESSAGE = 500;
 const HISTORY_LIMIT = 4;
 const MAX_TOKENS = 600;
+/** Timeout per key. Dengan 3 key, worst-case ≈ 45 dtk; kasus normal 1 key langsung jawab. */
+const GROQ_TIMEOUT_MS = 15000;
 
 // Rate limit sederhana per IP (in-memory).
 // Catatan: di serverless multi-instance (Vercel), hitungan bersifat per-instance.
@@ -39,14 +42,103 @@ interface ChatMessage {
   content: string;
 }
 
+// ---------------------------------------------------------------------------
+// Fase 2 — Penolakan cepat TANPA memanggil LLM.
+// Hanya untuk sinyal off-topic yang KUAT. Bila ragu sedikit pun → return null
+// (lanjut ke LLM) agar pertanyaan Scaffdev ambigu tidak kena tolak.
+// ---------------------------------------------------------------------------
+
+/** Kata yang menandakan pertanyaan Scaffdev — bila cocok, JANGAN PERNAH tolak. */
+const SCAFFDEV_HINT =
+  /(scaffdev|tanya scaffdev|template|cli|npx|env|setup|instal|error|gagal|midtrans|supabase|xendit|duitku|rajaongkir|fonnte|cloudinary|resend|ongkir|bayar|payment|database|laravel|next|builder|katalog|deploy|slug|webhook|callback|invoice|email|whatsapp|framework|kategori|docs|dokumentasi|troubleshoot|folder|project|repositori|repo\b)/i;
+
+/** Pola off-topic kuat: jailbreak, minta kode umum, tugas sekolah, lifestyle. */
+const OFFTOPIC_PATTERNS: { re: RegExp; tag: string }[] = [
+  {
+    re: /(lupakan|abaikan|hapus).*(instruksi|aturan|prompt|aturanmu)|ignore\s+(previous|all|above|your)\s+instructions|tampilkan.*(system prompt|prompt.?mu|instruksimu)|reveal.*prompt/i,
+    tag: "jailbreak",
+  },
+  {
+    re: /(kamu|kau|anda)\s+sekarang\s+adalah|you are now|mode developer|developer mode|jailbreak|bypass\s+(aturan|filter|safety)|demi\s+(keamanan|kebaikan).*boleh/i,
+    tag: "role",
+  },
+  {
+    re: /buatkan?\s+(kode|code|script|skrip|fungsi|function|class|kelas|program\s+(python|javascript|java|c\+\+?)|kode\s+(python|javascript|java|php|go|rust))|tuliskan\s+(kode|program|script|skrip)|buatin\s+(kode|script|fungsi)/i,
+    tag: "codegen",
+  },
+  {
+    re: /kerjakan\s+(tugas|pr\b|soal)|jawab.*soal.*(matematika|fisika|kimia|biologi|sejarah)|buatin\s+(tugas|pr\b)|tugas\s+sekolah|soal\s+ujian/i,
+    tag: "homework",
+  },
+  {
+    re: /resep\s+masakan|skor\s+pertandingan|cuaca\s+(hari ini|di\s+\w+)|jadwal\s+(sholat|bioskop|kereta|bola)|curhat\s+dong|lirik\s+lagu/i,
+    tag: "lifestyle",
+  },
+];
+
+const FAST_REJECTIONS = [
+  "Hmm, itu di luar jangkauanku nih — aku cuma ngerti soal Scaffdev. Mau dibantu pilih template atau beresin error setup? 🙂",
+  "Wah, itu bukan bidangku — aku asisten Scaffdev (template, CLI, setup, error). Mau lanjut ke situ?",
+  "Aku nggak bisa bantu yang itu, soalnya aku khusus Scaffdev. Tapi kalau soal template atau setup, gas!",
+];
+
+/** Kembalikan jawaban tolak instan, atau null bila harus lewat LLM. */
+function fastReject(message: string): string | null {
+  // Pengaman utama: sinyal Scaffdev sekecil apa pun → JANGAN tolak.
+  if (SCAFFDEV_HINT.test(message)) return null;
+  const hit = OFFTOPIC_PATTERNS.some((p) => p.re.test(message));
+  if (!hit) return null;
+  return FAST_REJECTIONS[message.length % FAST_REJECTIONS.length];
+}
+
+// ---------------------------------------------------------------------------
+// Fase 3 — RAG relevan: hanya docs yang cocok kata kunci (max 3 × 1500 char),
+// bukan dump semua docs. Prompt kecil = lebih cepat + jawaban lebih fokus.
+// ---------------------------------------------------------------------------
+
+const SHORT_TERMS = new Set(["cli", "env", "slug", "api", "sdk", "db", "ui", "pr"]);
+
+function queryTerms(message: string): string[] {
+  const words = message
+    .toLowerCase()
+    .split(/[^a-z0-9_]+/)
+    .filter((w) => w.length > 3 || SHORT_TERMS.has(w));
+  return [...new Set(words)];
+}
+
+async function relevantDocParts(message: string, maxDocs = 3, charsEach = 1500): Promise<string[]> {
+  const terms = queryTerms(message);
+  const docs = getAllDocs();
+  if (terms.length === 0 || docs.length === 0) return [];
+  const scored: { title: string; content: string; score: number }[] = [];
+  for (const d of docs) {
+    const full = await getDocBySlug(d.slug);
+    if (!full) continue;
+    const hayTitle = full.title.toLowerCase();
+    const hayBody = full.content.toLowerCase().slice(0, 4000);
+    let score = 0;
+    for (const t of terms) {
+      if (hayTitle.includes(t)) score += 3;
+      // NOTED: hitung kemunculan di body maksimal 3 agar 1 doc berulang-ulang
+      // tidak mengalahkan doc yang cocok banyak istilah berbeda.
+      const hits = hayBody.split(t).length - 1;
+      score += Math.min(hits, 3);
+    }
+    if (score > 0) scored.push({ title: full.title, content: full.content, score });
+  }
+  scored.sort((a, b) => b.score - a.score);
+  return scored.slice(0, maxDocs).map((s) => `### ${s.title}\n${s.content.slice(0, charsEach)}`);
+}
+
 /**
  * Asisten AI publik (troubleshooting & panduan Scaffdev).
- * RAG: isi content/docs/*.md + snapshot katalog published + integrasi,
- * semuanya dibaca server-side. Tanpa auth — dilindungi rate limit ketat,
- * context di-trim, dan system prompt menolak topik di luar Scaffdev.
+ * RAG: docs relevan + snapshot katalog published + integrasi, server-side.
+ * Streaming SSE; penolakan off-topic kuat dijawab instan tanpa LLM.
+ * Tanpa auth — dilindungi rate limit ketat, context di-trim, dan system
+ * prompt menolak topik di luar Scaffdev.
  */
 export async function POST(request: NextRequest) {
-  if (!process.env.GROQ_API_KEY) {
+  if (getGroqKeys().length === 0) {
     return NextResponse.json(
       { error: "Asisten AI belum dikonfigurasi. Coba lagi nanti." },
       { status: 503 }
@@ -91,18 +183,14 @@ export async function POST(request: NextRequest) {
         .slice(-HISTORY_LIMIT)
     : [];
 
-  // Konteks: dokumentasi (trim) + katalog live (published saja).
-  const docs = getAllDocs();
-  const docParts: string[] = [];
-  let budget = 9000;
-  for (const d of docs) {
-    if (budget <= 0) break;
-    const full = await getDocBySlug(d.slug);
-    if (!full) continue;
-    const chunk = full.content.slice(0, 2200);
-    docParts.push(`### ${full.title}\n${chunk}`);
-    budget -= chunk.length;
+  // Fase 2: tolak-cepat — tanpa biaya/latensi LLM.
+  const instant = fastReject(message);
+  if (instant) {
+    return NextResponse.json({ answer: instant });
   }
+
+  // Fase 3: konteks relevan saja (bukan dump semua docs).
+  const docParts = await relevantDocParts(message);
 
   const templates = await getAllTemplates();
   const catalog = templates.map((t) => ({
@@ -110,7 +198,7 @@ export async function POST(request: NextRequest) {
     nama: t.nama,
     framework: t.framework,
     kategori: t.kategori,
-    deskripsi: (t.deskripsi ?? "").slice(0, 200),
+    deskripsi: (t.deskripsi ?? "").slice(0, 120),
     integrasi: t.opsi_integrasi,
   }));
 
@@ -141,6 +229,12 @@ export async function POST(request: NextRequest) {
     "Boleh menampilkan command CLI, cuplikan env, dan langkah setup karena itu bagian dokumentasi Scaffdev — tapi JANGAN buatkan kode program/script di luar konteks itu.",
     "Jawaban ringkas dan to the point (maksimal ~600 token). Sebut path panduan saat relevan (mis. /docs/troubleshooting).",
     "",
+    "FORMAT JAWABAN (wajib dipatuhi):",
+    "- Langsung ke jawaban — TANPA pembuka basa-basi ('Gampang!', 'Tentu saja!', 'Halo!').",
+    "- Prosedur = langkah bernomor; perintah = blok kode ```bash; cuplikan env = blok kode; sebut path /docs/... bila relevan.",
+    "- Maksimal 1 emoji per jawaban, hanya di kalimat penutup bila perlu.",
+    "- Tutup dengan 1 kalimat tawaran bantuan SPESIFIK (contoh: 'Mau aku jelaskan cara isi .env.local-nya?'), bukan 'Ada yang mau ditanyakan lagi?' yang generik.",
+    "",
     "FAKTA KUNCI SCAFFDEV (jadikan acuan — jangan dikarang):",
     "- Command interaktif: npx scaffdev@latest. Langsung via slug: npx scaffdev@latest --template=<slug> (WAJIB pakai tanda =, tanpa spasi). Nama folder custom: npx scaffdev@latest nama-folder --template=<slug>. Instal global: npm install -g scaffdev.",
     "- Framework template yang didukung: Next.js (App Router, butuh Node.js v18+) dan Laravel (butuh PHP 8.2+ dan Composer). Selain itu BELUM didukung.",
@@ -151,50 +245,55 @@ export async function POST(request: NextRequest) {
     "- 'Builder' adalah nama fitur rancang-sendiri (pilih template base + centang integrasi, maks 1 per kategori) — SELURUHNYA masih Coming Soon. Katalog Template adalah yang live sekarang.",
     "- Aturan 'maks 1 per kategori' (1 payment, 1 database, dst.) HANYA akan berlaku NANTI saat fitur custom tersebut launch. JANGAN PERNAH menyatakan seolah aturan itu / customisasi apa pun sudah berlaku saat ini. Kalau user bertanya 'apakah bisa custom integrasi?', jawab: belum bisa, masih Coming Soon, tawarkan template bawaan terdekat.",
     "- Saat menyebut command, gunakan format npx scaffdev@latest --template=<slug>.",
-    `DOKUMENTASI:\n${docParts.join("\n\n")}`,
+    docParts.length > 0
+      ? `DOKUMENTASI RELEVAN:\n${docParts.join("\n\n")}`
+      : "DOKUMENTASI RELEVAN: (tidak ada halaman docs yang cocok — jawab dari FAKTA KUNCI + KATALOG di bawah)",
     `KATALOG TEMPLATE (published): ${JSON.stringify(catalog)}`,
     `DAFTAR INTEGRASI: ${JSON.stringify(integrasi)}`,
   ].join("\n");
 
-  let groqRes: Response;
+  const messages: GroqMessage[] = [
+    { role: "system", content: system },
+    ...cleanHistory,
+    { role: "user", content: message.trim() },
+  ];
+
+  // Fase 1+4: rotasi key + streaming SSE (passthrough body upstream).
   try {
-    groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: GROQ_MODEL,
-        temperature: 0.3,
-        max_tokens: MAX_TOKENS,
-        messages: [
-          { role: "system", content: system },
-          ...cleanHistory,
-          { role: "user", content: message.trim() },
-        ],
-      }),
-      signal: AbortSignal.timeout(30000),
+    const { upstream } = await groqChatStreamFirstOk({
+      model: GROQ_MODEL,
+      temperature: 0.3,
+      maxTokens: MAX_TOKENS,
+      timeoutMs: GROQ_TIMEOUT_MS,
+      messages,
     });
-  } catch {
+    return new Response(upstream.body, {
+      headers: {
+        "Content-Type": "text/event-stream; charset=utf-8",
+        "Cache-Control": "no-cache, no-transform",
+        Connection: "keep-alive",
+        "X-Accel-Buffering": "no",
+      },
+    });
+  } catch (err) {
+    if (err instanceof GroqError) {
+      if (err.kind === "RATE_LIMIT") {
+        return NextResponse.json(
+          { error: "Asisten sedang sibuk. Coba lagi sebentar." },
+          { status: 429 }
+        );
+      }
+      if (err.kind === "NO_KEY") {
+        return NextResponse.json(
+          { error: "Asisten AI belum dikonfigurasi. Coba lagi nanti." },
+          { status: 503 }
+        );
+      }
+      return NextResponse.json(
+        { error: "Asisten gagal menjawab. Coba lagi nanti." },
+        { status: 502 }
+      );
+    }
     return NextResponse.json({ error: "Tidak dapat menghubungi AI. Coba lagi." }, { status: 502 });
   }
-
-  if (!groqRes.ok) {
-    const status = groqRes.status === 429 ? 429 : 502;
-    return NextResponse.json(
-      { error: groqRes.status === 429 ? "Asisten sedang sibuk. Coba lagi sebentar." : "Asisten gagal menjawab. Coba lagi nanti." },
-      { status }
-    );
-  }
-
-  const payload = (await groqRes.json()) as {
-    choices?: { message?: { content?: string } }[];
-  };
-  const answer = payload.choices?.[0]?.message?.content?.trim();
-  if (!answer) {
-    return NextResponse.json({ error: "AI tidak memberikan jawaban. Coba lagi." }, { status: 502 });
-  }
-
-  return NextResponse.json({ answer });
 }

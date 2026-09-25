@@ -23,9 +23,13 @@ export default async function NewTemplatePage() {
   // Opsi resmi dari tabel referensi (dikelola di menu Framework & Kategori).
   // Fallback bila tabel belum ada (migrasi 006 belum jalan): nilai dari template + bawaan.
   const { data: frameworkRows, error: fwErr } = await supabase.from("frameworks").select("kode").order("kode");
-  const { data: kategoriRows, error: katErr } = await supabase.from("kategoris").select("kode").order("kode");
+  const { data: kategoriRows, error: katErr } = await supabase.from("kategoris").select("kode,nama_tampilan").order("nama_tampilan");
   let frameworkOptions = (frameworkRows ?? []).map((r) => r.kode as string);
   let kategoriOptions = (kategoriRows ?? []).map((r) => r.kode as string);
+  let kategoriList = (kategoriRows ?? []).map((r) => ({
+    kode: r.kode as string,
+    nama_tampilan: (r.nama_tampilan ?? r.kode) as string,
+  }));
   if (fwErr || katErr || frameworkOptions.length === 0 || kategoriOptions.length === 0) {
     const { data: existing } = await supabase.from("templates").select("framework,kategori");
     const fromTpl = (k: "framework" | "kategori") =>
@@ -36,6 +40,9 @@ export default async function NewTemplatePage() {
     if (kategoriOptions.length === 0) {
       kategoriOptions = [...new Set([...fromTpl("kategori"), "ecommerce", "landing-page", "portfolio"])].sort();
     }
+    if (kategoriList.length === 0) {
+      kategoriList = kategoriOptions.map((k) => ({ kode: k, nama_tampilan: k }));
+    }
   }
 
   return (
@@ -44,7 +51,7 @@ export default async function NewTemplatePage() {
       <p className="animate-admin-enter mb-6 mt-1 text-sm text-zinc-400" style={{ animationDelay: "60ms" }}>
         Tempel link repo GitHub publik milik teman — centang publish agar langsung live.
       </p>
-      <TemplateForm mode="new" integrasiOptions={integrasiOptions} frameworkOptions={frameworkOptions} kategoriOptions={kategoriOptions} />
+      <TemplateForm mode="new" integrasiOptions={integrasiOptions} frameworkOptions={frameworkOptions} kategoriOptions={kategoriOptions} kategoriList={kategoriList} />
     </main>
   );
 }

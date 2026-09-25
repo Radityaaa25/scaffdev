@@ -1043,3 +1043,58 @@ article.docs-article .terminal-card pre code {
     font-size: 12px;
   }
 }
+
+/* Chat AI (AskAI) — render markdown jawaban, scoped .chat-md agar tidak
+   menyentuh gaya komponen lain. Warna mengikuti bubble asisten. */
+.chat-md {
+  overflow-wrap: anywhere;
+}
+.chat-md p {
+  margin: 0 0 0.5em;
+}
+.chat-md p:last-child {
+  margin-bottom: 0;
+}
+.chat-md ul,
+.chat-md ol {
+  margin: 0.25em 0 0.75em;
+  padding-left: 1.25em;
+}
+.chat-md li {
+  margin: 0.2em 0;
+}
+.chat-md ul {
+  list-style: disc;
+}
+.chat-md ol {
+  list-style: decimal;
+}
+.chat-md code {
+  font-family: var(--font-geist-mono, ui-monospace, monospace);
+  font-size: 0.85em;
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 6px;
+  padding: 0.1em 0.35em;
+}
+.chat-md pre {
+  margin: 0.5em 0 0.75em;
+  padding: 0.75em 0.9em;
+  background: #0a0a0b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  overflow-x: auto;
+}
+.chat-md pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+}
+.chat-md a {
+  color: #a78bfa;
+  text-decoration: underline;
+}
+.chat-md strong {
+  color: #fafafa;
+}

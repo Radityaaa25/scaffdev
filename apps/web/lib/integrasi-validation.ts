@@ -12,6 +12,9 @@ export const ALLOWED_KATEGORI_INTEGRASI = [
 
 const KODE_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const ENV_KEY_RE = /^[A-Z][A-Z0-9_]{1,64}$/;
+// Repo modul harus GitHub publik https — CLI melakukan git clone tanpa token.
+const REPO_URL_RE =
+  /^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+?(\.git)?\/?$/;
 
 const MAX_KODE = 60;
 const MAX_NAMA = 100;
@@ -30,6 +33,8 @@ export interface NormalizedIntegrasiInput {
   kategori_integrasi: string | null;
   daftar_env_var: NormalizedEnvVar[];
   instruksi_setup: string | null;
+  repo_url: string;
+  framework_compat: string[];
 }
 
 export function validateIntegrasiInput(
@@ -121,6 +126,41 @@ export function validateIntegrasiInput(
     out.instruksi_setup = s || null;
   } else if (!opts.partial) {
     out.instruksi_setup = null;
+  }
+
+  // repo_url (repo modul GitHub publik; kosong = belum ada modul/coming soon)
+  if ("repo_url" in b) {
+    if (b.repo_url != null && typeof b.repo_url !== "string") {
+      return { ok: false, error: "Field 'repo_url' harus string URL." };
+    }
+    const r = typeof b.repo_url === "string" ? b.repo_url.trim() : "";
+    if (r && !REPO_URL_RE.test(r)) {
+      return { ok: false, error: "Field 'repo_url' harus URL GitHub https publik yang valid." };
+    }
+    out.repo_url = r;
+  } else if (!opts.partial) {
+    out.repo_url = "";
+  }
+
+  // framework_compat (array kode framework; kosong = semua framework)
+  if ("framework_compat" in b) {
+    if (!Array.isArray(b.framework_compat)) {
+      return { ok: false, error: "Field 'framework_compat' harus array of string." };
+    }
+    const cleaned = [...new Set(
+      b.framework_compat
+        .filter((x): x is string => typeof x === "string")
+        .map((x) => x.trim().toLowerCase())
+        .filter(Boolean)
+    )];
+    for (const k of cleaned) {
+      if (!KODE_RE.test(k)) {
+        return { ok: false, error: `Kode framework tidak valid: "${k}".` };
+      }
+    }
+    out.framework_compat = cleaned;
+  } else if (!opts.partial) {
+    out.framework_compat = [];
   }
 
   return { ok: true, data: out };
