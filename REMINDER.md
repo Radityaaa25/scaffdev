@@ -71,7 +71,9 @@ Repo ini = 2 aplikasi terpisah → 2 project Vercel dari repo yang sama:
 - Root Directory: `apps/web`, Framework: Next.js.
 - Env wajib: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
   (tanpa ini BUILD GAGAL — sitemap + generateStaticParams memanggil Supabase).
-- Env opsional: `GROQ_API_KEY` (tanpa ini AI balas 503),
+- Env opsional: `GROQ_API_KEY` (tanpa ini AI balas 503). Boleh multi-key
+  pisah koma (`k1,k2,k3` tanpa spasi) — route web rotasi otomatis saat
+  429/5xx/timeout; admin tetap 1 key.
   `CORS_ALLOWED_ORIGINS` (isi `https://<web>.vercel.app,https://<admin>.vercel.app`).
 - Hasil URL web inilah yang jadi default CLI (poin 1) saat custom domain dibeli.
 

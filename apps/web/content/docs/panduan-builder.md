@@ -19,7 +19,7 @@ Scaffdev punya dua cara mendapatkan project. Pahami bedanya:
 |---|---|---|
 | Konsep | **Bundel fix** — apa yang terlihat di preview = apa yang di-generate | **Rancang-sendiri** — pilih template base + centang integrasi favoritmu |
 | Status | **Live sekarang**, command langsung jalan | **Coming Soon**, belum bisa dipakai |
-| Contoh hasil | `npx scaffdev@latest --template=ecommerce-supabase-midtrans-nextjs` | Nanti: base + `--with=midtrans,supabase` (format final ditentukan saat launch) |
+| Contoh hasil | `npx scaffdev@latest --template=ecommerce-supabase-midtrans-nextjs` | Nanti: base + `--with=midtrans,supabase` (format CLI-nya sudah final, menunggu launch katalog modul) |
 
 Kalau kamu butuh project **sekarang**, tutup halaman ini dan buka [Katalog Template](/templates).
 Kalau kamu penasaran Builder akan seperti apa, lanjut baca.

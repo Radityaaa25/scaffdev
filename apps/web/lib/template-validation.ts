@@ -32,6 +32,8 @@ export interface NormalizedTemplateInput {
   deskripsi: string | null;
   screenshot_url: string | null;
   opsi_integrasi: string[];
+  builder_hidden_kategoris: string[];
+  builder_hidden: boolean;
   is_published: boolean;
 }
 
@@ -155,6 +157,40 @@ export function validateTemplateInput(
     out.opsi_integrasi = cleaned;
   } else if (!opts.partial) {
     out.opsi_integrasi = [];
+  }
+
+  // builder_hidden_kategoris (daftar hitam kategori untuk Builder;
+  // hanya kode terdaftar yang diterima, tolak eksplisit bila asing)
+  if ("builder_hidden_kategoris" in b) {
+    if (!Array.isArray(b.builder_hidden_kategoris)) {
+      return { ok: false, error: "Field 'builder_hidden_kategoris' harus array of string." };
+    }
+    const cleaned = [...new Set(
+      b.builder_hidden_kategoris
+        .filter((x): x is string => typeof x === "string")
+        .map((x) => x.trim().toLowerCase())
+        .filter(Boolean)
+    )];
+    const allowed = opts.allowedKategoris;
+    const unknown = allowed === null
+      ? []
+      : cleaned.filter((k) => !allowed.includes(k));
+    if (unknown.length > 0) {
+      return { ok: false, error: `Kategori tidak dikenal: ${unknown.join(", ")}.` };
+    }
+    out.builder_hidden_kategoris = cleaned;
+  } else if (!opts.partial) {
+    out.builder_hidden_kategoris = [];
+  }
+
+  // builder_hidden (sembunyikan template dari Builder; default tampil)
+  if ("builder_hidden" in b) {
+    if (typeof b.builder_hidden !== "boolean") {
+      return { ok: false, error: "Field 'builder_hidden' harus boolean." };
+    }
+    out.builder_hidden = b.builder_hidden;
+  } else if (!opts.partial) {
+    out.builder_hidden = false;
   }
 
   // is_published

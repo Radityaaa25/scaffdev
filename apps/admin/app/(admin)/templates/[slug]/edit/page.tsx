@@ -36,9 +36,13 @@ export default async function EditTemplatePage({
 
   // Opsi resmi dari tabel referensi; fallback bila tabel belum ada (migrasi 006 belum jalan).
   const { data: frameworkRows, error: fwErr } = await supabase.from("frameworks").select("kode").order("kode");
-  const { data: kategoriRows, error: katErr } = await supabase.from("kategoris").select("kode").order("kode");
+  const { data: kategoriRows, error: katErr } = await supabase.from("kategoris").select("kode,nama_tampilan").order("nama_tampilan");
   let frameworkOptions = (frameworkRows ?? []).map((r) => r.kode as string);
   let kategoriOptions = (kategoriRows ?? []).map((r) => r.kode as string);
+  let kategoriList = (kategoriRows ?? []).map((r) => ({
+    kode: r.kode as string,
+    nama_tampilan: (r.nama_tampilan ?? r.kode) as string,
+  }));
   if (fwErr || katErr || frameworkOptions.length === 0 || kategoriOptions.length === 0) {
     const { data: existingRows } = await supabase.from("templates").select("framework,kategori");
     const fromTpl = (k: "framework" | "kategori") =>
@@ -48,6 +52,9 @@ export default async function EditTemplatePage({
     }
     if (kategoriOptions.length === 0) {
       kategoriOptions = [...new Set([...fromTpl("kategori"), "ecommerce", "landing-page", "portfolio"])].sort();
+    }
+    if (kategoriList.length === 0) {
+      kategoriList = kategoriOptions.map((k) => ({ kode: k, nama_tampilan: k }));
     }
   }
 
@@ -60,6 +67,8 @@ export default async function EditTemplatePage({
     deskripsi: template.deskripsi ?? "",
     screenshot_url: template.screenshot_url ?? "",
     opsi_integrasi: template.opsi_integrasi ?? [],
+    builder_hidden_kategoris: (template.builder_hidden_kategoris ?? []) as string[],
+    builder_hidden: (template.builder_hidden ?? false) as boolean,
     is_published: template.is_published,
   };
 
@@ -76,6 +85,7 @@ export default async function EditTemplatePage({
         integrasiOptions={(integrasiRows ?? []) as { kode: string; nama_tampilan: string }[]}
         frameworkOptions={frameworkOptions}
         kategoriOptions={kategoriOptions}
+        kategoriList={kategoriList}
       />
     </main>
   );

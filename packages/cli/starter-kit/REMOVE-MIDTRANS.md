@@ -26,7 +26,7 @@ rm lib/payments/midtrans.ts "app/api/payments/midtrans/route.ts" components/chec
 ### A.2. Hapus env (dari `.env.local`)
 
 - `MIDTRANS_SERVER_KEY`
-- `NEXT_PUBLIC_MIDTRANS_CLIENT_KEY`
+- `MIDTRANS_CLIENT_KEY`
 
 Hapus barisnya, jangan dikosongkan saja.
 

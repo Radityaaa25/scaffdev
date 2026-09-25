@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AskAI } from "@/components/AskAI";
 
 export const metadata: Metadata = {
   title: "Builder Kategori — Segera Hadir",
@@ -35,6 +36,7 @@ export default async function BuilderKategoriPage() {
           </Link>
         </div>
       </div>
+      <AskAI />
     </main>
   );
 }

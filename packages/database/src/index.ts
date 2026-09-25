@@ -57,6 +57,8 @@ export interface Template {
   opsi_integrasi: string[];
   is_published: boolean;
   downloads_count: number;
+  builder_hidden_kategoris: string[];
+  builder_hidden: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -72,11 +74,14 @@ export interface TemplateDetailResponse {
   deskripsi?: string;
   kategori?: string;
   screenshot_url?: string;
+  builder_hidden_kategoris: string[];
   integrasi: Array<{
     kode: string;
     nama_tampilan: string;
     daftar_env_var: EnvVar[];
     instruksi_setup?: string | null;
+    kategori_integrasi?: string | null;
+    has_modul: boolean;
   }>;
 }
 

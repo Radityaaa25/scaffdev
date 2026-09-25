@@ -35,24 +35,32 @@ tersebut. Manifest TETAP satu di root (tidak boleh ada manifest per subfolder).
 {
   "kode": "midtrans",
   "version": "1.0.0",
-  "frameworks": ["nextjs"],
+  "frameworks": ["nextjs", "laravel"],
   "files": [
-    { "src": "lib/midtrans.ts", "dest": "lib/payments/midtrans.ts" },
-    { "src": "app/api/midtrans/route.ts", "dest": "app/api/payments/midtrans/route.ts" }
+    { "src": "lib/midtrans.ts", "dest": "lib/payments/midtrans.ts", "frameworks": ["nextjs"] },
+    { "src": "app/api/midtrans/route.ts", "dest": "app/api/payments/midtrans/route.ts", "frameworks": ["nextjs"] },
+    { "src": "app/Services/MidtransService.php", "dest": "app/Services/MidtransService.php", "frameworks": ["laravel"] }
   ],
   "dependencies": {
     "npm": { "midtrans-client": "^1.4.0" }
   },
-  "env": ["MIDTRANS_SERVER_KEY", "NEXT_PUBLIC_MIDTRANS_CLIENT_KEY"],
+  "env": ["MIDTRANS_SERVER_KEY", "MIDTRANS_CLIENT_KEY"],
   "setup": "SETUP-FRAGMENT.md",
   "removal": {
-    "files": ["lib/payments/midtrans.ts", "app/api/payments/midtrans/route.ts"],
-    "env": ["MIDTRANS_SERVER_KEY", "NEXT_PUBLIC_MIDTRANS_CLIENT_KEY"],
+    "files": ["lib/payments/midtrans.ts", "app/api/payments/midtrans/route.ts", "app/Services/MidtransService.php"],
+    "env": ["MIDTRANS_SERVER_KEY", "MIDTRANS_CLIENT_KEY"],
     "stepsFile": "REMOVE.md"
   },
   "conflicts": ["xendit"]
 }
 ```
+
+> Aturan filter `frameworks` per entri: CLI menyuntik HANYA entri yang berlaku
+> untuk framework base (file PHP tidak akan nyasar ke project Next.js dan
+> sebaliknya). Entri TANPA filter berlaku untuk semua framework — pakai hanya
+> bila `src`/`dest`-nya valid di semua framework (mis. `README` tambahan).
+> Validator menolak: filter menunjuk framework di luar daftar modul, dan
+> framework tanpa ≥1 entri yang berlaku.
 
 ## Referensi field
 
@@ -61,11 +69,11 @@ tersebut. Manifest TETAP satu di root (tidak boleh ada manifest per subfolder).
 | `kode` | Ya | Sama dengan `kode` di tabel `integrasi` (huruf kecil, dash). |
 | `version` | Ya | Semver modul (`1.0.0`). CLI menolak versi tak terbaca. |
 | `frameworks` | Ya | Daftar kode framework yang didukung modul. Harus subset dari `framework_compat` di database; kosong = semua. |
-| `files[]` | Ya, min 1 | Pasangan `src` (relatif basis sumber = `{repo}/{framework}/` bila ada, else root) → `dest` (relatif root template base). `dest` dilarang keluar root (`..`) dan dilarang menimpa file bawaan base — tabrakan = generate GAGAL eksplisit. |
+| `files[]` | Ya, min 1 | Pasangan `src` (relatif basis sumber = `{repo}/{framework}/` bila ada, else root) → `dest` (relatif root template base) + opsional `frameworks` (filter per entri, subset dari `frameworks` modul; absen = semua framework). `dest` dilarang keluar root (`..`) dan dilarang menimpa file bawaan base — tabrakan = generate GAGAL eksplisit. Tiap framework di `frameworks` wajib punya ≥1 entri yang berlaku. |
 | `dependencies.npm` / `.composer` | Tidak | Map nama → range versi, di-merge ke `package.json`/`composer.json` base. Konflik range tak terdamaikan = GAGAL eksplisit. |
 | `env` | Tidak | Daftar key yang dipakai modul. Harus subset dari `daftar_env_var` di database (sumber kebenaran tetap DB). |
 | `setup` | Tidak | Path file markdown di repo modul, digabung ke `SETUP.md` hasil racikan setelah fragmen bawaan. |
-| `removal` | **Ya bila kategori payment/database/auth/shipping** | Panduan copot untuk skenario "double se-kategori": `files` + `env` milik modul + `stepsFile` (markdown langkah hapus manual). CLI men-generate section "Cara mencopot X" otomatis dari sini. |
+| `removal` | **Ya bila kategori payment/database/auth/shipping** | Panduan copot untuk skenario "double se-kategori": `files` + `env` milik modul + `stepsFile` (markdown langkah hapus manual). `files` harus TEPAT mencakup semua `dest` di `files[]` (tidak kurang agar tak ada file yatim, tidak lebih agar tak menghapus milik orang). CLI men-generate section "Cara mencopot X" otomatis dari sini. |
 | `conflicts[]` | Tidak | Daftar `kode` integrasi yang tidak disarankan bareng (mis. `midtrans` vs `xendit`). CLI meminta konfirmasi eksplisit, bukan menolak. |
 
 ## Aturan main CLI (ringkas, detail implementasi di Fase 1)
@@ -86,6 +94,7 @@ Selain cek struktur, validator membangun **graf import** sederhana (import/requi
 ## Checklist pembuat modul
 
 - [ ] `scaff.integration.json` valid (CLI menyediakan `scaffdev validate-module` di 0.2.0).
-- [ ] Semua `src` ada di repo; semua `dest` relatif dan tidak menimpa file base populer (`package.json`, `.env.example`, `README.md` dilarang sebagai `dest`).
-- [ ] `SETUP-FRAGMENT.md` + `REMOVE.md` (bila wajib) jelas untuk pemula.
+- [ ] Semua `src` ada di repo **per framework yang berlaku** (entri nextjs ada di `nextjs/`, entri laravel ada di `laravel/`); semua `dest` relatif dan tidak menimpa file base populer (`package.json`, `.env.example`, `README.md` dilarang sebagai `dest`).
+- [ ] `removal.files` TEPAT mencakup semua `dest` (tidak kurang, tidak lebih).
+- [ ] `SETUP-FRAGMENT.md` + `REMOVE.md` (bila wajib) jelas untuk pemula — REMOVE mencakup SEMUA framework yang didukung (section per framework).
 - [ ] Test suntik ke minimal 1 template base per framework yang didukung.
