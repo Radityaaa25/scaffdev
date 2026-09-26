@@ -1044,6 +1044,167 @@ article.docs-article .terminal-card pre code {
   }
 }
 
+
+/* ---- Landing (ReactBits-style): reveal + spotlight ---- */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.landing-spot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(480px circle at var(--spot-x, 50%) var(--spot-y, 0%), rgba(139, 92, 246, 0.14), transparent 65%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+.landing-spot:hover::before {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .landing-spot::before {
+    display: none;
+  }
+}
+
+/* ---- Bits demo tiles (gaya ReactBits, CSS-only) ---- */
+.bits-split span {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.6em);
+  animation: bits-split-up 2.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+@keyframes bits-split-up {
+  0% { opacity: 0; transform: translateY(0.6em); }
+  20%, 70% { opacity: 1; transform: none; }
+  90%, 100% { opacity: 0; transform: translateY(-0.6em); }
+}
+
+.bits-shimmer-btn {
+  position: relative;
+  overflow: hidden;
+}
+.bits-shimmer-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%);
+  transform: translateX(-120%);
+  animation: bits-shimmer-sweep 2.4s ease-in-out infinite;
+}
+@keyframes bits-shimmer-sweep {
+  0% { transform: translateX(-120%); }
+  55%, 100% { transform: translateX(120%); }
+}
+
+.bits-spot-demo {
+  --spot-x: 50%;
+  --spot-y: 50%;
+}
+
+.bits-typing {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 0.15em solid #8b5cf6;
+  width: 0;
+  animation: bits-typing-loop 6s steps(19) infinite, hero-term-cursor 0.5s step-end infinite alternate;
+}
+/* "npx scaffdev@latest" = 19 karakter */
+@keyframes bits-typing-loop {
+  0%, 100% { width: 0; }
+  25%, 75% { width: 19ch; }
+}
+
+.bits-blob {
+  animation: bits-blob-drift 7s ease-in-out infinite;
+}
+.bits-blob-b {
+  animation-delay: -3.5s;
+}
+@keyframes bits-blob-drift {
+  0%, 100% { transform: translate(-14px, 6px) scale(1); }
+  50% { transform: translate(14px, -8px) scale(1.25); }
+}
+
+.bits-dot {
+  animation: bits-dot-bounce 1.2s ease-in-out infinite;
+}
+@keyframes bits-dot-bounce {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(-8px); opacity: 1; }
+}
+
+.bits-beam {
+  position: relative;
+  background: #0e0b13;
+  z-index: 0;
+}
+.bits-beam::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 14px;
+  background: conic-gradient(from var(--bits-beam-angle, 0deg), #8b5cf6, #ec4899, #8b5cf6);
+  z-index: -1;
+  animation: bits-beam-spin 3s linear infinite;
+}
+@property --bits-beam-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes bits-beam-spin {
+  to { --bits-beam-angle: 360deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bits-split span,
+  .bits-shimmer-btn::after,
+  .bits-typing,
+  .bits-blob,
+  .bits-dot,
+  .bits-beam::before {
+    animation: none;
+  }
+  .bits-split span { opacity: 1; transform: none; }
+  .bits-typing { width: 19ch; border-right: none; }
+}
+
+/* ---- Float pelan untuk orb background landing ---- */
+.bg-float-a { animation: bg-float-a 12s ease-in-out infinite alternate; }
+.bg-float-b { animation: bg-float-b 15s ease-in-out infinite alternate-reverse; }
+@keyframes bg-float-a {
+  from { transform: translate(0, 0); }
+  to { transform: translate(50px, 40px); }
+}
+@keyframes bg-float-b {
+  from { transform: translate(0, 0); }
+  to { transform: translate(-60px, -45px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-float-a,
+  .bg-float-b {
+    animation: none;
+  }
+}
+
 /* Chat AI (AskAI) — render markdown jawaban, scoped .chat-md agar tidak
    menyentuh gaya komponen lain. Warna mengikuti bubble asisten. */
 .chat-md {
@@ -1098,3 +1259,4 @@ article.docs-article .terminal-card pre code {
 .chat-md strong {
   color: #fafafa;
 }
+
