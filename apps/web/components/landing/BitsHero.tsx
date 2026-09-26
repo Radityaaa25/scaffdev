@@ -46,7 +46,7 @@ export function BitsHero({ templateCount }: { templateCount: number }) {
         </p>
 
         <h1
-          className="hero-enter hero-enter-2 mx-auto mt-6 max-w-3xl text-5xl font-extrabold leading-[1.02] tracking-tight text-white sm:text-7xl"
+          className="hero-enter hero-enter-2 mx-auto mt-6 max-w-3xl text-balance text-5xl font-extrabold leading-[1.02] tracking-tight text-white sm:text-7xl"
         >
           Ship project{" "}
           <span className="bg-gradient-to-r from-[#C4B5FD] via-[#8B5CF6] to-[#7C3AED] bg-clip-text text-transparent">
@@ -90,7 +90,7 @@ export function BitsHero({ templateCount }: { templateCount: number }) {
         </dl>
 
         {/* Panel tab Preview / Code ala halaman detail ReactBits */}
-        <div className="hero-enter hero-enter-5 mx-auto mt-8 max-w-2xl overflow-hidden rounded-2xl border border-white/[0.08] bg-[#131316] text-left">
+        <div className="hero-enter hero-enter-5 mx-auto mt-8 max-w-2xl overflow-hidden rounded-2xl border border-white/[0.08] bg-[#131316] text-left shadow-[0_0_90px_rgba(139,92,246,0.12)]">
           <div className="flex items-center gap-1 border-b border-white/[0.06] p-2" role="tablist" aria-label="Preview atau code">
             {(["preview", "code"] as const).map((t) => (
               <button
