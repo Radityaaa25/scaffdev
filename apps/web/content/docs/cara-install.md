@@ -89,8 +89,8 @@ Hasilnya: folder `toko-saya/` berisi hasil clone template `ecommerce-supabase-mi
 
 ### Menambah Modul Integrasi (`--with`, Builder)
 
-> Status: Coming Soon untuk katalog publik — flag ini aktif bila template
-> dan modul yang dipakai sudah mendukung Builder (punya manifest).
+> Status: Live — flag ini butuh CLI `0.2.0+` dan template/modul yang mendukung
+> Builder (punya manifest). Lihat tata caranya di [Panduan Builder](/docs/panduan-builder).
 
 Untuk menempel modul integrasi ke template base (mis. tambah Midtrans ke
 template polosan):

@@ -7,7 +7,7 @@ import { AskAI } from "@/components/AskAI";
 export const metadata: Metadata = {
   title: "Builder — Rancang Sendiri Kombinasimu",
   description:
-    "Builder Scaffdev: pilih template base dan centang integrasi favoritmu. Segera hadir penuh di CLI 0.2.0.",
+    "Builder Scaffdev: pilih template base dan centang integrasi favoritmu. Butuh CLI 0.2.0+.",
 };
 
 export default function BuilderPage() {
@@ -25,12 +25,12 @@ export default function BuilderPage() {
                   New
                 </span>
                 <span className="text-zinc-400">
-                  Builder aktif penuh saat CLI <span className="font-mono text-zinc-200">0.2.0</span> rilis.
-                  Racikan di bawah sudah bisa dicoba — command-nya jalan setelah update CLI.
+                  Builder sudah live — racik base + integrasi di bawah, lalu
+                  jalankan command-nya dengan CLI <span className="font-mono text-zinc-200">0.2.0+</span>.
                 </span>
               </p>
-              <Link href="/templates" className="mt-1 inline-block text-xs sm:text-sm font-medium text-[#8B5CF6] hover:underline">
-                Butuh sekarang? Pakai katalog →
+              <Link href="/docs/panduan-builder" className="mt-1 inline-block text-xs sm:text-sm font-medium text-[#8B5CF6] hover:underline">
+                Cara pakai Builder →
               </Link>
             </div>
           </div>

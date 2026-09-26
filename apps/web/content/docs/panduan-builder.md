@@ -1,15 +1,15 @@
 ---
-title: Panduan Builder (Coming Soon)
-description: Memahami konsep Builder Scaffdev — rancang sendiri kombinasi template dan integrasi. Fitur dalam pengembangan.
+title: Panduan Builder
+description: Memahami dan memakai Builder Scaffdev — rancang sendiri kombinasi template dan integrasi, langkah demi langkah sampai generate.
 order: 3
 section: Mulai
 ---
 
-# Panduan Builder (Coming Soon)
+# Panduan Builder
 
-> **Status: Coming Soon.** Builder belum bisa dipakai saat ini. Halaman ini menjelaskan
-> konsepnya agar kamu tahu apa yang sedang disiapkan — untuk generate project
-> hari ini, gunakan [Katalog Template](/templates) yang sudah live.
+> **Status: Live.** Builder sudah bisa dipakai di [/builder](/builder) dengan CLI
+> `0.2.0+`. Halaman ini menjelaskan konsep + tata cara lengkapnya — untuk generate
+> project kilat tanpa racikan, gunakan [Katalog Template](/templates).
 
 ## Builder vs Katalog Template — Jangan Tertukar
 
@@ -18,59 +18,85 @@ Scaffdev punya dua cara mendapatkan project. Pahami bedanya:
 | | Katalog Template (`/templates`) | Builder (`/builder`) |
 |---|---|---|
 | Konsep | **Bundel fix** — apa yang terlihat di preview = apa yang di-generate | **Rancang-sendiri** — pilih template base + centang integrasi favoritmu |
-| Status | **Live sekarang**, command langsung jalan | **Coming Soon**, belum bisa dipakai |
-| Contoh hasil | `npx scaffdev@latest --template=ecommerce-supabase-midtrans-nextjs` | Nanti: base + `--with=midtrans,supabase` (format CLI-nya sudah final, menunggu launch katalog modul) |
+| Status | **Live** | **Live (New)** — butuh CLI `0.2.0+` |
+| Contoh hasil | `npx scaffdev@latest --template=ecommerce-supabase-midtrans-nextjs` | `npx scaffdev@latest toko-saya --template=ecommerce-basic-nextjs --with=midtrans,supabase` |
 
-Kalau kamu butuh project **sekarang**, tutup halaman ini dan buka [Katalog Template](/templates).
-Kalau kamu penasaran Builder akan seperti apa, lanjut baca.
-
-## Cara Kerja Builder (Saat Launch Nanti)
-
-Alurnya selalu tiga langkah:
+## Tata Cara Memakai Builder (3 Langkah)
 
 ### Langkah 1 — Pilih Template Base
 
-Pilih satu template sebagai fondasi (sama seperti memilih di katalog): kategori
+Di [/builder](/builder), pilih satu template sebagai fondasi: kategori
 (E-commerce, Landing Page, Portfolio) dan framework (Next.js atau Laravel).
-Base menentukan struktur halaman, tampilan, dan prasyarat runtime.
+Base menentukan struktur halaman, tampilan, dan prasyarat runtime
+(Node.js v18+ untuk Next.js; PHP 8.2+ dan Composer untuk Laravel).
 
-### Langkah 2 — Centang Integrasi (Maks 1 per Kategori)
+Tips: dari halaman detail template mana pun, klik **"Rancang template ini
+di Builder"** — template itu langsung terpilih sebagai base
+(via link `/builder?base=<slug>`).
 
-Inilah bedanya dengan katalog: kamu mencentang sendiri layanan yang dibutuhkan,
-dikelompokkan per kategori — payment (Midtrans *atau* Xendit), database
-(Supabase), autentikasi, ongkir (RajaOngkir). **Maksimal 1 pilihan per kategori**,
+### Langkah 2 — Centang Integrasi (Maks 1 per Kategori Inti)
+
+Centang layanan yang dibutuhkan, dikelompokkan per kategori — payment
+(Midtrans *atau* Xendit *atau* Duitku), database (Supabase), autentikasi,
+ongkir (RajaOngkir), dan lainnya (Fonnte, Cloudinary, Resend).
+**Maksimal 1 pilihan per kategori inti** (payment/database/auth/shipping),
 karena dua payment atau dua database dalam satu project bikin alur ambigu
-(checkout pakai yang mana? data truth-nya di mana?).
+(checkout pakai yang mana? data truth-nya di mana?). Kategori `other`
+boleh lebih dari satu.
 
-Aturan maks-1 ini **hanya berlaku saat Builder launch** — bukan aturan yang
-berlaku hari ini, karena Builder-nya sendiri belum ada.
+Aturan maks-1 ini **hanya berlaku di Builder**. Template katalog tidak
+terpengaruh (isinya fix dari admin).
 
-### Langkah 3 — Dapat Command Custom & Generate
+Kalau base-mu polosan (tanpa integrasi bawaan) dan kamu tidak mencentang
+apa-apa, bisa lewati langkah ini — hasilnya command polosan.
 
-Builder meracik satu command custom dari pilihanmu. CLI kemudian meng-clone
-repo template base, lalu **menyuntikkan modul integrasi** yang kamu centang
-(setiap integrasi adalah repo modul ramping berisi file kodenya + panduan),
-menggabungkan dependency, `.env.example`, dan `SETUP.md` secara otomatis.
+### Langkah 3 — Salin Command & Generate
 
-## Yang Bisa Dilakukan Sekarang
+Builder meracik satu command custom, contoh:
 
-1. **Pakai katalog** — pilih template yang bundel integrasinya paling dekat dengan
-   kebutuhanmu (lihat daftar integrasi di halaman detail tiap template).
-2. **Pelajari daftar integrasi** di [Daftar Integrasi](/docs/daftar-integrasi)
-   agar saat Builder launch kamu sudah tahu mau mencentang apa.
-3. **Pahami setup env** di [Environment & Setup](/docs/env-dan-setup) — alur isi
-   API key-nya sama, baik via katalog maupun nanti via Builder.
+```bash
+npx scaffdev@latest toko-saya --template=ecommerce-basic-nextjs --with=midtrans,supabase
+```
+
+Tempel di terminal dan execute. CLI kemudian:
+1. Meng-clone repo template base.
+2. **Menyuntikkan modul integrasi** yang kamu centang (setiap integrasi
+   adalah repo modul ramping berisi file kodenya) — tabrakan file = gagal
+   eksplisit, tidak ada timpa diam-diam.
+3. Menggabungkan dependency (`npm`/`composer`), `.env.example`, dan `SETUP.md`.
+
+Lanjutannya sama seperti katalog: salin env (`cp .env.example .env.local`
+untuk Next.js; `cp .env.example .env` + `php artisan key:generate` untuk
+Laravel) → isi API key mengikuti `SETUP.md` → `npm run dev` /
+`php artisan serve`. Detailnya di [Environment & Setup](/docs/env-dan-setup).
+
+## Alur Kerja Lengkap (Ringkas)
+
+```
+Pilih base → centang integrasi → salin command → execute di terminal
+→ isi .env mengikuti SETUP.md → npm run dev / php artisan serve → jadi
+```
+
+Yang terjadi di balik layar saat execute: clone base → validasi manifest
+modul → cek tabrakan → salin file → merge dependency → generate
+`.env.example` + `SETUP.md` (+ panduan copot bila double se-kategori).
+Semua deterministik — tidak ada tebakan struktur repo.
 
 ## Pertanyaan Umum tentang Builder
 
 **Apakah Builder sudah bisa dipakai?**
-Belum. Masih Coming Soon. Semua command generate yang berfungsi hari ini
-berasal dari katalog.
+Sudah — live di [/builder](/builder), membutuhkan CLI `0.2.0+`.
+Update dulu: `npm install -g scaffdev@latest` atau pakai `npx scaffdev@latest`
+(yang otomatis mengambil versi terbaru).
 
 **Apakah aturan maks-1 sudah berlaku?**
-Belum — aturan itu bagian dari Builder dan baru berlaku saat launch.
-Template katalog tidak terpengaruh (isinya fix dari admin).
+Ya, di Builder (kategori inti: payment/database/auth/shipping).
+Template katalog tidak terpengaruh.
+
+**Base polosan + tanpa centang, hasilnya apa?**
+Command polosan (tanpa `--with`) — sama seperti generate dari katalog
+untuk template tersebut.
 
 **Apakah saya perlu menyiapkan sesuatu?**
-Tidak. Saat launch, Builder memakai akun dan alur yang sama — tidak ada
-migrasi atau langkah khusus.
+Tidak. Builder memakai akun dan alur yang sama — tidak ada migrasi atau
+langkah khusus. Pastikan CLI-mu versi `0.2.0+` (`npx scaffdev@latest --version`).

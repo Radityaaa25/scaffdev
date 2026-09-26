@@ -36,7 +36,7 @@ export async function GET() {
     "",
     "- Scaffdev tidak membuatkan akun pihak ketiga (Supabase/Midtrans/Xendit/RajaOngkir) — user daftar sendiri.",
     "- File env aktif (.env.local / .env) jangan pernah di-commit.",
-    "- Fitur custom kombinasi integrasi masih Coming Soon.",
+    "- Fitur custom kombinasi integrasi (Builder, /builder) sudah live — butuh CLI 0.2.0+.",
     "",
     `Selengkapnya: ${SITE_URL}/llms-full.txt`,
     "",

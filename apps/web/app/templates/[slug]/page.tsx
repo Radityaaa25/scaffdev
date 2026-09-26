@@ -177,8 +177,8 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
       {/* Action Box: Pakai Template Ini */}
       <TemplateActionBox slug={template.slug} framework={template.framework} />
 
-      {/* Coming Soon: kombinasi integrasi custom (disabled) */}
-      <IntegrationPickerComingSoon />
+      {/* Kombinasi custom via Builder (live) — preview + deep-link ?base= */}
+      <IntegrationPickerComingSoon baseSlug={template.slug} />
 
       {/* Description & Integration Specs */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">

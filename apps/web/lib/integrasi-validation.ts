@@ -128,7 +128,7 @@ export function validateIntegrasiInput(
     out.instruksi_setup = null;
   }
 
-  // repo_url (repo modul GitHub publik; kosong = belum ada modul/coming soon)
+  // repo_url (repo modul GitHub publik; kosong = tanpa modul Builder)
   if ("repo_url" in b) {
     if (b.repo_url != null && typeof b.repo_url !== "string") {
       return { ok: false, error: "Field 'repo_url' harus string URL." };

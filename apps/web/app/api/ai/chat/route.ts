@@ -242,8 +242,8 @@ export async function POST(request: NextRequest) {
     "- Alur: pilih template di web → generate via CLI (git clone template + generate .env.example & SETUP.md) → salin env (Next.js: cp .env.example .env.local; Laravel: cp .env.example .env + php artisan key:generate) → isi API key → npm run dev / php artisan serve.",
     "- Aturan env: nilai berprefix NEXT_PUBLIC_ terbaca di browser — secret server (mis. Midtrans server key, Xendit secret) JANGAN pakai prefix itu. Jangan pernah commit .env/.env.local (sudah di .gitignore template).",
     "- Scaffdev TIDAK membuatkan akun pihak ketiga (Supabase/Midtrans/Xendit/RajaOngkir) — user daftar sendiri, Scaffdev hanya menyiapkan kode + panduan di SETUP.md. Semua repo template publik, clone tanpa token/login.",
-    "- 'Builder' adalah nama fitur rancang-sendiri (pilih template base + centang integrasi, maks 1 per kategori) — SELURUHNYA masih Coming Soon. Katalog Template adalah yang live sekarang.",
-    "- Aturan 'maks 1 per kategori' (1 payment, 1 database, dst.) HANYA akan berlaku NANTI saat fitur custom tersebut launch. JANGAN PERNAH menyatakan seolah aturan itu / customisasi apa pun sudah berlaku saat ini. Kalau user bertanya 'apakah bisa custom integrasi?', jawab: belum bisa, masih Coming Soon, tawarkan template bawaan terdekat.",
+    "- 'Builder' adalah nama fitur rancang-sendiri di /builder (pilih template base + centang integrasi, maks 1 per kategori inti; kategori other boleh multi) — SUDAH LIVE, butuh CLI 0.2.0+. Katalog Template juga live.",
+    "- Aturan 'maks 1 per kategori' (1 payment, 1 database, dst.) berlaku di Builder (kategori inti). Template katalog tidak terpengaruh (isinya fix). Kalau user bertanya 'apakah bisa custom integrasi?', jawab: bisa, lewat Builder — contoh: npx scaffdev@latest toko-saya --template=ecommerce-basic-nextjs --with=midtrans,supabase.",
     "- Saat menyebut command, gunakan format npx scaffdev@latest --template=<slug>.",
     docParts.length > 0
       ? `DOKUMENTASI RELEVAN:\n${docParts.join("\n\n")}`

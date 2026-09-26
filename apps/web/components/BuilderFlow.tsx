@@ -217,7 +217,7 @@ function RacikanAside({
 
 /**
  * Builder flow: base → centang integrasi → command custom.
- * Berbadge Coming Soon sampai matriks uji Fase 3 hijau (keputusan terkunci).
+ * Berbadge New — Builder live, butuh CLI 0.2.0+.
  */
 export function BuilderFlow() {
   const searchParams = useSearchParams();
@@ -237,10 +237,17 @@ export function BuilderFlow() {
   const [installMode, setInstallMode] = useState<"ask" | "install" | "no-install">("ask");
 
   // Muat katalog + indeks integrasi paralel sekali saat mount.
+  // Timeout 20 dtk: dev server yang lambat/hang tidak boleh membuat
+  // skeleton abadi — gagal cepat ke layar error + tombol Muat Ulang.
   useEffect(() => {
     async function load() {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 20000);
       try {
-        const [tRes, iRes] = await Promise.all([fetch("/api/templates"), fetch("/api/integrasi")]);
+        const [tRes, iRes] = await Promise.all([
+          fetch("/api/templates", { signal: ctrl.signal }),
+          fetch("/api/integrasi", { signal: ctrl.signal }),
+        ]);
         if (tRes.ok) {
           const t = await tRes.json();
           setTemplates(t.templates ?? []);
@@ -252,6 +259,7 @@ export function BuilderFlow() {
       } catch {
         setLoadError(true);
       } finally {
+        clearTimeout(timer);
         setLoading(false);
       }
     }
@@ -262,11 +270,16 @@ export function BuilderFlow() {
 
   // Muat detail base saat base dipilih/diganti. State loading diset di
   // event handler pemilih (bukan di effect) agar patuh aturan lint.
+  // Timeout 20 dtk: request yang hang (mis. dev server lambat compile route
+  // dinamis) tidak boleh membuat skeleton abadi — halaman tetap bisa dipakai
+  // dengan data base dari daftar (framework + nama), tanpa info bawaan.
   useEffect(() => {
     if (!baseSlug) return;
     const slug = baseSlug;
     let cancelled = false;
-    fetch(`/api/templates/${encodeURIComponent(slug)}`)
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 20000);
+    fetch(`/api/templates/${encodeURIComponent(slug)}`, { signal: ctrl.signal })
       .then((res) => {
         if (!res.ok) throw new Error("gagal");
         return res.json() as Promise<TemplateDetailResponse>;
@@ -280,9 +293,14 @@ export function BuilderFlow() {
         if (cancelled) return;
         setBaseDetail(null);
         setDetailLoading(false);
+      })
+      .finally(() => {
+        clearTimeout(timer);
       });
     return () => {
       cancelled = true;
+      ctrl.abort();
+      clearTimeout(timer);
     };
   }, [baseSlug]);
 
@@ -459,7 +477,7 @@ export function BuilderFlow() {
       </div>
       <p className="mb-6 text-sm text-zinc-400 leading-relaxed max-w-2xl">
         Pilih template base, centang integrasi (maks 1 per kategori inti), dan dapatkan
-        command custom. Command membutuhkan CLI <span className="font-mono text-zinc-300">0.2.0</span> (segera hadir).
+        command custom. Command membutuhkan CLI <span className="font-mono text-zinc-300">0.2.0+</span>.
       </p>
 
       <StepIndicator step={step} onSelect={(n) => setStep(n)} />
@@ -847,7 +865,7 @@ export function BuilderFlow() {
               <p className="text-sm font-semibold text-[#FAFAFA] mb-3">Jalankan di terminal:</p>
               <CommandBox command={command} />
               <p className="mt-3 text-[11px] text-zinc-500">
-                Membutuhkan CLI <span className="font-mono text-zinc-300">0.2.0</span> (segera hadir).
+                Membutuhkan CLI <span className="font-mono text-zinc-300">0.2.0+</span>.
                 Prasyarat runtime mengikuti framework base
                 {baseFramework ? <span className="font-mono text-zinc-300"> ({baseFramework})</span> : ""}.
               </p>
