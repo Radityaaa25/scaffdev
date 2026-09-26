@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAllDocs, getDocBySlug } from "@/lib/docs";
 import { getAllTemplates } from "@/lib/data";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { getGroqKeys, groqChatStreamFirstOk, GroqError, type GroqMessage } from "@/lib/ai-groq";
+// NOTED: @/lib/docs SENGAJA di-import lazy di dalam handler (bukan static
+// import): bila modul docs gagal di-load di suatu environment, chat tetap
+// hidup tanpa konteks docs + error-nya berupa JSON, bukan 500 kosong.
 
 export const dynamic = "force-dynamic";
 
@@ -108,11 +110,19 @@ function queryTerms(message: string): string[] {
 
 async function relevantDocParts(message: string, maxDocs = 3, charsEach = 1500): Promise<string[]> {
   const terms = queryTerms(message);
-  const docs = getAllDocs();
+  let docsLib: typeof import("@/lib/docs");
+  try {
+    docsLib = await import("@/lib/docs");
+  } catch {
+    // Modul docs gagal di-load (mis. environment tanpa jsdom/filesystem):
+    // chat tetap jalan tanpa konteks docs daripada mati total.
+    return [];
+  }
+  const docs = docsLib.getAllDocs();
   if (terms.length === 0 || docs.length === 0) return [];
   const scored: { title: string; content: string; score: number }[] = [];
   for (const d of docs) {
-    const full = await getDocBySlug(d.slug);
+    const full = await docsLib.getDocBySlug(d.slug);
     if (!full) continue;
     const hayTitle = full.title.toLowerCase();
     const hayBody = full.content.toLowerCase().slice(0, 4000);
