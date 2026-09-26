@@ -6,7 +6,7 @@ import { Template, TemplateDetailResponse } from "../types";
 const DEFAULT_API_URL =
   process.env.SCAFF_API_BASE_URL || "https://scaffdev.vercel.app";
 
-const REQUEST_TIMEOUT_MS = 8000;
+const REQUEST_TIMEOUT_MS = 20000;
 
 export function apiBaseUrl(): string {
   return DEFAULT_API_URL.replace(/\/+$/, "");

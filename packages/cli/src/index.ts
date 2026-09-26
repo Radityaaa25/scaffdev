@@ -4,7 +4,7 @@ import path from "path";
 import fs from "fs";
 import os from "os";
 import * as p from "@clack/prompts";
-import { fetchTemplatesFromApi, fetchTemplateDetailFromApi, apiBaseUrl } from "./lib/api-client";
+import { fetchTemplatesFromApi, fetchTemplateDetailFromApi } from "./lib/api-client";
 import { checkPrerequisites } from "./lib/prerequisite-check";
 import { cloneRepository } from "./lib/git";
 import { generateEnvExample, generateSetupDoc } from "./lib/env-generator";
@@ -13,7 +13,24 @@ import { fetchIntegrasiIndex } from "./lib/modules";
 import { injectModule, cleanupModuleDir, mergeNpmDependencies, mergeComposerDependencies } from "./lib/injector";
 import { resolveInstallPlan, runInstallPlan, type InstallOutcome } from "./lib/install";
 import { validateModuleTarget } from "./lib/validate";
+import { startProgress, shortRepo } from "./lib/ui-progress";
 import { TemplateDetailResponse, IntegrasiDetail } from "./types";
+
+/**
+ * Versi dibaca dari package.json saat runtime (bukan hardcode) agar
+ * --version tidak pernah basi lagi setelah bump versi. package.json selalu
+ * ikut ter-publish (sejajar dist/), baik via npx temp-install maupun global.
+ */
+function cliVersion(): string {
+  try {
+    const pkgPath = path.join(__dirname, "..", "package.json");
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8")) as { version?: unknown };
+    if (typeof pkg.version === "string" && pkg.version.trim()) return pkg.version.trim();
+  } catch {
+    /* fallback di bawah */
+  }
+  return "0.0.0-unknown";
+}
 
 async function main() {
   const args: string[] = process.argv.slice(2);
@@ -43,7 +60,7 @@ Opsi:
   }
 
   if (args.includes("--version") || args.includes("-v")) {
-    console.log("scaffdev v0.1.2");
+    console.log(`scaffdev v${cliVersion()}`);
     process.exit(0);
   }
 
@@ -103,11 +120,10 @@ Opsi:
 
   if (!slug) {
     // Mode Interactive Prompt (tanpa flag --template)
-    const spinner = p.spinner();
-    spinner.start(`Mengambil daftar template aktif dari API (${apiBaseUrl()})...`);
-
+    // Progress 1-baris via helper (animasi di terminal normal, statis di Git Bash/pipe).
+    const listProgress = startProgress("Mengambil daftar template aktif...");
     const templates = await fetchTemplatesFromApi();
-    spinner.stop(`Berhasil memuat ${templates.length} template aktif.`);
+    listProgress.stop(`Berhasil memuat ${templates.length} template aktif.`);
 
     const result = await runInteractivePrompt(templates);
     if (!result) {
@@ -140,16 +156,14 @@ Opsi:
   }
 
   // Fetch full template details (termasuk integrasi lengkap)
-  const detailSpinner = p.spinner();
-  detailSpinner.start("Mengambil detail konfigurasi template...");
-
+  const detailProgress = startProgress("Mengambil detail konfigurasi template...");
   let templateDetail: TemplateDetailResponse;
   try {
     templateDetail = await fetchTemplateDetailFromApi(slug);
-    detailSpinner.stop("Detail template berhasil didapatkan.");
+    detailProgress.stop("Detail template berhasil didapatkan.");
   } catch (err: unknown) {
     const error = err as Error;
-    detailSpinner.stop("Gagal mengambil detail template.");
+    detailProgress.stop("Gagal mengambil detail template.");
     p.cancel(error.message || "Terjadi kesalahan saat menghubungi API Scaff.");
     process.exit(1);
     return;
@@ -178,17 +192,19 @@ Opsi:
     "Ringkasan Pilihan Project"
   );
 
-  // Clone repository
-  const cloneSpinner = p.spinner();
-  cloneSpinner.start(`Mengkloning template dari GitHub (${templateDetail.repo_url})...`);
+  // Clone repository — teks progress memakai nama pendek repo (tanpa URL
+  // panjang) agar 1 baris tetap rapi. URL penuh hanya muncul bila gagal.
+  const cloneProgress = startProgress(`Mengkloning template "${templateDetail.nama || templateDetail.slug}"...`);
 
   try {
     await cloneRepository(templateDetail.repo_url, targetDir);
-    cloneSpinner.stop("Repository template berhasil dikloning.");
+    cloneProgress.stop(`Template "${templateDetail.nama || templateDetail.slug}" terkloning.`);
   } catch (err: unknown) {
     const error = err as Error;
-    cloneSpinner.stop("Gagal melakukan git clone.");
-    p.cancel(`Terjadi kesalahan saat meng-clone template:\n${error.message}`);
+    cloneProgress.stop("Gagal melakukan git clone.");
+    p.cancel(
+      `Terjadi kesalahan saat meng-clone template (${shortRepo(templateDetail.repo_url)}):\n${error.message}`
+    );
     process.exit(1);
     return;
   }
@@ -234,7 +250,7 @@ Opsi:
       }
       if (!row.repo_url || !row.repo_url.trim()) {
         p.cancel(
-          `Integrasi "${row.nama_tampilan}" belum punya repo modul (masih Coming Soon per integrasi).\nPilih integrasi lain atau pakai template yang sudah menyertakannya.`
+          `Integrasi "${row.nama_tampilan}" belum punya repo modul.\nPilih integrasi lain atau pakai template yang sudah menyertakannya.`
         );
         process.exit(1);
         return;
@@ -280,18 +296,19 @@ Opsi:
         }
       }
 
-      const modSpinner = p.spinner();
-      modSpinner.start(`Menyuntik modul ${row.nama_tampilan}...`);
+      const modProgress = startProgress(`Menyuntik modul ${row.nama_tampilan}...`);
       try {
         const injected = await injectModule(targetDir, row.repo_url.trim(), fw, workRoot);
-        modSpinner.stop(`Modul ${row.nama_tampilan} v${injected.version} tersuntik (${injected.installedFiles.length} file).`);
+        modProgress.stop(
+          `Modul ${row.nama_tampilan} v${injected.version} tersuntik (${injected.installedFiles.length} file ${fw}).`
+        );
 
         if (injected.manifest.dependencies?.npm && fw !== "laravel") {
           try {
             const added = mergeNpmDependencies(targetDir, injected.manifest.dependencies.npm);
             addedNpmPackages.push(...added);
           } catch (err) {
-            modSpinner.stop("Gagal merge dependency.");
+            modProgress.stop("Gagal merge dependency.");
             p.cancel((err as Error).message);
             process.exit(1);
             return;
@@ -303,7 +320,7 @@ Opsi:
             const added = mergeComposerDependencies(targetDir, injected.manifest.dependencies.composer);
             addedNpmPackages.push(...added);
           } catch (err) {
-            modSpinner.stop("Gagal merge dependency.");
+            modProgress.stop("Gagal merge dependency.");
             p.cancel((err as Error).message);
             process.exit(1);
             return;
@@ -329,7 +346,7 @@ Opsi:
         }
         cleanupModuleDir(injected.dir);
       } catch (err) {
-        modSpinner.stop("Gagal menyuntik modul.");
+        modProgress.stop("Gagal menyuntik modul.");
         p.cancel((err as Error).message);
         process.exit(1);
         return;
@@ -392,8 +409,7 @@ Opsi:
   }
 
   // Generate .env.example & SETUP.md
-  const genSpinner = p.spinner();
-  genSpinner.start("Men-generate .env.example dan SETUP.md...");
+  const genProgress = startProgress("Men-generate .env.example dan SETUP.md...");
 
   try {
     generateEnvExample(targetDir, allIntegrasi, templateDetail.framework);
@@ -404,10 +420,10 @@ Opsi:
       templateDetail.framework,
       { removalGuides }
     );
-    genSpinner.stop("Dokumentasi setup & environment variables siap.");
+    genProgress.stop("Dokumentasi setup & environment variables siap.");
   } catch (err: unknown) {
     const error = err as Error;
-    genSpinner.stop("Gagal men-generate file konfigurasi.");
+    genProgress.stop("Gagal men-generate file konfigurasi.");
     p.log.warn(`Peringatan: ${error.message}`);
   }
 
