@@ -1,6 +1,6 @@
 {
   "name": "scaffdev",
-  "version": "0.1.2",
+  "version": "0.2.2",
   "description": "CLI untuk generate project boilerplate Scaffdev dengan tampilan visual jadi dan kurasi integrasi konteks Indonesia.",
   "keywords": [
     "scaffolding",

@@ -1,16 +1,33 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Marked } from "marked";
+import DOMPurify from "isomorphic-dompurify";
 import { XIcon, ArrowUpIcon } from "./DocsIcons";
 
 interface Msg {
   role: "user" | "assistant";
   content: string;
+  /** HTML markdown final (diisi saat stream selesai). Selama streaming: tampilkan teks mentah. */
+  html?: string;
 }
 
 const STORAGE_KEY = "scaffdev-askai-v1";
 const RETENTION_MS = 7 * 24 * 60 * 60 * 1000; // 7 hari, sliding.
 const MAX_STORED = 20;
+
+const marked = new Marked({ breaks: true });
+
+/**
+ * Render markdown jawaban AI menjadi HTML aman.
+ * NOTED: output AI = untrusted — WAJIB lewat DOMPurify (XSS via
+ * <script>/<img onerror>/javascript: URL). Allowlist default sudah cukup
+ * untuk teks + code + list + link (link asing tetap diklik user manual).
+ */
+async function renderMarkdown(md: string): Promise<string> {
+  const raw = await marked.parse(md);
+  return DOMPurify.sanitize(typeof raw === "string" ? raw : "");
+}
 
 /** Muat riwayat dari browser bila masih dalam masa retensi 7 hari. */
 function loadStoredMessages(): Msg[] {
@@ -49,9 +66,32 @@ export function AskAI() {
   const [messages, setMessages] = useState<Msg[]>(() => loadStoredMessages());
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
+  // True setelah token pertama tiba (indikator "berpikir" diganti teks mengalir).
+  const [streaming, setStreaming] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Typewriter: token AI ditampung di antrean, ditampilkan 1 huruf per tick
+  // agar terlihat diketik (tidak tiba-tiba muncul segambreng).
+  const TYPE_TICK_MS = 18;
+  const TYPE_PER_TICK = 1;
+  const queueRef = useRef("");
+  const shownRef = useRef("");
+  const streamDoneRef = useRef(false);
+  const pumpTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  function stopPump() {
+    if (pumpTimerRef.current) {
+      clearInterval(pumpTimerRef.current);
+      pumpTimerRef.current = null;
+    }
+  }
+
+  // Hentikan pompa bila komponen dilepas saat masih mengetik.
+  useEffect(() => stopPump, []);
+
   // Persistensi browser: tiap ada pesan baru, simpan + perpanjang retensi 7 hari.
+  // NOTED: pesan yang masih streaming (tanpa html) ikut tersimpan sebagai teks —
+  // saat dibuka lagi ia tampil sebagai teks polos, aman.
   useEffect(() => {
     try {
       if (messages.length === 0) {
@@ -78,7 +118,7 @@ export function AskAI() {
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages, pending, open ]);
+  }, [messages, pending, open, streaming]);
 
   function toggleOpen() {
     if (open) {
@@ -90,6 +130,46 @@ export function AskAI() {
     requestAnimationFrame(() => setShown(true));
   }
 
+  /** Set isi pesan assistant terakhir (buat bila belum ada). */
+  function setLastAssistant(content: string) {
+    setMessages((prev) => {
+      const last = prev[prev.length - 1];
+      if (last && last.role === "assistant" && !last.html) {
+        return [...prev.slice(0, -1), { ...last, content }];
+      }
+      return [...prev, { role: "assistant" as const, content }];
+    });
+  }
+
+  /** Finalisasi pesan assistant terakhir: render markdown → html. */
+  async function finalizeAssistant() {
+    const htmlOf = async (content: string) => {
+      try {
+        return await renderMarkdown(content);
+      } catch {
+        return undefined;
+      }
+    };
+    const lastContent = await new Promise<string>((resolve) => {
+      setMessages((prev) => {
+        const last = prev[prev.length - 1];
+        resolve(last && last.role === "assistant" ? last.content : "");
+        return prev;
+      });
+    });
+    if (!lastContent) return;
+    const html = await htmlOf(lastContent);
+    if (html) {
+      setMessages((prev) => {
+        const last = prev[prev.length - 1];
+        if (last && last.role === "assistant" && !last.html) {
+          return [...prev.slice(0, -1), { ...last, html }];
+        }
+        return prev;
+      });
+    }
+  }
+
   async function send(text?: string) {
     const content = (text ?? input).trim();
     if (!content || pending) return;
@@ -97,6 +177,12 @@ export function AskAI() {
     setMessages(next);
     setInput("");
     setPending(true);
+    setStreaming(false);
+    // Reset typewriter: antrean + tampilan mulai dari nol tiap pesan baru.
+    stopPump();
+    queueRef.current = "";
+    shownRef.current = "";
+    streamDoneRef.current = false;
     try {
       const res = await fetch("/api/ai/chat", {
         method: "POST",
@@ -106,24 +192,115 @@ export function AskAI() {
           history: next.slice(0, -1).slice(-4),
         }),
       });
-      const payload = (await res.json()) as { answer?: string; error?: string };
-      if (!res.ok) {
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: payload.error || "Asisten gagal menjawab." },
-        ]);
+      const ctype = res.headers.get("content-type") ?? "";
+      if (!res.ok || !ctype.includes("text/event-stream")) {
+        // Jalur JSON: jawaban instan (tolak-cepat) atau error terstruktur.
+        let errText = "Asisten gagal menjawab.";
+        try {
+          const payload = (await res.json()) as { answer?: string; error?: string };
+          if (res.ok && payload.answer) {
+            const html = await renderMarkdown(payload.answer).catch(() => undefined);
+            setMessages((prev) => [...prev, { role: "assistant" as const, content: payload.answer as string, html }]);
+            return;
+          }
+          errText = payload.error || errText;
+        } catch {
+          /* body bukan JSON — pakai pesan default */
+        }
+      setMessages((prev) => [...prev, { role: "assistant", content: errText }]);
+      setPending(false);
+      setStreaming(false);
+      return;
+      }
+      // Jalur SSE: token ditampung ke antrean, pompa typewriter yang
+      // menampilkannya 1 huruf per tick (efek diketik).
+      const reader = res.body?.getReader();
+      if (!reader) throw new Error("no-stream");
+      // Pompa: kuras antrean sedikit demi sedikit. Selesai (finalisasi
+      // markdown + buka kunci tombol) hanya bila stream HABIS dan antrean KOSONG.
+      stopPump();
+      pumpTimerRef.current = setInterval(() => {
+        const q = queueRef.current;
+        if (!q) {
+          if (streamDoneRef.current) {
+            stopPump();
+            void (async () => {
+              await finalizeAssistant();
+              setPending(false);
+              setStreaming(false);
+            })();
+          }
+          return;
+        }
+        shownRef.current += q.slice(0, TYPE_PER_TICK);
+        queueRef.current = q.slice(TYPE_PER_TICK);
+        setLastAssistant(shownRef.current);
+      }, TYPE_TICK_MS);
+      const decoder = new TextDecoder();
+      let buf = "";
+      let gotToken = false;
+      try {
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buf += decoder.decode(value, { stream: true });
+          const parts = buf.split("\n\n");
+          buf = parts.pop() ?? "";
+          for (const part of parts) {
+            const line = part.trim().split("\n").find((l) => l.startsWith("data:"));
+            if (!line) continue;
+            const data = line.slice(5).trim();
+            if (data === "[DONE]") continue;
+            try {
+              const json = JSON.parse(data) as {
+                choices?: { delta?: { content?: string } }[];
+              };
+              const token = json.choices?.[0]?.delta?.content;
+              if (token) {
+                if (!gotToken) {
+                  gotToken = true;
+                  setStreaming(true);
+                }
+                queueRef.current += token;
+              }
+            } catch {
+              /* chunk parsial — lewati */
+            }
+          }
+        }
+      } catch {
+        // Stream terputus di tengah: antrekan yang sudah ada tetap diketik,
+        // catatan ditambahkan di ekornya — lalu pompa menyelesaikan sisanya.
+        if (gotToken) {
+          queueRef.current += "\n\n_(Koneksi terputus — coba kirim ulang.)_";
+        }
+      }
+      streamDoneRef.current = true;
+      if (!gotToken) {
+        // Stream kosong: tidak ada yang bisa diketik — tampilkan error langsung.
+        stopPump();
+        setMessages((prev) => [...prev, { role: "assistant", content: "AI tidak memberikan jawaban. Coba lagi." }]);
+        setPending(false);
+        setStreaming(false);
         return;
       }
-      setMessages((prev) => [...prev, { role: "assistant" as const, content: payload.answer ?? "" }]);
     } catch {
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "Tidak dapat menghubungi asisten. Coba lagi." },
-      ]);
-    } finally {
+      stopPump();
+      setMessages((prev) => {
+        const last = prev[prev.length - 1];
+        // Stream terputus sebelum token pertama: tampilkan error langsung.
+        if (last && last.role === "assistant" && last.content && !last.html) {
+          return [...prev.slice(0, -1), { ...last, content: `${last.content}\n\n_(Koneksi terputus — coba kirim ulang.)_` }];
+        }
+        return [...prev, { role: "assistant", content: "Tidak dapat menghubungi asisten. Coba lagi." }];
+      });
       setPending(false);
+      setStreaming(false);
     }
   }
+
+  // Indikator "berpikir": tampil selama menunggu token pertama.
+  const thinking = pending && !streaming;
 
   return (
     <>
@@ -187,26 +364,38 @@ export function AskAI() {
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div
-                  className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
+                  className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
                     m.role === "user"
-                      ? "rounded-br-md bg-[#8B5CF6] text-white shadow-lg shadow-[#8B5CF6]/25"
+                      ? "whitespace-pre-wrap rounded-br-md bg-[#8B5CF6] text-white shadow-lg shadow-[#8B5CF6]/25"
                       : "rounded-bl-md border border-[#26262B] bg-white/[0.04] text-zinc-200"
                   }`}
                 >
-                  {m.content}
+                  {m.role === "user" || !m.html ? (
+                    <span className="whitespace-pre-wrap">{m.content}</span>
+                  ) : (
+                    // NOTED: html sudah lewat DOMPurify saat finalisasi — aman dirender.
+                    <span className="chat-md" dangerouslySetInnerHTML={{ __html: m.html }} />
+                  )}
                 </div>
               </div>
             ))}
-            {pending && (
+            {thinking && (
               <div className="flex justify-start">
-                <div className="flex gap-1.5 rounded-2xl rounded-bl-md border border-[#26262B] bg-white/[0.04] px-4 py-3">
-                  {[0, 1, 2].map((d) => (
-                    <span
-                      key={d}
-                      className="h-1.5 w-1.5 animate-bounce rounded-full bg-zinc-400"
-                      style={{ animationDelay: `${d * 0.15}s` }}
-                    />
-                  ))}
+                <div
+                  className="flex items-center gap-2.5 rounded-2xl rounded-bl-md border border-[#26262B] bg-white/[0.04] px-4 py-3"
+                  role="status"
+                  aria-label="Scaffbot sedang berpikir"
+                >
+                  <span className="flex gap-1.5" aria-hidden="true">
+                    {[0, 1, 2].map((d) => (
+                      <span
+                        key={d}
+                        className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#8B5CF6]"
+                        style={{ animationDelay: `${d * 0.15}s` }}
+                      />
+                    ))}
+                  </span>
+                  <span className="text-xs text-zinc-400">Scaffbot sedang berpikir…</span>
                 </div>
               </div>
             )}

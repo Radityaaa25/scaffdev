@@ -38,6 +38,10 @@ yarn-error.log*
 packages/cli/dist/
 
 # Local-only: AI agent skills & internal dev docs (jangan push ke GitHub)
-.agents/
-docs/
-skills-lock.json
+# PENTING: pakai leading slash agar hanya folder root yang cocok.
+# Pola tanpa slash (mis. "docs/") juga mengecualikan apps/web/app/docs
+# dari SCAN OTOMATIS Tailwind v4 → utilitas yang hanya dipakai halaman
+# docs tidak ke-generate → layout docs rusak (sidebar turun, sticky mati).
+/.agents/
+/docs/
+/skills-lock.json

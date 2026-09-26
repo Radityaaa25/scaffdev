@@ -51,6 +51,8 @@ export async function getTemplateBySlug(slug: string): Promise<TemplateDetailRes
           nama_tampilan: item.nama_tampilan,
           daftar_env_var: item.daftar_env_var,
           instruksi_setup: item.instruksi_setup,
+          kategori_integrasi: item.kategori_integrasi ?? null,
+          has_modul: Boolean(item.repo_url && String(item.repo_url).trim() !== ""),
         });
       }
     }
@@ -64,6 +66,7 @@ export async function getTemplateBySlug(slug: string): Promise<TemplateDetailRes
     kategori: tpl.kategori,
     deskripsi: tpl.deskripsi ?? undefined,
     screenshot_url: tpl.screenshot_url ?? undefined,
+    builder_hidden_kategoris: (tpl.builder_hidden_kategoris ?? []) as string[],
     integrasi: integrasiDetails,
   };
 }

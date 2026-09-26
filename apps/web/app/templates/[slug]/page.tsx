@@ -138,13 +138,24 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
           )}
         </div>
 
-        <div className="flex items-center gap-2 self-start md:self-auto shrink-0">
+        <div className="flex flex-wrap items-center gap-2 self-start md:self-auto shrink-0">
           <a
             href="#pakai-template"
             className="px-5 py-2.5 rounded-xl font-medium text-sm text-white bg-[#8B5CF6] hover:bg-[#7C3AED] shadow-lg shadow-[#8B5CF6]/20 transition-all active:scale-[0.98]"
           >
             ⚡ Pakai Template Ini
           </a>
+          {template.repo_url ? (
+            <a
+              href={template.repo_url}
+              target="_blank"
+              rel="noreferrer"
+              title="Lihat source code template di GitHub"
+              className="px-5 py-2.5 rounded-xl font-medium text-sm text-zinc-300 border border-[#26262B] hover:bg-[#131316] hover:text-white transition-all active:scale-[0.98]"
+            >
+              Lihat Repo ↗
+            </a>
+          ) : null}
           <Link
             href="/templates"
             className="text-xs font-medium text-zinc-400 hover:text-white px-3 py-2.5 rounded-xl border border-[#26262B] hover:bg-[#131316] transition-colors"
@@ -177,8 +188,8 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
       {/* Action Box: Pakai Template Ini */}
       <TemplateActionBox slug={template.slug} framework={template.framework} />
 
-      {/* Coming Soon: kombinasi integrasi custom (disabled) */}
-      <IntegrationPickerComingSoon />
+      {/* Kombinasi custom via Builder (live) — preview + deep-link ?base= */}
+      <IntegrationPickerComingSoon baseSlug={template.slug} />
 
       {/* Description & Integration Specs */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">

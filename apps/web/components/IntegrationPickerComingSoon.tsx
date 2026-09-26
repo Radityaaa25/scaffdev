@@ -20,11 +20,12 @@ const KATEGORI_LABEL: Record<string, string> = {
 const KATEGORI_ORDER = ["payment", "database", "auth", "shipping", "other"];
 
 /**
- * Picker kombinasi integrasi custom — COMING SOON.
- * Menampilkan opsi live dari /api/integrasi dalam keadaan disabled.
- * Tidak memengaruhi command generate yang aktif (tetap polosan).
+ * Preview kombinasi integrasi + handoff ke Builder (live).
+ * Menampilkan opsi live dari /api/integrasi sebagai preview (disabled);
+ * racikan custom yang sebenarnya dikerjakan di /builder (deep-link ?base=).
+ * Tidak memengaruhi command generate polosan di atas.
  */
-export function IntegrationPickerComingSoon() {
+export function IntegrationPickerComingSoon({ baseSlug }: { baseSlug: string }) {
   const [items, setItems] = useState<IntegrasiItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -60,20 +61,21 @@ export function IntegrationPickerComingSoon() {
 
   return (
     <section
-      aria-label="Kombinasi integrasi custom (segera hadir)"
-      className="relative mt-8 rounded-2xl border border-amber-500/25 bg-amber-500/[0.04] p-6 overflow-hidden"
+      aria-label="Kombinasi integrasi custom via Builder"
+      className="relative mt-8 rounded-2xl border border-emerald-500/25 bg-emerald-500/[0.04] p-6 overflow-hidden"
     >
       <div className="flex flex-wrap items-center gap-2 mb-2">
         <h2 className="text-base font-semibold text-[#FAFAFA]">
           Kombinasi Integrasi Custom
         </h2>
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30">
-          Coming Soon
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+          New
         </span>
       </div>
       <p className="text-sm text-zinc-400 leading-relaxed mb-5">
-        Pilih template polosan di atas untuk generate sekarang. Nanti kamu bisa mencentang
-        kombinasi favoritmu di sini — <span className="text-zinc-200 font-medium">maks 1 pilihan per kategori</span> (mis. payment: Midtrans <em>atau</em> Xendit).
+        Template ini bisa diracik ulang dengan integrasi favoritmu di Builder —
+        centang payment / database / auth (<span className="text-zinc-200 font-medium">maks 1 pilihan per kategori</span>, mis. payment: Midtrans <em>atau</em> Xendit),
+        lalu generate command custom.
       </p>
 
       {loading ? (
@@ -124,13 +126,13 @@ export function IntegrationPickerComingSoon() {
 
       <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-[11px] text-zinc-500">
-          Command generate aktif tetap versi polosan di atas — pilihan custom di sini belum memengaruhi hasil generate.
+          Command generate polosan di atas tetap bisa dipakai langsung — atau racik custom via Builder.
         </p>
         <Link
-          href="/builder"
-          className="shrink-0 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-300 transition-all hover:bg-amber-500/20 active:scale-95"
+          href={`/builder?base=${encodeURIComponent(baseSlug)}`}
+          className="shrink-0 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-300 transition-all hover:bg-emerald-500/20 active:scale-95"
         >
-          Rancang di Builder →
+          Rancang template ini di Builder →
         </Link>
       </div>
     </section>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useTransition, useMemo } from "react";
+import Link from "next/link";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Template } from "@scaff/database";
 import { TemplateCard } from "@/components/TemplateCard";
@@ -237,14 +238,18 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
       <div className="container relative mx-auto px-4 py-12 max-w-7xl">
       <TemplatesHero />
 
-      {/* Coming Soon banner */}
-      <div className="flex items-start sm:items-center gap-3 bg-amber-500/[0.07] border border-amber-500/25 rounded-xl px-4 py-3 mb-6">
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30 shrink-0 mt-0.5 sm:mt-0">
-          Coming Soon
+      {/* Builder live banner */}
+      <div className="flex items-start sm:items-center gap-3 bg-emerald-500/[0.07] border border-emerald-500/25 rounded-xl px-4 py-3 mb-6">
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shrink-0 mt-0.5 sm:mt-0">
+          New
         </span>
         <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-          <span className="text-zinc-200 font-medium">Kombinasi integrasi custom</span> — pilih template polosan
-          sekarang, centang payment / database / auth favoritmu segera hadir. Maks 1 pilihan per kategori.
+          <span className="text-zinc-200 font-medium">Kombinasi integrasi custom sudah live</span> — pilih template
+          polosan, centang payment / database / auth favoritmu di{" "}
+          <Link href="/builder" className="text-[#8B5CF6] hover:underline font-medium">
+            Builder →
+          </Link>{" "}
+          Maks 1 pilihan per kategori.
         </p>
       </div>
 

@@ -46,7 +46,7 @@ export function TemplatesHero() {
             <span className="shrink-0 rounded-full bg-[#8B5CF6] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
               Baru
             </span>
-            <span className="truncate">Kombinasi integrasi custom segera hadir</span>
+            <span className="truncate">Kombinasi integrasi custom sudah live di Builder</span>
           </p>
           <h1 className="hero-enter hero-enter-2 mt-5 text-[2rem] sm:text-5xl lg:text-[3.4rem] font-extrabold text-[#FAFAFA] tracking-tight leading-[1.08]">
             Hemat token <span className="text-[#8B5CF6]">AI-mu,</span>{" "}
@@ -71,7 +71,7 @@ export function TemplatesHero() {
             ))}
           </ul>
 
-          <div className="hero-enter hero-enter-4 mt-6 sm:mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+          <div className="hero-enter hero-enter-4 mt-6 sm:mt-7 flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:items-center">
             <a
               href="#katalog"
               className="btn-gooey group"

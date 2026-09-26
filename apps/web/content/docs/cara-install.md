@@ -85,7 +85,51 @@ npx scaffdev@latest toko-saya --template=ecommerce-supabase-midtrans-nextjs
 
 Hasilnya: folder `toko-saya/` berisi hasil clone template `ecommerce-supabase-midtrans-nextjs`.
 
-> Penting: flag-nya `--template=<slug>` (dengan tanda `=`). Tanpa flag ini CLI masuk mode interaktif. Salah tulis seperti `--template <slug>` (pakai spasi) tidak dikenali — selalu pakai `=`.
+> Penting: flag-nya `--template=<slug>` (dengan tanda `=`). Tanpa flag ini CLI masuk mode interaktif.
+
+### Menambah Modul Integrasi (`--with`, Builder)
+
+> Status: Live — flag ini butuh CLI `0.2.0+` dan template/modul yang mendukung
+> Builder (punya manifest). Lihat tata caranya di [Panduan Builder](/docs/panduan-builder).
+
+Untuk menempel modul integrasi ke template base (mis. tambah Midtrans ke
+template polosan):
+
+```bash
+npx scaffdev@latest toko-saya --template=ecommerce-basic-nextjs --with=midtrans
+```
+
+Aturannya:
+
+- Modul diambil dari repo yang didaftarkan admin (kolom repo modul di menu Integrasi).
+- Maksimal 1 per kategori inti (payment/database/auth/shipping); kategori `other` boleh multi.
+- Modul yang tidak cocok framework-nya ditolak dengan pesan jelas — bukan di-skip diam-diam.
+- File yang tabrakan dengan base = generate GAGAL eksplisit (tidak ada timpa diam-diam).
+
+### Install Dependency Otomatis
+
+Setelah generate, CLI menawarkan install dependency (default: Ya):
+
+```bash
+# Jawab "tidak" di prompt, atau paksa via flag:
+npx scaffdev@latest toko-saya --template=<slug> --no-install   # lewati
+npx scaffdev@latest toko-saya --template=<slug> --install      # langsung jalan (untuk CI)
+```
+
+Template monorepo (install di beberapa folder) didukung via rencana install
+di `scaff.template.json` — CLI menjalankannya berurutan dengan output live.
+Gagal install tidak menggagalkan generate (project tetap valid, lanjutkan manual).
+
+### Validasi Modul/Template untuk Pembuatnya
+
+```bash
+# Dari folder repo modul/template:
+scaffdev validate-module .
+# Atau langsung dari URL repo:
+scaffdev validate-module https://github.com/username/scaff-modul-midtrans.git
+```
+
+Wajib lulus sebelum repo didaftarkan ke admin. Salah tulis seperti `--template <slug>` (pakai spasi) tidak dikenali — selalu pakai `=`.
 
 ### Kapan memakai mode interaktif vs slug langsung?
 

@@ -635,3 +635,33 @@ $$;
 
 revoke all on function public.log_login_attempt(text, boolean) from public;
 grant execute on function public.log_login_attempt(text, boolean) to anon, authenticated;
+
+-- ============================================================
+-- Migrasi 010 — Kontrak modul integrasi untuk Builder (Fase 0)
+-- repo_url: repo GitHub publik berisi file modul (mis. supabase.ts).
+-- framework_compat: daftar kode framework yang didukung modul ini
+--   (array kosong = semua framework). Dipakai CLI + Builder untuk
+--   memfilter opsi yang valid per template base.
+-- CARA PAKAI: jalankan blok ini sekali di Supabase SQL Editor.
+-- ============================================================
+alter table public.integrasi
+  add column if not exists repo_url text not null default '',
+  add column if not exists framework_compat text[] not null default '{}';
+
+-- ============================================================
+-- Migrasi 011 — Kategori disembunyikan dari Builder per template
+-- builder_hidden_kategoris: daftar HITAM kode kategori (default kosong
+-- = semua tampil). Diatur admin via checklist "Tampil di Builder".
+-- CARA PAKAI: jalankan blok ini sekali di Supabase SQL Editor.
+-- ============================================================
+alter table public.templates
+  add column if not exists builder_hidden_kategoris text[] not null default '{}';
+
+-- ============================================================
+-- Migrasi 012 — Sembunyikan template dari Builder (per template)
+-- builder_hidden: true = hilang total dari pilihan base Langkah 1.
+-- Default false (tampil). Katalog, CLI, dan halaman lain TIDAK terpengaruh.
+-- CARA PAKAI: jalankan blok ini sekali di Supabase SQL Editor.
+-- ============================================================
+alter table public.templates
+  add column if not exists builder_hidden boolean not null default false;

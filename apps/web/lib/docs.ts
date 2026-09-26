@@ -3,7 +3,11 @@ import path from "path";
 import { Marked } from "marked";
 import { markedHighlight } from "marked-highlight";
 import hljs from "highlight.js";
-import DOMPurify from "isomorphic-dompurify";
+// NOTED: SENGAJA tidak memakai isomorphic-dompurify di server — ia menarik
+// jsdom yang gagal di-load di serverless Vercel ("Failed to load external
+// module jsdom" → 500 kosong di semua route pengimpor lib ini). Sebagai ganti,
+// sanitasi ringan khusus di bawah (cukup karena docs/*.md adalah konten
+// first-party terpercaya, bukan input user/AI).
 
 export interface DocMeta {
   slug: string;
@@ -60,6 +64,24 @@ function slugifyHeading(text: string): string {
     .replace(/[\s_]+/g, "-")
     .replace(/-+/g, "-")
     .slice(0, 80);
+}
+
+/**
+ * Sanitasi ringan khusus HTML hasil render docs — tanpa jsdom/DOMPurify
+ * (tidak bisa jalan di serverless Vercel).
+ * Menghapus: blok <script>, atribut event-handler (on*), dan javascript: URL.
+ * BUKAN sanitizer general-purpose — jangan pakai untuk konten user/AI.
+ */
+function sanitizeDocsHtml(html: string): string {
+  return (
+    html
+      // Blok script (termasuk multiline, case-insensitive).
+      .replace(/<script[\s\S]*?<\/script\s*>/gi, "")
+      // Event handler: onload="...", onclick='...', onerror=... (quoted/unquoted).
+      .replace(/\s+on[a-z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "")
+      // javascript: di href/src/action (dengan/tanpa quotes, case-insensitive).
+      .replace(/\s(href|src|action)\s*=\s*("javascript:[^"]*"|'javascript:[^']*'|javascript:[^\s>]+)/gi, ' $1="#"')
+  );
 }
 
 export function getAllDocs(): DocMeta[] {
@@ -154,13 +176,11 @@ export async function getDocBySlug(slug: string): Promise<DocItem | null> {
 
   const html = await marked.parse(body);
 
-  // W2: marked meneruskan raw HTML apa adanya → sanitasi server-side agar
-  // <script>/<img onerror>/event-handler dari markdown (mis. via PR fork
-  // yang lolos review) tidak tereksekusi di browser pembaca docs.
-  // Allowlist default DOMPurify sudah cukup untuk konten docs + output hljs.
-  const cleanHtml = DOMPurify.sanitize(html, {
-    ADD_ATTR: ["target", "rel"],
-  });
+  // W2: marked meneruskan raw HTML apa adanya → strip pola aktif berbahaya
+  // (<script>, event-handler, javascript: URL) agar tidak tereksekusi di
+  // browser pembaca docs. Cukup untuk konten first-party; output AI/bubble
+  // chat (untrusted) tetap lewat DOMPurify penuh di sisi client (AskAI).
+  const cleanHtml = sanitizeDocsHtml(typeof html === "string" ? html : "");
 
   return {
     slug,

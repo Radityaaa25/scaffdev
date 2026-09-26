@@ -95,12 +95,14 @@ export function TemplateCard({ template }: TemplateCardProps) {
           )}
         </div>
 
-        {/* Coming Soon hint */}
+        {/* Builder live hint */}
         <p className="flex items-center gap-1.5 text-[11px] text-zinc-500 mb-4">
-          <span className="inline-flex items-center px-1.5 py-px rounded text-[10px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30">
-            Coming Soon
+          <span className="inline-flex items-center px-1.5 py-px rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+            New
           </span>
-          Kombinasi integrasi custom
+          <Link href={`/builder?base=${encodeURIComponent(template.slug)}`} className="hover:text-zinc-300 hover:underline">
+            Racik custom di Builder →
+          </Link>
         </p>
 
         {/* Action Button */}

@@ -37,11 +37,17 @@ export function generateEnvExample(
   fs.writeFileSync(filePath, lines.join("\n"), "utf-8");
 }
 
+export interface SetupExtra {
+  /** Panduan copot per integrasi (dari manifest modul / template). */
+  removalGuides?: { nama: string; body: string }[];
+}
+
 export function generateSetupDoc(
   targetDir: string,
   integrasi: IntegrasiDetail[],
   templateName: string,
-  framework: string
+  framework: string,
+  extra?: SetupExtra
 ): void {
   const isLaravel = framework.toLowerCase() === "laravel";
   const quickSteps = isLaravel
@@ -110,6 +116,24 @@ export function generateSetupDoc(
 
   lines.push("---");
   lines.push("Dokumentasi resmi Scaff: [https://scaffdev.vercel.app/docs](https://scaffdev.vercel.app/docs)");
+  lines.push("");
+
+  const guides = extra?.removalGuides?.filter((g) => g.body.trim()) ?? [];
+  if (guides.length > 0) {
+    lines.push("## Mencopot Integrasi (bila berubah pikiran)");
+    lines.push("");
+    lines.push(
+      "Bagian ini dibuat otomatis karena project ini memuat lebih dari satu integrasi se-kategori. " +
+        "Ikuti panduan salah satu layanan di bawah untuk mencopot yang tidak dipakai."
+    );
+    lines.push("");
+    for (const g of guides) {
+      lines.push(`### Cara mencopot ${g.nama}`);
+      lines.push("");
+      lines.push(g.body.trim());
+      lines.push("");
+    }
+  }
 
   const filePath = path.join(targetDir, "SETUP.md");
   fs.writeFileSync(filePath, lines.join("\n"), "utf-8");

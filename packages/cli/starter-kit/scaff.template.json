@@ -1,0 +1,21 @@
+{
+  "$schema": "https://scaffdev.vercel.app/schemas/scaff.template.json",
+  "name": "GANTI-NAMA-TEMPLATE",
+  "slug": "ganti-slug-template-nextjs",
+  "framework": "nextjs",
+  "provides": {
+    "midtrans": [
+      "lib/payments/midtrans.ts",
+      "app/api/payments/midtrans/route.ts",
+      "components/checkout/MidtransButton.tsx"
+    ],
+    "supabase": [
+      "lib/supabase.ts",
+      "lib/auth.ts"
+    ]
+  },
+  "removalGuides": {
+    "midtrans": "REMOVE-MIDTRANS.md",
+    "supabase": "REMOVE-SUPABASE.md"
+  }
+}

@@ -32,5 +32,6 @@ export interface TemplateDetailResponse {
   nama?: string;
   deskripsi?: string;
   kategori?: string;
+  builder_hidden_kategoris?: string[];
   integrasi: IntegrasiDetail[];
 }
