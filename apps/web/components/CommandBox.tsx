@@ -23,9 +23,9 @@ export function CommandBox({ command, className = "" }: CommandBoxProps) {
 
   return (
     <div
-      className={`relative flex items-center justify-between gap-3 bg-[#131316] border border-[#26262B] rounded-lg px-4 py-3 font-mono text-sm shadow-inner group hover:border-[#8B5CF6]/50 transition-colors ${className}`}
+      className={`relative flex min-w-0 w-full max-w-full overflow-hidden items-center justify-between gap-2 bg-[#131316] border border-[#26262B] rounded-lg px-3 py-2.5 font-mono text-xs shadow-inner group hover:border-[#8B5CF6]/50 transition-colors sm:gap-3 sm:px-4 sm:py-3 sm:text-sm ${className}`}
     >
-      <div className="flex items-center gap-2 overflow-x-auto select-all scrollbar-none">
+      <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto select-all scrollbar-none">
         <span className="text-[#8B5CF6] select-none font-bold">$</span>
         <span className="text-[#FAFAFA] whitespace-nowrap">{command}</span>
       </div>

@@ -15,13 +15,13 @@ const STEPS = [
   {
     no: "02",
     title: "Salin command",
-    desc: "Setiap template punya slug unik. CLI 100% API-driven — tidak ada template hardcode atau palsu. DB kosong berarti error eksplisit, bukan daftar fiktif.",
+    desc: "Setiap template punya slug dan command unik. Salin command-nya — mau interaktif (npx scaffdev@latest) atau langsung (--template=<slug>).",
     link: { href: "/docs/cara-install", label: "Cara install →" },
   },
   {
     no: "03",
     title: "Generate & kembangkan",
-    desc: "Jalankan satu baris di terminal. Dapat folder project siap jalan: UI jadi, .env.example, dan SETUP.md — langsung bisa dikembangkan.",
+    desc: "Jalankan satu baris di terminal. Dapat folder project siap jalan: UI jadi, .env.example, dan SETUP.md — langsung bisa dikembangkan. Butuh kombinasi sendiri? Racik di Builder dengan --with.",
     link: { href: "/docs/env-dan-setup", label: "Setup environment →" },
   },
 ];
@@ -68,7 +68,7 @@ export function HowItWorks() {
             ◆ Cara kerja
           </p>
           <h2 className="mt-2 max-w-xl text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            Dari nol ke project jalan dalam 3 langkah.
+            Dari nol ke project jalan dalam ±2 menit, 3 langkah.
           </h2>
         </Reveal>
 
@@ -119,6 +119,12 @@ export function HowItWorks() {
               <div className="mt-6">
                 <CommandBox command="npx scaffdev@latest" />
               </div>
+              <Link
+                href="/builder"
+                className="mt-3 inline-block text-xs font-medium text-[#8B5CF6] hover:underline"
+              >
+                atau racik custom di Builder →
+              </Link>
               <p className="mt-4 rounded-xl border border-white/[0.08] bg-white/[0.02] px-4 py-3 text-xs leading-relaxed text-zinc-500">
                 <span className="font-semibold text-zinc-300">Disclaimer:</span> ini hanya
                 panduan singkat. Untuk detail tiap langkah, baca{" "}

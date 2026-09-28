@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Renderer, Program, Mesh, Triangle } from "ogl";
 import styles from "./Grainient.module.css";
 
@@ -173,17 +173,24 @@ export default function Grainient({
   className = "",
 }: GrainientProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  // Fade-in saat frame pertama jadi (anti-kedip): kanvas mulai transparan,
+  // muncul mulus 700ms di atas underlay statis. Tanpa ini terlihat patah
+  // (kosong ~1 dtk saat shader compile) setiap refresh.
+  const [ready, setReady] = useState(false);
+  const readyRef = useRef(false);
 
   // Effect 1: bangun konteks WebGL sekali, pause saat offscreen / tab hidden
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
+    // NOTED performa: DPR di-cap 1.5 (gradient blur tidak butuh retina penuh —
+    // hemat fill-rate besar di layar hi-dpi), antialias mati (sudah dari sananya).
     const renderer = new Renderer({
       webgl: 2,
       alpha: true,
       antialias: false,
-      dpr: Math.min(window.devicePixelRatio || 1, 2),
+      dpr: Math.min(window.devicePixelRatio || 1, 1.5),
     });
 
     const gl = renderer.gl;
@@ -240,6 +247,31 @@ export default function Grainient({
     ro.observe(container);
     setSize();
 
+    // Tandai frame pertama jadi (idempoten — aman dipanggil tiap frame).
+    const markReady = () => {
+      if (!readyRef.current) {
+        readyRef.current = true;
+        setReady(true);
+      }
+    };
+
+    // Aksesibilitas + performa: pengguna prefers-reduced-motion mendapat SATU
+    // frame statis (tanpa rAF loop, tanpa observer) — GPU diam total.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      renderer.render({ scene: mesh });
+      markReady();
+      return () => {
+        ro.disconnect();
+        ctxMap.delete(container);
+        readyRef.current = false;
+        try {
+          container.removeChild(canvas);
+        } catch {
+          /* abaikan */
+        }
+      };
+    }
+
     let raf = 0;
     let isVisible = true;
     let isPageVisible = !document.hidden;
@@ -248,6 +280,7 @@ export default function Grainient({
     const loop = (t: number) => {
       (program.uniforms.iTime.value as number) = (t - t0) * 0.001;
       renderer.render({ scene: mesh });
+      markReady();
       raf = requestAnimationFrame(loop);
     };
 
@@ -286,6 +319,10 @@ export default function Grainient({
       io.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
       ctxMap.delete(container);
+      // Reset agar mount ulang (StrictMode/HMR) mengulang fade dari awal,
+      // bukan langsung opacity penuh di atas kanvas kosong.
+      readyRef.current = false;
+      setReady(false);
       try {
         container.removeChild(canvas);
       } catch {
@@ -350,5 +387,11 @@ export default function Grainient({
     lightMode,
   ]);
 
-  return <div ref={containerRef} className={`${styles.container} ${className}`.trim()} />;
+  return (
+    <div
+      ref={containerRef}
+      className={`${styles.container} ${className}`.trim()}
+      style={{ opacity: ready ? 1 : 0, transition: "opacity 700ms ease" }}
+    />
+  );
 }

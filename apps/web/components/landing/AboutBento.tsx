@@ -10,6 +10,31 @@ const LOCAL_LOGOS = [
   { label: "Duitku", src: "/logo-duitku.svg", wordmark: true },
 ];
 
+/** Semua tools yang terekspos di marquee: 2 framework + 8 integrasi.
+ *  Logo lokal (SVG) diutamakan; 2 tanpa SVG memakai hotlink resmi (lazy).
+ *  Sumber: simpleicons.org (cloudinary, resend), rajaongkir.com,
+ *  fonnte.com (varian putih untuk tema gelap). */
+const MARQUEE_ITEMS = [
+  { label: "Next.js", src: "/logo-nextjs.svg", wordmark: false },
+  { label: "Laravel", src: "/logo-laravel.svg", wordmark: false },
+  ...LOCAL_LOGOS,
+  { label: "Cloudinary", src: "/logo-cloudinary.svg", wordmark: false },
+  { label: "Resend", src: "/logo-resend.svg", wordmark: false },
+  {
+    label: "RajaOngkir",
+    src: "https://storage.googleapis.com/komerce/assets/LP-Rajaongkir/new/rajaongkir_bykomerce.webp",
+    wordmark: true,
+  },
+  {
+    label: "Fonnte",
+    src: "https://fonnte.com/wp-content/uploads/2023/03/Logo-Fonnte-putih-300x72.png",
+    wordmark: true,
+  },
+];
+
+// Daftar digandakan agar loop marquee padat tanpa celah.
+const MARQUEE_LOOP = [...MARQUEE_ITEMS, ...MARQUEE_ITEMS];
+
 /** Tentang Kami gaya bento: profil, stats live, open-source, kurasi lokal, kontak. */
 export function AboutBento({ templateCount }: { templateCount: number }) {
   return (
@@ -48,18 +73,33 @@ export function AboutBento({ templateCount }: { templateCount: number }) {
                   <span className="text-zinc-200">Laravel</span>, framework lain menyusul.
                 </p>
               </div>
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-col gap-3 sm:flex-row">
+                {/* Kebalikan gooey: diam ungu penuh, hover surut transparan.
+                    Filter SVG dipakai ulang dari hero (id unik, jangan diduplikat). */}
                 <Link
                   href="/docs/konsep-dasar"
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-[#8B5CF6] px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-[#7C3AED] active:scale-[0.98]"
+                  className="btn-gooey-reverse group w-full max-w-56 text-center"
                 >
-                  Pelajari konsepnya <span aria-hidden="true">→</span>
+                  Pelajari konsepnya
+                  <span className="ml-1.5 inline-block transition-transform group-hover:translate-x-0.5">→</span>
+                  <span className="btn-gooey__blobs" aria-hidden="true">
+                    <div />
+                    <div />
+                    <div />
+                  </span>
                 </Link>
+                {/* btn-gooey: filter SVG-nya sudah dirender sekali di hero (BitsHero) — jangan diduplikat (id harus unik). */}
                 <Link
                   href="/templates"
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-medium text-zinc-200 transition-all hover:border-white/20 hover:text-white"
+                  className="btn-gooey group w-full max-w-56 text-center"
                 >
                   Lihat template
+                  <span className="ml-1.5 inline-block transition-transform group-hover:translate-x-0.5">→</span>
+                  <span className="btn-gooey__blobs" aria-hidden="true">
+                    <div />
+                    <div />
+                    <div />
+                  </span>
                 </Link>
               </div>
             </div>
@@ -68,7 +108,7 @@ export function AboutBento({ templateCount }: { templateCount: number }) {
           {/* Stats live */}
           <Reveal delay={80}>
             <div className="landing-spot relative flex h-full flex-col justify-center overflow-hidden rounded-2xl border border-[#26262B] bg-[#131316] p-6 transition-colors hover:border-[#8B5CF6]/50 sm:p-8">
-              <p className="font-mono text-[11px] uppercase tracking-widest text-zinc-500">Live dari database</p>
+              <p className="font-mono text-[11px] uppercase tracking-widest text-zinc-500">Tersedia sekarang</p>
               <p className="mt-2 text-5xl font-extrabold tracking-tight text-white">
                 {templateCount}
                 <span className="text-[#8B5CF6]">.</span>
@@ -97,9 +137,12 @@ export function AboutBento({ templateCount }: { templateCount: number }) {
                 href={GITHUB_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-4 inline-flex w-fit items-center gap-1.5 text-sm font-medium text-[#8B5CF6] hover:underline"
+                className="learn-more mt-4"
               >
-                Buka GitHub <span aria-hidden="true">↗</span>
+                <span className="circle" aria-hidden="true">
+                  <span className="icon arrow" />
+                </span>
+                <span className="button-text">Buka GitHub</span>
               </a>
             </div>
           </Reveal>
@@ -108,28 +151,42 @@ export function AboutBento({ templateCount }: { templateCount: number }) {
           <Reveal delay={80}>
             <div className="landing-spot relative flex h-full flex-col overflow-hidden rounded-2xl border border-[#26262B] bg-[#131316] p-6 transition-colors hover:border-[#8B5CF6]/50">
               <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#8B5CF6]/30 bg-[#8B5CF6]/10 text-[#A78BFA]">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-5 w-5">
-                  <path d="M12 21s-7-4.5-7-11a7 7 0 0 1 14 0c0 6.5-7 11-7 11z" />
-                  <circle cx="12" cy="10" r="2.5" />
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-5 w-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085" />
                 </svg>
               </span>
-              <h3 className="mt-4 text-base font-semibold text-white">Kurasi lokal Indonesia</h3>
+              <h3 className="mt-4 text-base font-semibold text-white">Tools dan integrasi tersedia</h3>
               <p className="mt-2 text-sm leading-relaxed text-zinc-400">
-                Payment & database yang benar-benar dipakai di sini.
+                Payment & database yang benar-benar dipakai di sini — kurasi lokal
+                Indonesia, siap dicentang di Builder.
               </p>
-              <div className="mt-4 flex flex-wrap items-center gap-2">
-                {LOCAL_LOGOS.map((l) => (
-                  <span key={l.label} className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1.5" title={l.label}>
-                    <img
-                      src={l.src}
-                      alt={`Logo ${l.label}`}
-                      loading="lazy"
-                      draggable={false}
-                      className={l.wordmark ? "h-4 w-auto" : "h-4 w-4"}
-                    />
-                    {!l.wordmark && <span className="font-mono text-[11px] text-zinc-300">{l.label}</span>}
-                  </span>
-                ))}
+              <div className="hero-marquee mt-4" aria-label="Framework dan integrasi yang didukung">
+                <div className="hero-marquee-track">
+                  {[0, 1].map((copy) => (
+                    <div key={copy} className="hero-marquee-group" aria-hidden={copy === 1}>
+                      {MARQUEE_LOOP.map((l, i) => (
+                        <span
+                          key={`${l.label}-${i}`}
+                          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1.5"
+                          title={l.label}
+                        >
+                          {l.src ? (
+                            <img
+                              src={l.src}
+                              alt={`Logo ${l.label}`}
+                              loading="lazy"
+                              draggable={false}
+                              className={l.wordmark ? "h-4 w-auto" : "h-4 w-4"}
+                            />
+                          ) : null}
+                          {(!l.src || !l.wordmark) && (
+                            <span className="font-mono text-[11px] text-zinc-300">{l.label}</span>
+                          )}
+                        </span>
+                      ))}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </Reveal>
@@ -145,7 +202,8 @@ export function AboutBento({ templateCount }: { templateCount: number }) {
               </span>
               <h3 className="mt-4 text-base font-semibold text-white">Hubungi kami</h3>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-zinc-400">
-                Butuh bantuan, kerjasama, atau ingin berkontribusi?
+                Butuh bantuan, punya kritik dan saran, ingin kerjasama,
+                atau berkontribusi?
               </p>
               <a
                 href="mailto:scaffdev.support@gmail.com"
@@ -153,8 +211,11 @@ export function AboutBento({ templateCount }: { templateCount: number }) {
               >
                 scaffdev.support@gmail.com
               </a>
-              <Link href="/lapor" className="mt-2 inline-flex w-fit items-center gap-1.5 text-sm font-medium text-[#8B5CF6] hover:underline">
-                Lapor bug / pengaduan <span aria-hidden="true">→</span>
+              <Link href="/lapor" className="learn-more mt-2">
+                <span className="circle" aria-hidden="true">
+                  <span className="icon arrow" />
+                </span>
+                <span className="button-text">Lapor bug</span>
               </Link>
             </div>
           </Reveal>

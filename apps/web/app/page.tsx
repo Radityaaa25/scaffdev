@@ -3,6 +3,7 @@ import { LandingBackdrop } from "@/components/landing/LandingBackdrop";
 import { BitsHero } from "@/components/landing/BitsHero";
 import { AboutBento } from "@/components/landing/AboutBento";
 import { HowItWorks } from "@/components/landing/HowItWorks";
+import { BuilderTeaser } from "@/components/landing/BuilderTeaser";
 import { FaqCta } from "@/components/landing/FaqCta";
 import { AskAI } from "@/components/AskAI";
 import { JsonLd } from "@/components/JsonLd";
@@ -64,6 +65,7 @@ export default async function LandingPage() {
       <BitsHero templateCount={initialTemplates.length} />
       <AboutBento templateCount={initialTemplates.length} />
       <HowItWorks />
+      <BuilderTeaser />
       <FaqCta />
       <AskAI />
     </main>
