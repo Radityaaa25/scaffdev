@@ -1,16 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { isRateLimited } from "@/lib/rate-limit";
+import { clientIp } from "@/lib/client-ip";
 
 const EMAIL_RE = /^[^\s@]{1,200}@[^\s@]{1,200}\.[^\s@]{2,}$/;
 const LIMIT = 30;
 const WINDOW_MS = 60 * 1000; // 30 pencatatan / menit / IP.
-
-function clientIp(request: NextRequest): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  return request.headers.get("x-real-ip") ?? "unknown";
-}
 
 /**
  * Catat upaya login admin (sukses maupun gagal) untuk deteksi brute force.

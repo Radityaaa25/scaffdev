@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CommandBox } from "@/components/CommandBox";
+import { LandingCommandBox } from "./LandingCommandBox";
 import { Reveal } from "./Reveal";
 
 const MINI_STEPS = [
@@ -89,7 +89,7 @@ export function BuilderTeaser() {
                 <span className="ml-auto hidden font-mono text-[11px] text-zinc-600 sm:block">live preview</span>
               </div>
               <div className="w-full min-w-0 p-3.5 sm:p-6">
-                <CommandBox command="npx scaffdev@latest toko-saya --template=ecommerce-basic-nextjs --with=midtrans,supabase" />
+                <LandingCommandBox command="npx scaffdev@latest toko-saya --template=ecommerce-basic-nextjs --with=midtrans,supabase" />
                 <div className="mt-3 flex flex-wrap gap-1.5" aria-label="Isi racikan">
                   {["laravel", "midtrans", "supabase"].map((c) => (
                     <span

@@ -2,15 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, createSupabaseServerClient } from "@/lib/supabase-server";
 import { validateLaporanInput } from "@/lib/laporan-validation";
 import { isRateLimited } from "@/lib/rate-limit";
+import { clientIp } from "@/lib/client-ip";
 
 const LAPOR_LIMIT = 5;
 const LAPOR_WINDOW_MS = 60 * 60 * 1000; // 5 laporan / jam / IP.
-
-function clientIp(request: NextRequest): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  return request.headers.get("x-real-ip") ?? "unknown";
-}
 
 /** Daftar laporan — khusus admin. */
 export async function GET(request: NextRequest) {

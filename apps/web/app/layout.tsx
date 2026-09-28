@@ -11,6 +11,7 @@ import {
   organizationJsonLd,
   websiteJsonLd,
   baseMetadata,
+  OG_IMAGE,
 } from "@/lib/seo";
 import "./globals.css";
 
@@ -41,11 +42,13 @@ export const metadata: Metadata = baseMetadata({
     siteName: SITE_NAME,
     title: `${SITE_NAME} — Starter Kit Next.js & Laravel Siap Jalan`,
     description: DEFAULT_OG_DESCRIPTION,
+    images: [OG_IMAGE],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: `${SITE_NAME} — Starter Kit Next.js & Laravel Siap Jalan`,
     description: DEFAULT_OG_DESCRIPTION,
+    images: [OG_IMAGE.url],
   },
 });
 

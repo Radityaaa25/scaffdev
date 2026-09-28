@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "@/components/landing/landing.css";
 import { LandingBackdrop } from "@/components/landing/LandingBackdrop";
 import { BitsHero } from "@/components/landing/BitsHero";
 import { AboutBento } from "@/components/landing/AboutBento";
@@ -9,8 +10,20 @@ import { AskAI } from "@/components/AskAI";
 import { JsonLd } from "@/components/JsonLd";
 import type { Template } from "@scaff/database";
 import { absoluteUrl, baseMetadata, itemListJsonLd } from "@/lib/seo";
+import { FAQS, faqPageJsonLd } from "@/lib/faq";
 
 export const revalidate = 3600;
+
+/**
+ * OG image khusus landing — sengaja didefinisikan lokal (bukan di lib/seo)
+ * supaya file landing tidak bergantung pada export baru di modul shared.
+ */
+const LANDING_OG_IMAGE = {
+  url: absoluteUrl("/og.png"),
+  width: 1200,
+  height: 630,
+  alt: "Scaffdev — Starter Kit Next.js & Laravel Siap Jalan",
+};
 
 export const metadata: Metadata = baseMetadata({
   title: "Scaffdev — Starter Kit Next.js & Laravel Siap Jalan",
@@ -32,6 +45,7 @@ export const metadata: Metadata = baseMetadata({
     title: "Scaffdev — Starter Kit Next.js & Laravel Siap Jalan",
     description:
       "Starter kit siap demo dengan kurasi integrasi lokal Indonesia. Satu baris command: npx scaffdev@latest.",
+    images: [LANDING_OG_IMAGE],
   },
 });
 
@@ -47,7 +61,11 @@ export default async function LandingPage() {
   }
 
   return (
-    <main className="relative flex flex-1 flex-col">
+    <main className="landing-root relative flex flex-1 flex-col">
+      {/* landing-root = scope CSS landing (components/landing/landing.css).
+          Tanpa class ini rule landing tidak match; halaman docs/builder/
+          templates tidak pernah punya class ini sehingga CSS tidak bocor
+          ke mereka walau stylesheet-nya ikut terbundel. */}
       {/* Backdrop: grid tajam + glow violet melayang acak. Satu layer full
           1 halaman, tanpa garis pemisah antar-section. */}
       <LandingBackdrop />
@@ -62,6 +80,7 @@ export default async function LandingPage() {
           }))
         )}
       />
+      <JsonLd data={faqPageJsonLd(FAQS)} />
       <BitsHero templateCount={initialTemplates.length} />
       <AboutBento templateCount={initialTemplates.length} />
       <HowItWorks />

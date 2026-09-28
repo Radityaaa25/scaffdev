@@ -14,10 +14,31 @@ import {
   baseMetadata,
   breadcrumbJsonLd,
   softwareApplicationJsonLd,
+  ogImages,
 } from "@/lib/seo";
 
 interface TemplateDetailPageProps {
   params: Promise<{ slug: string }>;
+}
+
+/** ISR: daftar template berubah tidak tiap menit — segarkan tiap 1 jam. */
+export const revalidate = 3600;
+
+/**
+ * Prerender katalog template di build time (SSG) — halaman detail template
+ * menjadi HTML statis, tanpa menunggu query Supabase per request.
+ * Slug yang tidak ada di daftar tetap dirender on-demand (`dynamicParams`
+ * default true) lalu jatuh ke `notFound()`.
+ */
+export async function generateStaticParams(): Promise<{ slug: string }[]> {
+  try {
+    const templates = await getAllTemplates();
+    return templates.map((t) => ({ slug: t.slug }));
+  } catch {
+    // Env Supabase belum terisi / DB tak terjangkau saat build → kosongkan
+    // daftar; semua slug tetap bisa dirender on-demand. Build tidak gagal.
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: TemplateDetailPageProps): Promise<Metadata> {
@@ -45,7 +66,7 @@ export async function generateMetadata({ params }: TemplateDetailPageProps): Pro
       url: absoluteUrl(`/templates/${template.slug}`),
       title,
       description,
-      ...(template.screenshot_url ? { images: [template.screenshot_url] } : {}),
+      images: ogImages(template.screenshot_url),
     },
   });
 }

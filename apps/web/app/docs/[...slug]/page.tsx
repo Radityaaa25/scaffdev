@@ -13,6 +13,7 @@ import {
   baseMetadata,
   articleJsonLd,
   breadcrumbJsonLd,
+  ogImages,
 } from "@/lib/seo";
 
 interface DocArticlePageProps {
@@ -45,6 +46,7 @@ export async function generateMetadata({ params }: DocArticlePageProps): Promise
       url: absoluteUrl(`/docs/${slugPath}`),
       title,
       description,
+      images: ogImages(),
     },
   });
 }

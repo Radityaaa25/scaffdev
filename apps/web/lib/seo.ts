@@ -13,6 +13,24 @@ export function absoluteUrl(path: string): string {
   return `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
+/**
+ * OG image standar (1200x630) untuk halaman tanpa gambar sendiri.
+ * Dipakai lewat metadata OBJECT, bukan file `app/opengraph-image.tsx` —
+ * file-based metadata prioritasnya lebih tinggi dan akan meng-override
+ * og:image screenshot tiap template di /templates/[slug].
+ */
+export const OG_IMAGE = {
+  url: absoluteUrl("/og.png"),
+  width: 1200,
+  height: 630,
+  alt: `${SITE_NAME} — Starter Kit Next.js & Laravel Siap Jalan`,
+} as const;
+
+/** Fallback: pakai screenshot template bila ada, kalau tidak pakai OG standar. */
+export function ogImages(screenshotUrl?: string | null) {
+  return screenshotUrl ? [{ url: screenshotUrl }] : [OG_IMAGE];
+}
+
 export function baseMetadata(overrides: Partial<Metadata> = {}): Metadata {
   return {
     metadataBase: new URL(SITE_URL),

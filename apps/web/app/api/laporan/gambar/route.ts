@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { isRateLimited } from "@/lib/rate-limit";
+import { clientIp } from "@/lib/client-ip";
 import { validateImageBytes } from "@/lib/upload-validation";
 
 // Bukti visual laporan user: kecil dan ketat — maks 1MB, hanya png/jpg/webp
@@ -9,12 +10,6 @@ const MAX_BYTES = 1 * 1024 * 1024;
 const BUCKET = "template-screenshots";
 const UPLOAD_LIMIT = 5;
 const UPLOAD_WINDOW_MS = 60 * 60 * 1000; // 5 upload / jam / IP.
-
-function clientIp(request: NextRequest): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  return request.headers.get("x-real-ip") ?? "unknown";
-}
 
 /**
  * Upload gambar bukti untuk laporan — publik tanpa login.

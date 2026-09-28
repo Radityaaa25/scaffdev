@@ -1,0 +1,439 @@
+/* ==========================================================================
+   CSS khusus halaman landing.
+
+   Kenapa terpisah dari app/globals.css:
+   globals.css di-import root layout, jadi ikut terbawa ke SEMUA route
+   (docs, builder, templates, laporan...). Next.js bahkan TIDAK menghapus
+   stylesheet saat navigasi antar route (lihat docs "Global CSS"), jadi rule
+   landing yang global bisa bocor dan merusak halaman lain.
+
+   Semua selector di file ini diawali `.landing-root` — class yang hanya ada
+   di <main> halaman landing. Konsekuensinya:
+   - halaman docs/builder/templates TIDAK pernah match selector ini,
+   - CSS landing tetap boleh ikut terbundel tanpa mengubah tampilan mereka.
+
+   Rule yang SUDAH ada di globals.css (milik main / dipakai juga TemplatesHero)
+   sengaja TIDAK diduplikasi di sini — cukup dipakai apa adanya.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. btn-gooey di layar sempit — flex-col CTA harus block + penuh.
+   Scoped: di main aturan ini bersifat global dan ikut mengubah tombol
+   TemplatesHero di /templates.
+   -------------------------------------------------------------------------- */
+@media (max-width: 640px) {
+  .landing-root .btn-gooey {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   2. Varian TERBALIK dari btn-gooey: diam = ungu penuh, hover = ungu surut
+   ke bawah jadi transparan (cermin dari gooey normal). Struktur HTML sama
+   persis (teks + .btn-gooey__blobs), filter SVG yang sama dipakai ulang.
+   Dipakai kartu "Tentang Kami".
+   -------------------------------------------------------------------------- */
+.landing-root .btn-gooey-reverse {
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  padding: 0.9em 1.6em;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  z-index: 1;
+  border: 2px solid #8b5cf6;
+  border-radius: 12px;
+  background: #8b5cf6;
+  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.35);
+  transition: color 700ms ease, background 700ms ease, box-shadow 700ms ease;
+}
+
+.landing-root .btn-gooey-reverse .btn-gooey__blobs {
+  height: 100%;
+  filter: url(#btn-gooey-filter);
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: -3px;
+  right: -1px;
+  z-index: -1;
+  border-radius: 10px;
+  background: rgba(139, 92, 246, 0.08);
+}
+
+.landing-root .btn-gooey-reverse .btn-gooey__blobs div {
+  background-color: #8b5cf6;
+  width: 34%;
+  height: 100%;
+  border-radius: 100%;
+  position: absolute;
+  transform: scale(1.4) translateY(0) translateZ(0);
+  transition: transform 700ms ease;
+}
+
+.landing-root .btn-gooey-reverse .btn-gooey__blobs div:nth-child(1) {
+  left: -5%;
+}
+
+.landing-root .btn-gooey-reverse .btn-gooey__blobs div:nth-child(2) {
+  left: 30%;
+  transition-delay: 60ms;
+}
+
+.landing-root .btn-gooey-reverse .btn-gooey__blobs div:nth-child(3) {
+  left: 66%;
+  transition-delay: 25ms;
+}
+
+.landing-root .btn-gooey-reverse:hover {
+  color: #a78bfa;
+  background: rgba(139, 92, 246, 0.08);
+  box-shadow: none;
+}
+
+.landing-root .btn-gooey-reverse:hover .btn-gooey__blobs div {
+  transform: scale(1.4) translateY(125%) translateZ(0);
+}
+
+.landing-root .btn-gooey-reverse:active {
+  transform: scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-root .btn-gooey-reverse,
+  .landing-root .btn-gooey-reverse .btn-gooey__blobs div {
+    transition: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. Terminal hero di layar sempit: output boleh wrap agar tidak kepotong
+   (animasi ketik baris 1 tetap jalan). Base rule-nya ada di globals.css
+   (juga dipakai TemplatesHero) — di sini hanya properti tambahannya.
+   -------------------------------------------------------------------------- */
+@media (max-width: 640px) {
+  .landing-root .hero-term-pre {
+    max-width: 100%;
+  }
+  .landing-root .hero-term-out {
+    white-space: normal;
+    align-items: flex-start;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. Tombol io-button (Uiverse): ikon putih mengembang saat hover.
+   Dipakai di kartu Tentang Kami. Tanpa styled-components.
+   -------------------------------------------------------------------------- */
+.landing-root .cssbuttons-io-button {
+  background: #a370f0;
+  color: white;
+  font-family: inherit;
+  padding: 0.35em;
+  padding-left: 1.2em;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 0.9em;
+  border: none;
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+  box-shadow: inset 0 0 1.6em -0.6em #714da6;
+  overflow: hidden;
+  position: relative;
+  height: 3.5em; /* disamakan dengan tinggi btn-gooey tetangganya */
+  padding-right: 3.3em;
+  cursor: pointer;
+  text-decoration: none;
+  transition: filter 0.2s;
+}
+.landing-root .cssbuttons-io-button:hover {
+  filter: brightness(1.08);
+}
+.landing-root .cssbuttons-io-button .icon {
+  background: white;
+  margin-left: 1em;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.2em;
+  width: 2.2em;
+  border-radius: 0.7em;
+  box-shadow: 0.1em 0.1em 0.6em 0.2em #7b52b9;
+  right: 0.3em;
+  transition: all 0.3s;
+}
+.landing-root .cssbuttons-io-button:hover .icon {
+  width: calc(100% - 0.6em);
+}
+.landing-root .cssbuttons-io-button .icon svg {
+  width: 1.1em;
+  transition: transform 0.3s;
+  color: #7b52b9;
+}
+.landing-root .cssbuttons-io-button:hover .icon svg {
+  transform: translateX(0.1em);
+}
+.landing-root .cssbuttons-io-button:active .icon {
+  transform: scale(0.95);
+}
+
+/* --------------------------------------------------------------------------
+   5. Tombol learn-more (Uiverse): lingkaran panah mengembang saat hover.
+   Dipakai di kartu Open-source & Hubungi kami. Tanpa styled-components.
+   Warna disesuaikan tema gelap (lingkaran ungu brand).
+   -------------------------------------------------------------------------- */
+.landing-root .learn-more {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  outline: none;
+  border: 0;
+  vertical-align: middle;
+  text-decoration: none;
+  background: transparent;
+  padding: 0;
+  font-size: 12px;
+  font-family: inherit;
+  width: 100%; /* selalu selebar kolom: dijamin sama dengan tombol tetangga */
+  max-width: 14rem; /* batas compact di desktop; mobile full-width */
+  height: auto;
+}
+.landing-root .learn-more .circle {
+  transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+  position: relative;
+  display: block;
+  margin: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: #8b5cf6;
+  border-radius: 1.625rem;
+}
+.landing-root .learn-more .circle .icon {
+  transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  background: #fff;
+}
+.landing-root .learn-more .circle .icon.arrow {
+  transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+  left: 0.55rem;
+  width: 1rem;
+  height: 0.125rem;
+  background: none;
+}
+.landing-root .learn-more .circle .icon.arrow::before {
+  position: absolute;
+  content: "";
+  top: -0.26rem;
+  right: 0.0625rem;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-top: 0.125rem solid #fff;
+  border-right: 0.125rem solid #fff;
+  transform: rotate(45deg);
+}
+.landing-root .learn-more .button-text {
+  transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.6rem 0;
+  margin: 0 0 0 1.6rem;
+  color: #d4d4d8;
+  font-weight: 700;
+  line-height: 1.6;
+  text-align: center;
+  text-transform: uppercase;
+}
+.landing-root .learn-more:hover .circle {
+  width: 100%;
+}
+.landing-root .learn-more:hover .circle .icon.arrow {
+  background: #fff;
+  transform: translate(1rem, 0);
+}
+.landing-root .learn-more:hover .button-text {
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   6. Landing (ReactBits-style): reveal + spotlight.
+   -------------------------------------------------------------------------- */
+.landing-root .reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+.landing-root .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.landing-root .landing-spot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(480px circle at var(--spot-x, 50%) var(--spot-y, 0%), rgba(139, 92, 246, 0.14), transparent 65%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+.landing-root .landing-spot:hover::before {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-root .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .landing-root .landing-spot::before {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. Bits demo tiles (gaya ReactBits, CSS-only).
+   -------------------------------------------------------------------------- */
+.landing-root .bits-split span {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.6em);
+  animation: bits-split-up 2.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+@keyframes bits-split-up {
+  0% { opacity: 0; transform: translateY(0.6em); }
+  20%, 70% { opacity: 1; transform: none; }
+  90%, 100% { opacity: 0; transform: translateY(-0.6em); }
+}
+
+.landing-root .bits-shimmer-btn {
+  position: relative;
+  overflow: hidden;
+}
+.landing-root .bits-shimmer-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%);
+  transform: translateX(-120%);
+  animation: bits-shimmer-sweep 2.4s ease-in-out infinite;
+}
+@keyframes bits-shimmer-sweep {
+  0% { transform: translateX(-120%); }
+  55%, 100% { transform: translateX(120%); }
+}
+
+.landing-root .bits-spot-demo {
+  --spot-x: 50%;
+  --spot-y: 50%;
+}
+
+.landing-root .bits-typing {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 0.15em solid #8b5cf6;
+  width: 0;
+  animation: bits-typing-loop 6s steps(19) infinite, hero-term-cursor 0.5s step-end infinite alternate;
+}
+/* "npx scaffdev@latest" = 19 karakter */
+@keyframes bits-typing-loop {
+  0%, 100% { width: 0; }
+  25%, 75% { width: 19ch; }
+}
+
+.landing-root .bits-blob {
+  animation: bits-blob-drift 7s ease-in-out infinite;
+}
+.landing-root .bits-blob-b {
+  animation-delay: -3.5s;
+}
+@keyframes bits-blob-drift {
+  0%, 100% { transform: translate(-14px, 6px) scale(1); }
+  50% { transform: translate(14px, -8px) scale(1.25); }
+}
+
+.landing-root .bits-dot {
+  animation: bits-dot-bounce 1.2s ease-in-out infinite;
+}
+@keyframes bits-dot-bounce {
+  0% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(-8px); opacity: 1; }
+}
+
+.landing-root .bits-beam {
+  position: relative;
+  background: #0e0b13;
+  z-index: 0;
+}
+.landing-root .bits-beam::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 14px;
+  background: conic-gradient(from var(--bits-beam-angle, 0deg), #8b5cf6, #ec4899, #8b5cf6);
+  z-index: -1;
+  animation: bits-beam-spin 3s linear infinite;
+}
+@property --bits-beam-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes bits-beam-spin {
+  to { --bits-beam-angle: 360deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-root .bits-split span,
+  .landing-root .bits-shimmer-btn::after,
+  .landing-root .bits-typing,
+  .landing-root .bits-blob,
+  .landing-root .bits-dot,
+  .landing-root .bits-beam::before {
+    animation: none;
+  }
+  .landing-root .bits-split span { opacity: 1; transform: none; }
+  .landing-root .bits-typing { width: 19ch; border-right: none; }
+}
+
+/* --------------------------------------------------------------------------
+   8. Float pelan untuk orb background landing.
+   -------------------------------------------------------------------------- */
+.landing-root .bg-float-a { animation: bg-float-a 12s ease-in-out infinite alternate; }
+.landing-root .bg-float-b { animation: bg-float-b 15s ease-in-out infinite alternate-reverse; }
+@keyframes bg-float-a {
+  from { transform: translate(0, 0); }
+  to { transform: translate(50px, 40px); }
+}
+@keyframes bg-float-b {
+  from { transform: translate(0, 0); }
+  to { transform: translate(-60px, -45px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-root .bg-float-a,
+  .landing-root .bg-float-b {
+    animation: none;
+  }
+}

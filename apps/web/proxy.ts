@@ -27,7 +27,9 @@ function allowedOrigin(requestOrigin: string | null): string {
   return configured[0];
 }
 
-export function middleware(request: NextRequest) {
+// Next.js 16: `middleware` sudah deprecated dan diganti `proxy`
+// (perilaku identik — hanya nama file & fungsi).
+export function proxy(request: NextRequest) {
   const origin = request.headers.get("origin") ?? "*";
   const isPreflight = request.method === "OPTIONS";
   const path = request.nextUrl.pathname;

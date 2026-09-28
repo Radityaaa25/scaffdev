@@ -4,7 +4,7 @@ import { getAllDocs } from "@/lib/docs";
 import { DocsSearch } from "@/components/DocsSearch";
 import { CommandBox } from "@/components/CommandBox";
 import { JsonLd } from "@/components/JsonLd";
-import { absoluteUrl, baseMetadata, itemListJsonLd } from "@/lib/seo";
+import { absoluteUrl, baseMetadata, itemListJsonLd, OG_IMAGE } from "@/lib/seo";
 
 export const metadata: Metadata = baseMetadata({
   title: "Dokumentasi Scaffdev — Panduan CLI, Template & Integrasi",
@@ -24,6 +24,7 @@ export const metadata: Metadata = baseMetadata({
     title: "Dokumentasi Scaffdev — Panduan CLI, Template & Integrasi",
     description:
       "Panduan lengkap Scaffdev: CLI, template, environment, integrasi lokal, troubleshooting, FAQ.",
+    images: [OG_IMAGE],
   },
 });
 

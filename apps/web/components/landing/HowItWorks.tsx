@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { CommandBox } from "@/components/CommandBox";
+import { LandingCommandBox } from "./LandingCommandBox";
 import { Reveal } from "./Reveal";
 
 const STEPS = [
@@ -117,7 +117,7 @@ export function HowItWorks() {
                 Scroll untuk langkah berikutnya — {Math.round(progress * 100)}%
               </p>
               <div className="mt-6">
-                <CommandBox command="npx scaffdev@latest" />
+                <LandingCommandBox command="npx scaffdev@latest" />
               </div>
               <Link
                 href="/builder"

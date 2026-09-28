@@ -4,7 +4,7 @@ import { TemplatesCatalog } from "@/components/TemplatesCatalog";
 import { AskAI } from "@/components/AskAI";
 import { JsonLd } from "@/components/JsonLd";
 import { getAllTemplates } from "@/lib/data";
-import { absoluteUrl, baseMetadata, itemListJsonLd } from "@/lib/seo";
+import { absoluteUrl, baseMetadata, itemListJsonLd, OG_IMAGE } from "@/lib/seo";
 
 export const revalidate = 3600;
 
@@ -28,6 +28,7 @@ export const metadata: Metadata = baseMetadata({
     title: "Katalog Template — Scaffdev",
     description:
       "Starter kit Next.js & Laravel siap jalan: e-commerce, landing page, portfolio + integrasi lokal. Generate via npx scaffdev@latest.",
+    images: [OG_IMAGE],
   },
 });
 

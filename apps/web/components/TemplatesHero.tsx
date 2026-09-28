@@ -49,8 +49,8 @@ export function TemplatesHero() {
             <span className="truncate">Kombinasi integrasi custom sudah live di Builder</span>
           </p>
           <h1 className="hero-enter hero-enter-2 mt-5 text-[2rem] sm:text-5xl lg:text-[3.4rem] font-extrabold text-[#FAFAFA] tracking-tight leading-[1.08]">
-            Ship project <span className="text-[#8B5CF6]">hari ini,</span>{" "}
-            <span className="text-[#8B5CF6]">bukan</span> minggu depan.
+            Hemat token <span className="text-[#8B5CF6]">AI-mu,</span>{" "}
+            cukup setup dengan <span className="text-[#8B5CF6]">Scaffdev.</span>
           </h1>
           <p className="hero-enter hero-enter-3 mt-4 sm:mt-5 max-w-xl text-sm sm:text-base text-zinc-400 leading-relaxed">
             Starter kit <span className="text-zinc-200 font-medium">Next.js & Laravel</span> dengan

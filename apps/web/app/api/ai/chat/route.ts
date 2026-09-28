@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAllTemplates } from "@/lib/data";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { getGroqKeys, groqChatStreamFirstOk, GroqError, type GroqMessage } from "@/lib/ai-groq";
+import { clientIp } from "@/lib/client-ip";
 // NOTED: @/lib/docs SENGAJA di-import lazy di dalam handler (bukan static
 // import): bila modul docs gagal di-load di suatu environment, chat tetap
 // hidup tanpa konteks docs + error-nya berupa JSON, bukan 500 kosong.
@@ -31,12 +32,6 @@ function rateLimited(ip: string): boolean {
   }
   entry.count += 1;
   return entry.count > LIMIT;
-}
-
-function clientIp(request: NextRequest): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  return request.headers.get("x-real-ip") ?? "unknown";
 }
 
 interface ChatMessage {

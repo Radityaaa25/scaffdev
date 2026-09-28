@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Marked } from "marked";
-import DOMPurify from "isomorphic-dompurify";
 import { XIcon, ArrowUpIcon } from "./DocsIcons";
 
 interface Msg {
@@ -16,7 +14,27 @@ const STORAGE_KEY = "scaffdev-askai-v1";
 const RETENTION_MS = 7 * 24 * 60 * 60 * 1000; // 7 hari, sliding.
 const MAX_STORED = 20;
 
-const marked = new Marked({ breaks: true });
+/**
+ * `marked` + `isomorphic-dompurify` (~79KB) dimuat lewat dynamic import
+ * karena keduanya hanya dipakai saat finalisasi jawaban — bukan saat render.
+ * Ini menyingkirkan parser markdown dari chunk hydration tiap route yang
+ * merender <AskAI/>. Output identik, hanya waktunya digeser ke belakang.
+ */
+function loadMarkdownLib() {
+  return Promise.all([import("marked"), import("isomorphic-dompurify")]).then(
+    ([markedMod, purifyMod]) => ({
+      marked: new markedMod.Marked({ breaks: true }),
+      DOMPurify: purifyMod.default,
+    })
+  );
+}
+
+let markdownLibPromise: ReturnType<typeof loadMarkdownLib> | null = null;
+
+function getMarkdownLib() {
+  markdownLibPromise ??= loadMarkdownLib();
+  return markdownLibPromise;
+}
 
 /**
  * Render markdown jawaban AI menjadi HTML aman.
@@ -25,6 +43,7 @@ const marked = new Marked({ breaks: true });
  * untuk teks + code + list + link (link asing tetap diklik user manual).
  */
 async function renderMarkdown(md: string): Promise<string> {
+  const { marked, DOMPurify } = await getMarkdownLib();
   const raw = await marked.parse(md);
   return DOMPurify.sanitize(typeof raw === "string" ? raw : "");
 }
@@ -88,6 +107,12 @@ export function AskAI() {
 
   // Hentikan pompa bila komponen dilepas saat masih mengetik.
   useEffect(() => stopPump, []);
+
+  // Pra-muat parser markdown di background sesudah hydration, supaya
+  // finalisasi jawaban pertama tidak menunggu unduhan chunk.
+  useEffect(() => {
+    void getMarkdownLib();
+  }, []);
 
   // Persistensi browser: tiap ada pesan baru, simpan + perpanjang retensi 7 hari.
   // NOTED: pesan yang masih streaming (tanpa html) ikut tersimpan sebagai teks —

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { LaporForm } from "@/components/LaporForm";
 import { JsonLd } from "@/components/JsonLd";
-import { absoluteUrl, baseMetadata, breadcrumbJsonLd } from "@/lib/seo";
+import { absoluteUrl, baseMetadata, breadcrumbJsonLd, OG_IMAGE } from "@/lib/seo";
 
 export const metadata: Metadata = baseMetadata({
   title: "Lapor Bug & Pengaduan — Scaffdev",
@@ -14,6 +14,7 @@ export const metadata: Metadata = baseMetadata({
     url: absoluteUrl("/lapor"),
     title: "Lapor Bug & Pengaduan — Scaffdev",
     description: "Laporkan bug, saran, atau pengaduan seputar Scaffdev tanpa login.",
+    images: [OG_IMAGE],
   },
 });
 

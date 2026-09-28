@@ -4,6 +4,7 @@ import { createSupabaseServerClient, requireAdmin } from "@/lib/supabase-server"
 import { isRateLimited, ADMIN_WRITE_LIMIT, ADMIN_WRITE_WINDOW_MS, STATS_LIMIT, STATS_WINDOW_MS } from "@/lib/rate-limit";
 import { validateTemplateInput } from "@/lib/template-validation";
 import { logActivity } from "@/lib/activity";
+import { clientIp } from "@/lib/client-ip";
 
 interface RouteParams {
   params: Promise<{ slug: string }>;
@@ -26,8 +27,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   // bisa dimanipulasi publik via curl berulang.
   const { searchParams } = new URL(request.url);
   if (searchParams.get("source") === "cli") {
-    const forwarded = request.headers.get("x-forwarded-for");
-    const ip = forwarded ? forwarded.split(",")[0].trim() : (request.headers.get("x-real-ip") ?? "unknown");
+    const ip = clientIp(request);
     if (!isRateLimited(`dl:${slug}:${ip}`, STATS_LIMIT, STATS_WINDOW_MS)) {
       try {
         const supabase = await createSupabaseServerClient();

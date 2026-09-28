@@ -6,8 +6,21 @@
 
 const buckets = new Map<string, { count: number; reset: number }>();
 
+/** Entries kedaluwarsa di-sweep periodik agar Map tidak tumbuh tanpa batas. */
+const SWEEP_INTERVAL_MS = 60 * 1000;
+let lastSweep = 0;
+
+function sweep(now: number): void {
+  if (now - lastSweep < SWEEP_INTERVAL_MS) return;
+  lastSweep = now;
+  for (const [key, entry] of buckets) {
+    if (now > entry.reset) buckets.delete(key);
+  }
+}
+
 export function isRateLimited(key: string, limit: number, windowMs: number): boolean {
   const now = Date.now();
+  sweep(now);
   const entry = buckets.get(key);
   if (!entry || now > entry.reset) {
     buckets.set(key, { count: 1, reset: now + windowMs });

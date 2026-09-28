@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Build-time OG image generator (CommonJS one-off script, not shipped).
+    "og-gen.cjs",
   ]),
 ]);
 
