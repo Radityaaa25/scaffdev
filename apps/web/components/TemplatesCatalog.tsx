@@ -218,8 +218,9 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
 
   return (
     <div className="relative">
-      {/* Backdrop full halaman: grid + gradasi */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+      {/* Backdrop full halaman: grid + gradasi. Naik -5rem agar tepi atasnya
+          tersamar di balik navbar, bukan jadi garis horizontal di bawah navbar. */}
+      <div className="pointer-events-none absolute inset-x-0 top-[-5rem] bottom-0 overflow-hidden" aria-hidden="true">
         <div
           className="absolute inset-0 opacity-25"
           style={{

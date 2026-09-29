@@ -54,7 +54,7 @@ function StepIndicator({ step, onSelect }: { step: number; onSelect?: (n: number
                 type="button"
                 onClick={() => onSelect(s.n)}
                 aria-label={`Kembali ke langkah ${s.n}: ${s.label}`}
-                className={`flex flex-1 items-center gap-2.5 rounded-2xl border px-3.5 py-3 text-left transition-all active:scale-[0.99] ${
+                className={`flex flex-1 flex-col items-center justify-center gap-1 rounded-2xl border px-1.5 py-2 text-center transition-all active:scale-[0.99] sm:flex-row sm:items-center sm:justify-start sm:gap-2.5 sm:px-3.5 sm:py-3 sm:text-left ${
                   active
                     ? "border-[#8B5CF6]/60 bg-gradient-to-r from-[#8B5CF6]/20 to-[#8B5CF6]/[0.04] shadow-lg shadow-[#8B5CF6]/15"
                     : done
@@ -63,11 +63,11 @@ function StepIndicator({ step, onSelect }: { step: number; onSelect?: (n: number
                 }`}
               >
                 <StepDot n={s.n} active={active} done={done} />
-                <span className="min-w-0">
-                  <span className={`block font-mono text-[10px] font-bold tracking-widest ${active ? "text-[#A78BFA]" : done ? "text-emerald-400/80" : "text-zinc-600"}`}>
+                <span className="w-full min-w-0 sm:w-auto">
+                  <span className={`hidden font-mono text-[10px] font-bold tracking-widest sm:block ${active ? "text-[#A78BFA]" : done ? "text-emerald-400/80" : "text-zinc-600"}`}>
                     LANGKAH {s.n}
                   </span>
-                  <span className={`block truncate text-sm font-semibold ${active ? "text-white" : done ? "text-zinc-300" : "text-zinc-500"}`}>
+                  <span className={`block truncate text-[11px] font-semibold sm:text-sm ${active ? "text-white" : done ? "text-zinc-300" : "text-zinc-500"}`}>
                     <span className="sm:hidden">{s.short}</span>
                     <span className="hidden sm:inline">{s.label}</span>
                   </span>
@@ -76,7 +76,7 @@ function StepIndicator({ step, onSelect }: { step: number; onSelect?: (n: number
             ) : (
               <span
                 aria-current={active ? "step" : undefined}
-                className={`flex flex-1 items-center gap-2.5 rounded-2xl border px-3.5 py-3 transition-all ${
+                className={`flex flex-1 flex-col items-center justify-center gap-1 rounded-2xl border px-1.5 py-2 text-center transition-all sm:flex-row sm:items-center sm:justify-start sm:gap-2.5 sm:px-3.5 sm:py-3 sm:text-left ${
                   active
                     ? "border-[#8B5CF6]/60 bg-gradient-to-r from-[#8B5CF6]/20 to-[#8B5CF6]/[0.04] shadow-lg shadow-[#8B5CF6]/15"
                     : done
@@ -85,11 +85,11 @@ function StepIndicator({ step, onSelect }: { step: number; onSelect?: (n: number
                 }`}
               >
                 <StepDot n={s.n} active={active} done={done} />
-                <span className="min-w-0">
-                  <span className={`block font-mono text-[10px] font-bold tracking-widest ${active ? "text-[#A78BFA]" : done ? "text-emerald-400/80" : "text-zinc-600"}`}>
+                <span className="w-full min-w-0 sm:w-auto">
+                  <span className={`hidden font-mono text-[10px] font-bold tracking-widest sm:block ${active ? "text-[#A78BFA]" : done ? "text-emerald-400/80" : "text-zinc-600"}`}>
                     LANGKAH {s.n}
                   </span>
-                  <span className={`block truncate text-sm font-semibold ${active ? "text-white" : done ? "text-zinc-300" : "text-zinc-500"}`}>
+                  <span className={`block truncate text-[11px] font-semibold sm:text-sm ${active ? "text-white" : done ? "text-zinc-300" : "text-zinc-500"}`}>
                     <span className="sm:hidden">{s.short}</span>
                     <span className="hidden sm:inline">{s.label}</span>
                   </span>
@@ -450,7 +450,8 @@ export function BuilderFlow() {
 
   return (
     <div className="relative">
-      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+      {/* Backdrop naik -5rem: tepi atas grid disembunyikan di balik navbar. */}
+      <div className="pointer-events-none absolute inset-x-0 top-[-5rem] bottom-0 overflow-hidden" aria-hidden="true">
         <div
           className="absolute inset-0 opacity-25"
           style={{
@@ -534,7 +535,7 @@ export function BuilderFlow() {
                       </span>
                     )}
                   </span>
-                  <span className="min-w-0 flex-1 py-0.5">
+                  <span className="min-w-0 flex-1 py-0.5 pr-8">
                     <span className="block truncate text-[15px] font-bold text-[#FAFAFA]">{t.nama}</span>
                     <span className="mt-1 flex flex-wrap items-center gap-1.5">
                       <span className="rounded-md bg-white/5 border border-white/10 px-1.5 py-px font-mono text-[10px] text-zinc-300">
@@ -702,8 +703,8 @@ export function BuilderFlow() {
                                 onChange={() => togglePick(group.kategori, opt.kode, group.single)}
                                 className="accent-[#8B5CF6]"
                               />
-                              <span className="font-mono text-[13px]">{opt.nama_tampilan}</span>
-                              <span className="ml-auto text-[10px] font-mono text-zinc-600">
+                              <span className="min-w-0 truncate font-mono text-[13px]">{opt.nama_tampilan}</span>
+                              <span className="ml-auto shrink-0 text-[10px] font-mono text-zinc-600">
                                 {reason ?? opt.kode}
                               </span>
                             </label>
@@ -746,7 +747,7 @@ export function BuilderFlow() {
           )}
 
           <div className="sticky bottom-4 z-10 mt-6 rounded-2xl bg-gradient-to-r from-[#8B5CF6]/40 via-white/10 to-[#EC4899]/30 p-[1px] shadow-2xl shadow-black/50 lg:hidden">
-          <div className="rounded-2xl bg-[#0A0A0B]/95 p-3 backdrop-blur-xl">
+          <div className="rounded-2xl bg-[#0A0A0B]/95 p-3 pr-20 backdrop-blur-xl">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <p className="flex-1 px-1 text-xs text-zinc-400 leading-relaxed" aria-live="polite">
                 {withCodes.length === 0 ? (
@@ -758,11 +759,11 @@ export function BuilderFlow() {
                   <> <span className="text-amber-400 font-medium">• double, perlu konfirmasi di atas</span></>
                 )}
               </p>
-              <div className="flex gap-2.5">
+              <div className="flex flex-wrap gap-2.5">
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl font-medium text-sm text-zinc-300 border border-white/10 bg-white/5 hover:bg-white/10 hover:text-white transition-all active:scale-[0.98]"
+                  className="flex-1 sm:flex-none whitespace-nowrap px-2.5 py-2.5 sm:px-5 rounded-xl font-medium text-xs sm:text-sm text-zinc-300 border border-white/10 bg-white/5 hover:bg-white/10 hover:text-white transition-all active:scale-[0.98]"
                 >
                   ← Kembali
                 </button>
@@ -770,7 +771,7 @@ export function BuilderFlow() {
                   type="button"
                   onClick={skipToCommand}
                   title="Base ini tidak butuh integrasi — langsung ke command polosan"
-                  className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl font-medium text-sm text-zinc-300 border border-dashed border-white/15 bg-transparent hover:border-white/30 hover:text-white transition-all active:scale-[0.98]"
+                  className="flex-1 sm:flex-none whitespace-nowrap px-2.5 py-2.5 sm:px-5 rounded-xl font-medium text-xs sm:text-sm text-zinc-300 border border-dashed border-white/15 bg-transparent hover:border-white/30 hover:text-white transition-all active:scale-[0.98]"
                 >
                   Lewati
                 </button>
@@ -779,9 +780,10 @@ export function BuilderFlow() {
                   disabled={!canProceedFromStep2}
                   onClick={() => setStep(3)}
                   title={!canProceedFromStep2 ? "Centang minimal 1 integrasi dulu" : undefined}
-                  className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl font-medium text-sm text-white bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] hover:brightness-110 shadow-lg shadow-[#8B5CF6]/30 transition-all active:scale-[0.98] disabled:opacity-40 disabled:shadow-none"
+                  className="flex-1 sm:flex-none whitespace-nowrap px-2.5 py-2.5 sm:px-6 rounded-xl font-medium text-xs sm:text-sm text-white bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] hover:brightness-110 shadow-lg shadow-[#8B5CF6]/30 transition-all active:scale-[0.98] disabled:opacity-40 disabled:shadow-none"
                 >
-                  Lanjut: command →
+                  <span className="sm:hidden">Lanjut →</span>
+                  <span className="hidden sm:inline">Lanjut: command →</span>
                 </button>
               </div>
             </div>

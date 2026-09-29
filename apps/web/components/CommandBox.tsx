@@ -25,7 +25,8 @@ export function CommandBox({ command, className = "" }: CommandBoxProps) {
     <div
       className={`relative flex items-center justify-between gap-3 bg-[#131316] border border-[#26262B] rounded-lg px-4 py-3 font-mono text-sm shadow-inner group hover:border-[#8B5CF6]/50 transition-colors ${className}`}
     >
-      <div className="flex items-center gap-2 overflow-x-auto select-all scrollbar-none">
+      {/* min-w-0 agar baris command men-scroll, bukan melebarkan halaman di mobile */}
+      <div className="flex min-w-0 items-center gap-2 overflow-x-auto select-all scrollbar-none">
         <span className="text-[#8B5CF6] select-none font-bold">$</span>
         <span className="text-[#FAFAFA] whitespace-nowrap">{command}</span>
       </div>
