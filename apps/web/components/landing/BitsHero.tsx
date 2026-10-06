@@ -26,24 +26,12 @@ export function BitsHero({ templateCount }: { templateCount: number }) {
     [templateCount > 0 ? `${templateCount}` : "—", "Template live"],
     ["2", "Framework"],
     ["6", "Integrasi lokal"],
-    ["MIT", "Open-source"],
+    ["Shield", "Source-available"],
   ];
 
   return (
     <section className="relative overflow-hidden">
       <div className="relative mx-auto max-w-5xl px-4 pb-10 pt-12 text-center sm:px-6 sm:pt-16">
-        <p className="hero-enter hero-enter-1 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] py-1.5 pl-2 pr-4 text-xs text-zinc-400 backdrop-blur">
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-          </span>
-          {templateCount > 0 ? (
-            <span><span className="font-semibold text-zinc-200">{templateCount} template</span> tersedia</span>
-          ) : (
-            <span>Starter kit Next.js & Laravel untuk Indonesia</span>
-          )}
-        </p>
-
         <h1
           className="hero-enter hero-enter-2 mx-auto mt-6 max-w-3xl text-balance text-5xl font-extrabold leading-[1.02] tracking-tight text-white sm:text-7xl"
         >
