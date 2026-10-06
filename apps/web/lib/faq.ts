@@ -22,7 +22,7 @@ export const FAQS: Faq[] = [
   },
   {
     q: "Apakah gratis?",
-    a: "Ya, open-source untuk developer Indonesia (MIT). Cukup Node.js v18+, Git, dan koneksi internet untuk mulai generate.",
+    a: "Ya, source-available di bawah PolyForm Shield untuk developer Indonesia. Cukup Node.js v18+, Git, dan koneksi internet untuk mulai generate.",
   },
   {
     q: "Di mana saya bisa bertanya atau lapor bug?",

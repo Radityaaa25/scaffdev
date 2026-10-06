@@ -75,6 +75,6 @@ cd toko-saya && npm install && cp .env.example .env.local && npm run dev
 
 **Scaffdev** — ship project hari ini, bukan minggu depan. 🚀
 
-MIT License • Open-source untuk developer Indonesia 🇮🇩
+[PolyForm Shield 1.0.0](./LICENSE.md) • Source-available untuk developer Indonesia 🇮🇩
 
 </div>

@@ -13,7 +13,7 @@ Kumpulan jawaban atas pertanyaan yang paling sering masuk — dari biaya, akun, 
 
 ### 1. Apakah Scaff gratis digunakan?
 
-**Ya, 100% gratis.** Seluruh template starter kit dan CLI Scaff bersifat open-source dan dapat kamu gunakan untuk project pribadi, perlombaan, maupun kebutuhan komersial.
+**Ya, 100% gratis.** Seluruh template starter kit dan CLI Scaffdev bersifat source-available (PolyForm Shield) dan dapat kamu gunakan untuk project pribadi, perlombaan, maupun kebutuhan komersial — selama bukan produk yang bersaing dengan Scaffdev.
 
 Yang mungkin berbayar adalah **layanan pihak ketiga** yang kamu pakai di dalam template (mis. paket berbayar Supabase / Midtrans / Xendit bila melewati kuota gratis). Scaff tidak memungut biaya dan tidak menagih langganan apa pun — tagihan layanan luar sepenuhnya urusanmu dengan penyedia layanan tersebut. Untuk tahap belajar dan MVP, tier gratis masing-masing layanan umumnya sudah cukup.
 

@@ -16,7 +16,7 @@
     "url": "git+https://github.com/Radityaaa25/scaffdev.git"
   },
   "homepage": "https://scaffdev.vercel.app",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE.md",
   "bin": {
     "scaffdev": "dist/index.js"
   },

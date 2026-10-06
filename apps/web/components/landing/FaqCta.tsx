@@ -89,7 +89,7 @@ export function FaqCta() {
                 </Link>
               </div>
               <p className="mt-4 text-center font-mono text-[11px] text-zinc-500">
-                MIT License · Open-source untuk developer Indonesia 🇮🇩
+                PolyForm Shield · Source-available untuk developer Indonesia 🇮🇩
               </p>
             </div>
           </Reveal>

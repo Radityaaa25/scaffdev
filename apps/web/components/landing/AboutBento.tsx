@@ -35,7 +35,7 @@ const MARQUEE_ITEMS = [
 // Daftar digandakan agar loop marquee padat tanpa celah.
 const MARQUEE_LOOP = [...MARQUEE_ITEMS, ...MARQUEE_ITEMS];
 
-/** Tentang Kami gaya bento: profil, stats live, open-source, kurasi lokal, kontak. */
+/** Tentang Kami gaya bento: profil, stats live, source-available, kurasi lokal, kontak. */
 export function AboutBento({ templateCount }: { templateCount: number }) {
   return (
     <section className="relative">
@@ -121,7 +121,7 @@ export function AboutBento({ templateCount }: { templateCount: number }) {
             </div>
           </Reveal>
 
-          {/* Open source */}
+          {/* Source-available */}
           <Reveal delay={0}>
             <div className="landing-spot relative flex h-full flex-col overflow-hidden rounded-2xl border border-[#26262B] bg-[#131316] p-6 transition-colors hover:border-[#8B5CF6]/50">
               <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#8B5CF6]/30 bg-[#8B5CF6]/10 text-[#A78BFA]">
@@ -129,7 +129,7 @@ export function AboutBento({ templateCount }: { templateCount: number }) {
                   <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.17c-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.75 2.69 1.25 3.34.95.1-.74.4-1.25.72-1.53-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 015.78 0c2.21-1.49 3.18-1.18 3.18-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.38-5.25 5.67.41.35.77 1.05.77 2.12v3.15c0 .3.21.67.8.55A11.51 11.51 0 0023.5 12C23.5 5.65 18.35.5 12 .5z" />
                 </svg>
               </span>
-              <h3 className="mt-4 text-base font-semibold text-white">Open-source (MIT)</h3>
+              <h3 className="mt-4 text-base font-semibold text-white">Source-available (Shield)</h3>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-zinc-400">
                 Dibangun terbuka untuk developer Indonesia. Intip kode, laporkan bug, atau berkontribusi.
               </p>

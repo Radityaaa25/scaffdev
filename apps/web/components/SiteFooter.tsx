@@ -98,7 +98,7 @@ export function SiteFooter() {
 
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/[0.06] pt-6 sm:flex-row">
           <p className="text-xs text-zinc-600">
-            © {new Date().getFullYear()} Scaffdev. Open-source untuk developer Indonesia.
+            © {new Date().getFullYear()} Scaffdev. Source-available untuk developer Indonesia.
           </p>
           <p className="font-mono text-xs text-zinc-600">
             npx <span className="text-[#8B5CF6]">scaffdev@latest</span>
