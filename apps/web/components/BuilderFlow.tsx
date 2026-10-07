@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import type { Template, TemplateDetailResponse } from "@scaff/database";
 import { CommandBox } from "@/components/CommandBox";
 import { IntegrationBadge } from "@/components/IntegrationBadge";
+import { LockIcon } from "@/components/DocsIcons";
 
 interface IntegrasiIndexItem {
   kode: string;
@@ -665,7 +666,7 @@ export function BuilderFlow() {
                     <div className="space-y-2 mt-1">
                       {baked && (
                         <div className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm bg-white/[0.03] border border-[#8B5CF6]/40">
-                          <span aria-hidden="true" title="Terkunci — bawaan base">🔒</span>
+                          <span aria-hidden="true" title="Terkunci — bawaan base"><LockIcon className="h-4 w-4" /></span>
                           <span className="text-zinc-200 font-medium">{baked.nama}</span>
                           <span className="ml-auto text-[10px] font-mono text-zinc-500">bawaan • terkunci</span>
                         </div>

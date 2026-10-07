@@ -95,7 +95,8 @@ export function TemplateCard({ template }: TemplateCardProps) {
           )}
         </div>
 
-        {/* Builder live hint */}
+        {/* Builder live hint — hanya bila template tersedia di Builder */}
+        {!template.builder_hidden && (
         <p className="flex items-center gap-1.5 text-[11px] text-zinc-500 mb-4">
           <span className="inline-flex items-center px-1.5 py-px rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
             New
@@ -104,6 +105,7 @@ export function TemplateCard({ template }: TemplateCardProps) {
             Racik custom di Builder →
           </Link>
         </p>
+        )}
 
         {/* Action Button */}
         <Link

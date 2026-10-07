@@ -7,6 +7,7 @@ import { Template } from "@scaff/database";
 import { TemplateCard } from "@/components/TemplateCard";
 import { TemplatesHero } from "@/components/TemplatesHero";
 import { fetchTemplates } from "@/lib/api";
+import { XIcon } from "@/components/DocsIcons";
 
 const PAGE_SIZE = 12;
 
@@ -275,7 +276,7 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
               className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white text-sm"
               aria-label="Hapus pencarian"
             >
-              ✕
+              <XIcon className="h-3.5 w-3.5" />
             </button>
           )}
         </div>

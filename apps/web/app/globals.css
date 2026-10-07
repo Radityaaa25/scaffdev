@@ -856,7 +856,7 @@ article.docs-article .terminal-card pre code {
 .hero-marquee-track {
   display: flex;
   width: max-content;
-  animation: hero-marquee-scroll 30s linear infinite;
+  animation: hero-marquee-scroll 60s linear infinite;
   will-change: transform;
 }
 .hero-marquee-group {

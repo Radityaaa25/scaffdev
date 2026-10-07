@@ -9,6 +9,7 @@ import { IntegrationPickerComingSoon } from "@/components/IntegrationPickerComin
 import { TemplateCard } from "@/components/TemplateCard";
 import { AskAI } from "@/components/AskAI";
 import { JsonLd } from "@/components/JsonLd";
+import { BoltIcon } from "@/components/DocsIcons";
 import {
   absoluteUrl,
   baseMetadata,
@@ -141,9 +142,9 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
         <div className="flex flex-wrap items-center gap-2 self-start md:self-auto shrink-0">
           <a
             href="#pakai-template"
-            className="px-5 py-2.5 rounded-xl font-medium text-sm text-white bg-[#8B5CF6] hover:bg-[#7C3AED] shadow-lg shadow-[#8B5CF6]/20 transition-all active:scale-[0.98]"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium text-sm text-white bg-[#8B5CF6] hover:bg-[#7C3AED] shadow-lg shadow-[#8B5CF6]/20 transition-all active:scale-[0.98]"
           >
-            ⚡ Pakai Template Ini
+            <BoltIcon className="h-4 w-4" /> Pakai Template Ini
           </a>
           {template.repo_url ? (
             <a
@@ -188,8 +189,11 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
       {/* Action Box: Pakai Template Ini */}
       <TemplateActionBox slug={template.slug} framework={template.framework} />
 
-      {/* Kombinasi custom via Builder (live) — preview + deep-link ?base= */}
-      <IntegrationPickerComingSoon baseSlug={template.slug} />
+      {/* Kombinasi custom via Builder (live) — preview + deep-link ?base=.
+          Disembunyikan bila template tidak tersedia di Builder. */}
+      {!template.builder_hidden && (
+        <IntegrationPickerComingSoon baseSlug={template.slug} />
+      )}
 
       {/* Description & Integration Specs */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">

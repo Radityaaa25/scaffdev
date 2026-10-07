@@ -75,6 +75,7 @@ export interface TemplateDetailResponse {
   kategori?: string;
   screenshot_url?: string;
   builder_hidden_kategoris: string[];
+  builder_hidden: boolean;
   integrasi: Array<{
     kode: string;
     nama_tampilan: string;

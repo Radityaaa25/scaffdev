@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { CommandBox } from "@/components/CommandBox";
+import { BoltIcon } from "@/components/DocsIcons";
 
 interface TemplateActionBoxProps {
   slug: string;
@@ -36,9 +37,9 @@ export function TemplateActionBox({ slug, framework }: TemplateActionBoxProps) {
           <button
             onClick={() => setShowCommand(true)}
             type="button"
-            className="w-full sm:w-auto px-6 py-3 rounded-xl font-medium text-sm text-white bg-[#8B5CF6] hover:bg-[#7C3AED] shadow-lg shadow-[#8B5CF6]/20 transition-all active:scale-[0.98] shrink-0"
+            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium text-sm text-white bg-[#8B5CF6] hover:bg-[#7C3AED] shadow-lg shadow-[#8B5CF6]/20 transition-all active:scale-[0.98] shrink-0"
           >
-            ⚡ Pakai Template Ini
+            <BoltIcon className="h-4 w-4" /> Pakai Template Ini
           </button>
         </div>
       ) : (

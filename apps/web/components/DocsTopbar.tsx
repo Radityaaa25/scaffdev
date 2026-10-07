@@ -32,7 +32,7 @@ export function DocsTopbar({ docs }: { docs: SpotlightDoc[] }) {
     <>
       <div className="flex w-full items-center gap-4">
         {/* Brand Section */}
-        <Link href="/docs" className="flex shrink-0 items-center gap-2.5" aria-label="Scaffdev Docs">
+        <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="Scaffdev - Beranda">
           <img
             src="/logo-full.png"
             alt="Scaffdev"

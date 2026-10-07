@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { UploadIcon } from "@/components/DocsIcons";
 
 const KATEGORI_OPTIONS = [
   { value: "bug", label: "Bug / Error", hint: "Fitur rusak, error, tampilan pecah" },
@@ -219,9 +220,9 @@ export function LaporForm() {
           type="button"
           disabled={uploading || pending}
           onClick={() => fileRef.current?.click()}
-          className="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-medium text-zinc-300 transition-all hover:bg-white/10 hover:text-white active:scale-95 disabled:opacity-60"
+          className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-medium text-zinc-300 transition-all hover:bg-white/10 hover:text-white active:scale-95 disabled:opacity-60"
         >
-          {uploading ? "Mengupload…" : "⬆ Pilih gambar bukti"}
+          {uploading ? "Mengupload…" : (<><UploadIcon className="h-4 w-4" /> Pilih gambar bukti</>)}
         </button>
         {uploadError && (
           <p className="mt-2 text-xs text-red-400">{uploadError}</p>

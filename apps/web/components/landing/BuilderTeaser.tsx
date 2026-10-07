@@ -85,7 +85,7 @@ export function BuilderTeaser() {
                   <span />
                   <span />
                 </div>
-                <p className="hero-term-title">racikan — bash</p>
+                <p className="hero-term-title">Builder</p>
                 <span className="ml-auto hidden font-mono text-[11px] text-zinc-600 sm:block">live preview</span>
               </div>
               <div className="w-full min-w-0 p-3.5 sm:p-6">
