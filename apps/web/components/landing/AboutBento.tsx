@@ -88,7 +88,7 @@ export function AboutBento({ templateCount }: { templateCount: number }) {
                     <div />
                   </span>
                 </Link>
-                {/* btn-gooey: filter SVG-nya sudah dirender sekali di hero (BitsHero) — jangan diduplikat (id harus unik). */}
+                {/* btn-gooey: filter SVG-nya sudah dirender sekali di hero (TemplatesHero) — jangan diduplikat (id harus unik). */}
                 <Link
                   href="/templates"
                   className="btn-gooey group w-full max-w-56 text-center"

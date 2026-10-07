@@ -943,6 +943,28 @@ article.docs-article .terminal-card pre code {
   transform: scale(0.98);
 }
 
+/* Kilau sweep subtle untuk CTA outline (dipakai tombol Builder di halaman detail).
+   Hanya overlay ::after transparan — warna dasar tombol tidak diubah. */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.16) 50%, transparent 60%);
+  transform: translateX(-130%);
+  transition: transform 800ms ease;
+  pointer-events: none;
+}
+
+.btn-shine:hover::after {
+  transform: translateX(130%);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .btn-gooey,
   .btn-gooey .btn-gooey__blobs div {

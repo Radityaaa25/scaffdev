@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "@/components/landing/landing.css";
 import { LandingBackdrop } from "@/components/landing/LandingBackdrop";
-import { BitsHero } from "@/components/landing/BitsHero";
+import { TemplatesHero } from "@/components/TemplatesHero";
 import { AboutBento } from "@/components/landing/AboutBento";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { BuilderTeaser } from "@/components/landing/BuilderTeaser";
@@ -81,7 +81,10 @@ export default async function LandingPage() {
         )}
       />
       <JsonLd data={faqPageJsonLd(FAQS)} />
-      <BitsHero templateCount={initialTemplates.length} />
+      {/* Samakan lebar hero dengan konten lain: max-w-7xl + padding horizontal. */}
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
+        <TemplatesHero />
+      </div>
       <AboutBento templateCount={initialTemplates.length} />
       <HowItWorks />
       <BuilderTeaser />

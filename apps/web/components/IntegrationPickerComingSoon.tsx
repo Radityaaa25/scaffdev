@@ -130,7 +130,7 @@ export function IntegrationPickerComingSoon({ baseSlug }: { baseSlug: string }) 
         </p>
         <Link
           href={`/builder?base=${encodeURIComponent(baseSlug)}`}
-          className="shrink-0 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-300 transition-all hover:bg-emerald-500/20 active:scale-95"
+          className="btn-shine shrink-0 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-300 transition-all hover:bg-emerald-500/20 active:scale-95"
         >
           Rancang template ini di Builder →
         </Link>

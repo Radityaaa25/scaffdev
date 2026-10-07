@@ -11,18 +11,6 @@ const HIGHLIGHTS = [
   "Generate via 1 baris CLI",
 ];
 
-const SUPPORTED = [
-  { name: "nextjs", label: "Next.js", logo: "/logo-nextjs.svg", wordmark: false },
-  { name: "laravel", label: "Laravel", logo: "/logo-laravel.svg", wordmark: false },
-  { name: "supabase", label: "Supabase", logo: "/logo-supabase.svg", wordmark: false },
-  { name: "midtrans", label: "Midtrans", logo: "/logo-midtrans.svg", wordmark: true },
-  { name: "xendit", label: "Xendit", logo: "/logo-xendit.svg", wordmark: false },
-  { name: "duitku", label: "Duitku", logo: "/logo-duitku.svg", wordmark: true },
-];
-
-// Tiap paruh loop berisi 2x daftar agar aliran selalu padat tanpa celah.
-const MARQUEE_HALF = [...SUPPORTED, ...SUPPORTED];
-
 /** Hero modern halaman katalog: copy + kartu terminal animasi ketik. */
 export function TemplatesHero() {
   const [copied, setCopied] = useState(false);
@@ -72,8 +60,8 @@ export function TemplatesHero() {
           </ul>
 
           <div className="hero-enter hero-enter-4 mt-6 sm:mt-7 flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-            <a
-              href="#katalog"
+            <Link
+              href="/templates"
               className="btn-gooey group"
             >
               Jelajahi Template
@@ -83,7 +71,7 @@ export function TemplatesHero() {
                 <div />
                 <div />
               </span>
-            </a>
+            </Link>
             <svg xmlns="http://www.w3.org/2000/svg" version="1.1" aria-hidden="true" style={{ display: "block", height: 0, width: 0, position: "absolute" }}>
               <defs>
                 <filter id="btn-gooey-filter">
@@ -162,40 +150,6 @@ export function TemplatesHero() {
             {copied ? "✓ Command tersalin — tempel di terminal" : "Satu baris command untuk generate project"}
           </p>
         </div>
-      </div>
-
-      {/* Marquee full selebar konten */}
-          <div className="hero-enter hero-enter-5 relative mt-10 sm:mt-12 w-full">
-            <div className="mb-5 flex justify-center">
-              <p className="inline-flex items-center rounded-full border border-[#8B5CF6]/50 bg-[#8B5CF6]/10 px-5 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-[#C4B5FD] shadow-[0_0_24px_rgba(139,92,246,0.35)]">
-                Terintegrasi dengan
-              </p>
-            </div>
-            <div className="hero-marquee" aria-label="Terintegrasi dengan Next.js, Laravel, Supabase, Midtrans, Xendit, Duitku">
-              <div className="hero-marquee-track">
-                {[0, 1].map((copy) => (
-                  <div key={copy} className="hero-marquee-group" aria-hidden={copy === 1}>
-                    {MARQUEE_HALF.map((s, i) => (
-                      <span
-                        key={`${s.name}-${i}`}
-                        className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] px-6 py-3 whitespace-nowrap"
-                      >
-                        <img
-                          src={s.logo}
-                          alt={`Logo ${s.label}`}
-                          loading="lazy"
-                          draggable={false}
-                          className={s.wordmark ? "h-6 w-auto shrink-0" : "h-6 w-6 shrink-0"}
-                        />
-                        {!s.wordmark && (
-                          <span className="font-mono text-base text-zinc-200">{s.label}</span>
-                        )}
-                      </span>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
       </div>
     </section>
   );
