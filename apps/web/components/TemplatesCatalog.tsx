@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Template } from "@scaff/database";
 import { TemplateCard } from "@/components/TemplateCard";
-import { TemplatesHero } from "@/components/TemplatesHero";
+import { IntegrationMarquee } from "@/components/IntegrationMarquee";
 import { fetchTemplates } from "@/lib/api";
 import { XIcon } from "@/components/DocsIcons";
 
@@ -238,7 +238,22 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
       </div>
 
       <div className="container relative mx-auto px-4 py-12 max-w-7xl">
-      <TemplatesHero />
+      {/* Header katalog ringkas — hero besar + marquee pindah ke landing. */}
+      <section className="relative mb-10">
+        <div className="relative py-2 sm:py-4">
+          <p className="hero-enter hero-enter-1 font-mono text-xs uppercase tracking-widest text-[#8B5CF6]">
+            ◆ Katalog
+          </p>
+          <h1 className="hero-enter hero-enter-2 mt-3 text-3xl sm:text-4xl font-extrabold text-[#FAFAFA] tracking-tight">
+            Jelajahi Template
+          </h1>
+          <p className="hero-enter hero-enter-3 mt-3 max-w-2xl text-sm sm:text-base text-zinc-400 leading-relaxed">
+            Starter kit <span className="text-zinc-200 font-medium">Next.js & Laravel</span> siap
+            jalan dengan kurasi integrasi lokal Indonesia. Pilih template, salin
+            command, generate — langsung bisa dikembangkan.
+          </p>
+        </div>
+      </section>
 
       {/* Builder live banner */}
       <div className="flex items-start sm:items-center gap-3 bg-emerald-500/[0.07] border border-emerald-500/25 rounded-xl px-4 py-3 mb-6">
@@ -254,6 +269,9 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
           Maks 1 pilihan per kategori.
         </p>
       </div>
+
+      {/* Marquee "Terintegrasi dengan" — hanya di halaman template. */}
+      <IntegrationMarquee />
 
       {/* Search + Sort */}
       <div id="katalog" className="flex flex-col sm:flex-row gap-3 mb-4 scroll-mt-24">

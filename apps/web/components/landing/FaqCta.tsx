@@ -77,15 +77,25 @@ export function FaqCta() {
               <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                 <Link
                   href="/templates"
-                  className="inline-flex flex-1 items-center justify-center rounded-xl bg-[#8B5CF6] px-5 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(139,92,246,0.35)] transition-all hover:bg-[#7C3AED] active:scale-[0.98]"
+                  className="btn-gooey flex-1 text-center"
                 >
                   Jelajahi Template
+                  <span className="btn-gooey__blobs" aria-hidden="true">
+                    <div />
+                    <div />
+                    <div />
+                  </span>
                 </Link>
                 <Link
                   href="/builder"
-                  className="inline-flex flex-1 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-zinc-200 transition-all hover:border-white/20 hover:text-white active:scale-[0.98]"
+                  className="btn-gooey-reverse flex-1 text-center"
                 >
                   Coba Builder
+                  <span className="btn-gooey__blobs" aria-hidden="true">
+                    <div />
+                    <div />
+                    <div />
+                  </span>
                 </Link>
               </div>
               <p className="mt-4 text-center font-mono text-[11px] text-zinc-500">
