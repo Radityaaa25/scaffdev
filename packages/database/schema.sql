@@ -665,3 +665,13 @@ alter table public.templates
 -- ============================================================
 alter table public.templates
   add column if not exists builder_hidden boolean not null default false;
+
+-- ============================================================
+-- Migrasi 013 — URL dokumentasi resmi per integrasi
+-- docs_url: link dokumentasi resmi modul (sumber tunggal: manifest).
+-- Kosong = tidak ditampilkan di halaman integrasi. Diatur admin via
+-- field "Dokumentasi Resmi" (disalin dari manifest modul).
+-- CARA PAKAI: jalankan blok ini sekali di Supabase SQL Editor.
+-- ============================================================
+alter table public.integrasi
+  add column if not exists docs_url text not null default '';

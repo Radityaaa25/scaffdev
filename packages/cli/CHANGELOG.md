@@ -1,5 +1,15 @@
 # Changelog CLI Scaffdev
 
+## 0.4.0
+
+- Standalone integration: `scaffdev add <kode>` — suntik 1 modul ke project
+  yang sedang dibuka (deteksi framework + fallback prompt, konflik
+  Cancel/Overwrite/Skip + backup `.scaff/trash/`, preview rencana, install
+  opsional, validasi final).
+- Mode interaktif opsi ke-3: Ambil integrasi (memakai mesin `add` yang sama).
+- Injector: mode konflik `skip`/`overwrite` (default `abort`, perilaku lama).
+- Manifest: field opsional `docsUrl` (URL dokumentasi resmi, tanpa hardcode).
+
 ## 0.3.0
 
 - Security audit repository: prompt `Run security audit?` sebelum setiap clone

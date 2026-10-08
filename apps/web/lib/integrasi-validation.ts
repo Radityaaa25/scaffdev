@@ -35,6 +35,7 @@ export interface NormalizedIntegrasiInput {
   instruksi_setup: string | null;
   repo_url: string;
   framework_compat: string[];
+  docs_url: string;
 }
 
 export function validateIntegrasiInput(
@@ -161,6 +162,21 @@ export function validateIntegrasiInput(
     out.framework_compat = cleaned;
   } else if (!opts.partial) {
     out.framework_compat = [];
+  }
+
+  // docs_url (URL dokumentasi resmi; kosong = tidak ditampilkan).
+  // Disalin admin dari manifest modul (sumber kebenaran tetap manifest).
+  if ("docs_url" in b) {
+    if (b.docs_url != null && typeof b.docs_url !== "string") {
+      return { ok: false, error: "Field 'docs_url' harus string URL." };
+    }
+    const d = typeof b.docs_url === "string" ? b.docs_url.trim() : "";
+    if (d && !/^https:\/\//i.test(d)) {
+      return { ok: false, error: "Field 'docs_url' harus URL https yang valid." };
+    }
+    out.docs_url = d;
+  } else if (!opts.partial) {
+    out.docs_url = "";
   }
 
   return { ok: true, data: out };

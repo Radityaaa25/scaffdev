@@ -27,6 +27,8 @@ export interface IntegrationManifest {
   dependencies?: { npm?: Record<string, string>; composer?: Record<string, string> };
   env?: string[];
   setup?: string;
+  /** URL dokumentasi resmi (opsional). Satu-satunya sumber link docs resmi. */
+  docsUrl?: string;
   removal?: { files: string[]; env: string[]; stepsFile: string };
   conflicts?: string[];
 }
@@ -209,6 +211,14 @@ export function parseIntegrationManifest(raw: unknown):
   }
 
   let removal: IntegrationManifest["removal"];
+  let docsUrl: string | undefined;
+  if (raw.docsUrl !== undefined) {
+    if (typeof raw.docsUrl !== "string" || !/^https:\/\//i.test(raw.docsUrl.trim())) {
+      errors.push({ field: "docsUrl", message: "Field 'docsUrl' harus URL https dokumentasi resmi (contoh: https://docs.midtrans.com)." });
+    } else {
+      docsUrl = raw.docsUrl.trim();
+    }
+  }
   if (raw.removal !== undefined) {
     if (!isPlainObject(raw.removal)) {
       errors.push({ field: "removal", message: "Field 'removal' harus object {files, env, stepsFile}." });
@@ -258,6 +268,7 @@ export function parseIntegrationManifest(raw: unknown):
     manifest.env = raw.env.filter((x): x is string => typeof x === "string").map((x) => x.trim()).filter(Boolean);
   }
   if (typeof raw.setup === "string" && raw.setup.trim()) manifest.setup = raw.setup.trim();
+  if (docsUrl) manifest.docsUrl = docsUrl;
   if (removal) manifest.removal = removal;
   if (Array.isArray(raw.conflicts)) {
     manifest.conflicts = [...new Set(

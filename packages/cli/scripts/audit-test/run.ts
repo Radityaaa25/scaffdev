@@ -9,6 +9,11 @@
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
+import { execFileSync } from "child_process";
+import {
+  injectModule,
+  cleanupModuleDir,
+} from "../../src/lib/injector";
 import {
   parseGitHubRepo,
   extractTarFiles,
@@ -279,5 +284,136 @@ ok("skip-src", !wantAuditFile("src/index.ts"));
   ]), "CRITICAL");
 }
 
-console.log(fail === 0 ? `OK: ${pass} asersi lolos` : `GAGAL: ${fail} dari ${pass + fail}`);
-process.exit(fail === 0 ? 0 : 1);
+// ---------- 10. inject conflict modes (repo git lokal, tanpa network) ----------
+
+function makeModuleRepo(): string {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "scaff-modrepo-"));
+  const manifest = {
+    kode: "fixture-mod",
+    version: "0.0.0",
+    frameworks: ["nextjs"],
+    files: [{ src: "lib/m.ts", dest: "lib/m.ts" }],
+    removal: { files: ["lib/m.ts"], env: [], stepsFile: "REMOVE.md" },
+  };
+  fs.mkdirSync(path.join(dir, "nextjs", "lib"), { recursive: true });
+  fs.writeFileSync(path.join(dir, "nextjs", "lib", "m.ts"), "export const fromModule = true;\n");
+  fs.writeFileSync(path.join(dir, "scaff.integration.json"), JSON.stringify(manifest, null, 2));
+  fs.writeFileSync(path.join(dir, "REMOVE.md"), "# copot: hapus lib/m.ts\n");
+  execFileSync("git", ["init", "-q", "-b", "main"], { cwd: dir });
+  execFileSync("git", ["add", "-A"], { cwd: dir });
+  execFileSync("git", ["-c", "user.email=t@t", "-c", "user.name=t", "commit", "-qm", "fixture"], {
+    cwd: dir,
+  });
+  return dir;
+}
+
+function makeProject(withCollision: boolean): string {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "scaff-proj-"));
+  if (withCollision) {
+    fs.mkdirSync(path.join(dir, "lib"), { recursive: true });
+    fs.writeFileSync(path.join(dir, "lib", "m.ts"), "export const mine = true;\n");
+  }
+  return dir;
+}
+
+async function sectionInjectModes(): Promise<void> {
+  // Catatan: git checkout di Windows dapat memberi CRLF — bandingkan
+  // setelah normalisasi agar uji stabil lintas OS.
+  const norm = (s: string): string => s.replace(/\r\n/g, "\n");
+  const repo = makeModuleRepo();
+  const workRoot = fs.mkdtempSync(path.join(os.tmpdir(), "scaff-work-"));
+  try {
+    // abort (default): gagal eksplisit, project utuh.
+    {
+      const proj = makeProject(true);
+      try {
+        let threw = "";
+        try {
+          await injectModule(proj, repo, "nextjs", workRoot);
+        } catch (err) {
+          threw = (err as Error).message;
+        }
+        ok("inject-abort-throw", threw.includes("TABRAKAN"));
+        eq(
+          "inject-abort-untouched",
+          norm(fs.readFileSync(path.join(proj, "lib", "m.ts"), "utf8")),
+          "export const mine = true;\n"
+        );
+      } finally {
+        fs.rmSync(proj, { recursive: true, force: true });
+      }
+    }
+
+    // skip: hanya file baru, yang ada dilewati + tercatat.
+    {
+      const proj = makeProject(true);
+      try {
+        const r = await injectModule(proj, repo, "nextjs", workRoot, { onConflict: "skip" });
+        eq("inject-skip-installed", r.installedFiles, []);
+        eq("inject-skip-skipped", r.skippedFiles, ["lib/m.ts"]);
+        eq(
+          "inject-skip-untouched",
+          norm(fs.readFileSync(path.join(proj, "lib", "m.ts"), "utf8")),
+          "export const mine = true;\n"
+        );
+        cleanupModuleDir(r.dir);
+      } finally {
+        fs.rmSync(proj, { recursive: true, force: true });
+      }
+    }
+
+    // overwrite: backup dulu ke .scaff/trash, lalu timpa.
+    {
+      const proj = makeProject(true);
+      try {
+        const r = await injectModule(proj, repo, "nextjs", workRoot, { onConflict: "overwrite" });
+        eq("inject-overwrite-installed", r.installedFiles, ["lib/m.ts"]);
+        eq("inject-overwrite-list", r.overwrittenFiles, ["lib/m.ts"]);
+        eq(
+          "inject-overwrite-content",
+          norm(fs.readFileSync(path.join(proj, "lib", "m.ts"), "utf8")),
+          "export const fromModule = true;\n"
+        );
+        ok(
+          "inject-overwrite-backup",
+          Boolean(r.backedUpTo) && fs.existsSync(path.join(r.backedUpTo as string, "lib", "m.ts"))
+        );
+        eq(
+          "inject-overwrite-backup-content",
+          norm(fs.readFileSync(path.join(r.backedUpTo as string, "lib", "m.ts"), "utf8")),
+          "export const mine = true;\n"
+        );
+        cleanupModuleDir(r.dir);
+      } finally {
+        fs.rmSync(proj, { recursive: true, force: true });
+      }
+    }
+
+    // bersih: terpasang + receipt tercatat.
+    {
+      const proj = makeProject(false);
+      try {
+        const r = await injectModule(proj, repo, "nextjs", workRoot);
+        eq("inject-clean-installed", r.installedFiles, ["lib/m.ts"]);
+        ok("inject-clean-receipt", fs.existsSync(path.join(proj, ".scaff", "receipt.json")));
+        cleanupModuleDir(r.dir);
+      } finally {
+        fs.rmSync(proj, { recursive: true, force: true });
+      }
+    }
+  } finally {
+    fs.rmSync(repo, { recursive: true, force: true });
+    fs.rmSync(workRoot, { recursive: true, force: true });
+  }
+}
+
+sectionInjectModes().then(
+  () => {
+    console.log(fail === 0 ? `OK: ${pass} asersi lolos` : `GAGAL: ${fail} dari ${pass + fail}`);
+    process.exit(fail === 0 ? 0 : 1);
+  },
+  (err) => {
+    console.log(`GAGAL (exception): ${(err as Error).message}`);
+    process.exit(1);
+  }
+);

@@ -71,3 +71,25 @@ export async function getTemplateBySlug(slug: string): Promise<TemplateDetailRes
     integrasi: integrasiDetails,
   };
 }
+
+export async function getAllIntegrasi(): Promise<Integrasi[]> {
+  const { data, error } = await supabase
+    .from("integrasi")
+    .select("*")
+    .order("nama_tampilan");
+  if (error) {
+    console.error("Error fetching integrasi:", error);
+    return [];
+  }
+  return (data ?? []) as Integrasi[];
+}
+
+export async function getIntegrasiByKode(kode: string): Promise<Integrasi | null> {
+  const { data, error } = await supabase
+    .from("integrasi")
+    .select("*")
+    .eq("kode", kode.toLowerCase())
+    .single();
+  if (error || !data) return null;
+  return data as Integrasi;
+}

@@ -18,6 +18,7 @@ export interface IntegrasiFormInitial {
   instruksi_setup: string;
   repo_url: string;
   framework_compat: string[];
+  docs_url: string;
 }
 
 export interface FrameworkOption {
@@ -53,6 +54,7 @@ export function IntegrasiForm({
   );
   const [instruksi, setInstruksi] = useState(initial?.instruksi_setup ?? "");
   const [repoUrl, setRepoUrl] = useState(initial?.repo_url ?? "");
+  const [docsUrl, setDocsUrl] = useState(initial?.docs_url ?? "");
   const [fwCompat, setFwCompat] = useState<string[]>(initial?.framework_compat ?? []);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -102,6 +104,7 @@ export function IntegrasiForm({
       instruksi_setup: instruksi.trim(),
       repo_url: repoUrl.trim(),
       framework_compat: fwCompat,
+      docs_url: docsUrl.trim(),
     };
     const res = await apiFetch(
       mode === "new" ? "/api/integrasi" : `/api/integrasi/${encodeURIComponent(kode ?? "")}`,
@@ -227,6 +230,20 @@ export function IntegrasiForm({
             placeholder="https://github.com/username/scaff-modul-tripay.git"
             className={`${inputCls} font-mono`}
           />
+        </div>
+        <div className="mt-4">
+          <label htmlFor="docs_url" className={labelCls}>Dokumentasi Resmi (opsional)</label>
+          <input
+            id="docs_url"
+            type="url"
+            value={docsUrl}
+            onChange={(e) => setDocsUrl(e.target.value)}
+            placeholder="https://docs.midtrans.com"
+            className={`${inputCls} font-mono`}
+          />
+          <p className="mt-1 text-xs text-zinc-500">
+            Satu-satunya sumber link docs resmi (juga isi field `docsUrl` di manifest modul).
+          </p>
         </div>
         <div className="mt-4">
           <span className={labelCls}>Kompatibel dengan framework</span>

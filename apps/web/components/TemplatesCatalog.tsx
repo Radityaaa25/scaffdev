@@ -508,6 +508,24 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
           )}
         </div>
       )}
+
+      {/* Strip integrasi: presentasi terpisah, katalog tetap utuh. */}
+      <Link
+        href="/integrasi"
+        className="group mt-10 flex flex-col sm:flex-row sm:items-center gap-3 rounded-2xl border border-[#3F3F4C] bg-[#24242C] p-5 transition-colors hover:border-[#8B5CF6]/40"
+      >
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-semibold text-white">
+            Butuh integrasi satuan, bukan template utuh?
+          </span>
+          <span className="mt-0.5 block text-xs text-zinc-500 leading-relaxed">
+            Jelajahi modul Supabase, Midtrans, Xendit, dan lainnya — satu modul untuk Builder dan CLI.
+          </span>
+        </span>
+        <span className="shrink-0 rounded-xl border border-[#8B5CF6]/30 bg-[#8B5CF6]/10 px-4 py-2 text-xs font-medium text-[#C4B5FD] transition-all group-hover:bg-[#8B5CF6]/20">
+          Lihat Integrasi →
+        </span>
+      </Link>
       </div>
     </div>
   );
