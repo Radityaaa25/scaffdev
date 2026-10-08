@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Output kompilasi harness eval-ai (generated, bukan source).
+    "scripts/eval-ai/dist/**",
   ]),
 ]);
 

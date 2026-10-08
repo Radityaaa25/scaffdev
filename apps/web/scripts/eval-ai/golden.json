@@ -1,0 +1,50 @@
+[
+  {
+    "name": "lisensi-dijamin-fakta",
+    "question": "Apa lisensi Scaffdev?",
+    "expectSlugInTop3": [],
+    "expectFactInContext": ["PolyForm Shield"]
+  },
+  {
+    "name": "cara-install",
+    "question": "Bagaimana cara install scaffdev?",
+    "expectSlugInTop3": ["cara-install"],
+    "expectFactInContext": ["npx scaffdev@latest"]
+  },
+  {
+    "name": "env-tidak-terbaca",
+    "question": "ENV saya tidak terbaca, apa yang salah?",
+    "expectSlugInTop3": ["env-dan-setup"],
+    "expectFactInContext": []
+  },
+  {
+    "name": "batas-integrasi-builder",
+    "question": "Berapa maksimal integrasi payment di Builder?",
+    "expectSlugInTop3": ["panduan-builder"],
+    "expectFactInContext": ["maks 1 per kategori"]
+  },
+  {
+    "name": "port-dipakai",
+    "question": "Port dev server sudah dipakai, bagaimana?",
+    "expectSlugInTop3": ["troubleshooting"],
+    "expectFactInContext": []
+  },
+  {
+    "name": "faq-gratis",
+    "question": "Apakah gratis?",
+    "expectSlugInTop3": ["faq-3"],
+    "expectFactInContext": ["PolyForm Shield"]
+  },
+  {
+    "name": "sinonim-bayar",
+    "question": "Bagaimana cara bayar pakai template?",
+    "expectSlugInTop3": ["daftar-integrasi"],
+    "expectFactInContext": []
+  },
+  {
+    "name": "perintah-generate",
+    "question": "Command untuk generate project ecommerce apa?",
+    "expectSlugInTop3": ["cara-install"],
+    "expectFactInContext": ["--template=<slug>"]
+  }
+]

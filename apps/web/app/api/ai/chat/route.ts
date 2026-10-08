@@ -2,6 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAllTemplates } from "@/lib/data";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { getGroqKeys, groqChatStreamFirstOk, GroqError, type GroqMessage } from "@/lib/ai-groq";
+import { isChatRateLimited } from "@/lib/rate-limit";
+import {
+  expandTerms,
+  faqCorpus,
+  queryTerms,
+  scoreDocs,
+  truncateToParagraph,
+  SCAFFDEV_FACTS,
+  type SearchDoc,
+} from "@/lib/ai-retrieval";
+import { FAQS } from "@/lib/faq";
 // NOTED: @/lib/docs SENGAJA di-import lazy di dalam handler (bukan static
 // import): bila modul docs gagal di-load di suatu environment, chat tetap
 // hidup tanpa konteks docs + error-nya berupa JSON, bukan 500 kosong.
@@ -15,23 +26,8 @@ const MAX_TOKENS = 600;
 /** Timeout per key. Dengan 3 key, worst-case ≈ 45 dtk; kasus normal 1 key langsung jawab. */
 const GROQ_TIMEOUT_MS = 15000;
 
-// Rate limit sederhana per IP (in-memory).
-// Catatan: di serverless multi-instance (Vercel), hitungan bersifat per-instance.
-// Cukup untuk MVP; naikkan ke KV/Upstash bila disalahgunakan.
-const WINDOW_MS = 10 * 60 * 1000;
-const LIMIT = 10;
-const hits = new Map<string, { count: number; reset: number }>();
-
-function rateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = hits.get(ip);
-  if (!entry || now > entry.reset) {
-    hits.set(ip, { count: 1, reset: now + WINDOW_MS });
-    return false;
-  }
-  entry.count += 1;
-  return entry.count > LIMIT;
-}
+// Rate limit via helper shared (KV Upstash bila env tersedia,
+// fallback in-memory). 10 pertanyaan / 10 menit / IP.
 
 function clientIp(request: NextRequest): string {
   const forwarded = request.headers.get("x-forwarded-for");
@@ -52,7 +48,7 @@ interface ChatMessage {
 
 /** Kata yang menandakan pertanyaan Scaffdev: bila cocok, JANGAN PERNAH tolak. */
 const SCAFFDEV_HINT =
-  /(scaffdev|tanya scaffdev|template|cli|npx|env|setup|instal|error|gagal|midtrans|supabase|xendit|duitku|rajaongkir|fonnte|cloudinary|resend|ongkir|bayar|payment|database|laravel|next|builder|katalog|deploy|slug|webhook|callback|invoice|email|whatsapp|framework|kategori|docs|dokumentasi|troubleshoot|folder|project|repositori|repo\b)/i;
+  /(scaffdev|tanya scaffdev|template|cli|npx|env|setup|instal|error|gagal|midtrans|supabase|xendit|duitku|rajaongkir|fonnte|cloudinary|resend|ongkir|bayar|payment|database|laravel|next|builder|katalog|deploy|slug|webhook|callback|invoice|email|whatsapp|framework|kategori|docs|dokumentasi|troubleshoot|folder|project|repositori|repo\b|lisensi|license|premium|berbayar|harga|biaya)/i;
 
 /** Pola off-topic kuat: jailbreak, minta kode umum, tugas sekolah, lifestyle. */
 const OFFTOPIC_PATTERNS: { re: RegExp; tag: string }[] = [
@@ -98,18 +94,8 @@ function fastReject(message: string): string | null {
 // bukan dump semua docs. Prompt kecil = lebih cepat + jawaban lebih fokus.
 // ---------------------------------------------------------------------------
 
-const SHORT_TERMS = new Set(["cli", "env", "slug", "api", "sdk", "db", "ui", "pr"]);
-
-function queryTerms(message: string): string[] {
-  const words = message
-    .toLowerCase()
-    .split(/[^a-z0-9_]+/)
-    .filter((w) => w.length > 3 || SHORT_TERMS.has(w));
-  return [...new Set(words)];
-}
-
 async function relevantDocParts(message: string, maxDocs = 3, charsEach = 1500): Promise<string[]> {
-  const terms = queryTerms(message);
+  const terms = expandTerms(queryTerms(message));
   let docsLib: typeof import("@/lib/docs");
   try {
     docsLib = await import("@/lib/docs");
@@ -120,24 +106,16 @@ async function relevantDocParts(message: string, maxDocs = 3, charsEach = 1500):
   }
   const docs = docsLib.getAllDocs();
   if (terms.length === 0 || docs.length === 0) return [];
-  const scored: { title: string; content: string; score: number }[] = [];
+  const corpus: SearchDoc[] = [];
   for (const d of docs) {
     const full = await docsLib.getDocBySlug(d.slug);
     if (!full) continue;
-    const hayTitle = full.title.toLowerCase();
-    const hayBody = full.content.toLowerCase().slice(0, 4000);
-    let score = 0;
-    for (const t of terms) {
-      if (hayTitle.includes(t)) score += 3;
-      // NOTED: hitung kemunculan di body maksimal 3 agar 1 doc berulang-ulang
-      // tidak mengalahkan doc yang cocok banyak istilah berbeda.
-      const hits = hayBody.split(t).length - 1;
-      score += Math.min(hits, 3);
-    }
-    if (score > 0) scored.push({ title: full.title, content: full.content, score });
+    corpus.push({ slug: d.slug, title: full.title, content: full.content });
   }
-  scored.sort((a, b) => b.score - a.score);
-  return scored.slice(0, maxDocs).map((s) => `### ${s.title}\n${s.content.slice(0, charsEach)}`);
+  // FAQ ikut jadi unit retrievable (jawaban pendek sering paling tepat).
+  for (const f of faqCorpus(FAQS)) corpus.push(f);
+  const scored = scoreDocs(corpus, terms, maxDocs);
+  return scored.map((s) => `### ${s.title}\n${truncateToParagraph(s.content, charsEach)}`);
 }
 
 /**
@@ -156,7 +134,7 @@ export async function POST(request: NextRequest) {
   }
 
   const ip = clientIp(request);
-  if (rateLimited(ip)) {
+  if (await isChatRateLimited(ip)) {
     return NextResponse.json(
       { error: "Terlalu banyak pertanyaan. Tunggu ±10 menit lalu coba lagi." },
       { status: 429 }
@@ -246,15 +224,7 @@ export async function POST(request: NextRequest) {
     "- Tutup dengan 1 kalimat tawaran bantuan SPESIFIK (contoh: 'Mau aku jelaskan cara isi .env.local-nya?'), bukan 'Ada yang mau ditanyakan lagi?' yang generik.",
     "",
     "FAKTA KUNCI SCAFFDEV (jadikan acuan, jangan dikarang):",
-    "- Command interaktif: npx scaffdev@latest. Langsung via slug: npx scaffdev@latest --template=<slug> (WAJIB pakai tanda =, tanpa spasi). Nama folder custom: npx scaffdev@latest nama-folder --template=<slug>. Instal global: npm install -g scaffdev.",
-    "- Framework template yang didukung: Next.js (App Router, butuh Node.js v18+) dan Laravel (butuh PHP 8.2+ dan Composer). Selain itu BELUM didukung.",
-    "- Kategori: ecommerce, landing-page, portfolio.",
-    "- Alur: pilih template di web → generate via CLI (git clone template + generate .env.example & SETUP.md) → salin env (Next.js: cp .env.example .env.local; Laravel: cp .env.example .env + php artisan key:generate) → isi API key → npm run dev / php artisan serve.",
-    "- Aturan env: nilai berprefix NEXT_PUBLIC_ terbaca di browser. Secret server (mis. Midtrans server key, Xendit secret) JANGAN pakai prefix itu. Jangan pernah commit .env/.env.local (sudah di .gitignore template).",
-    "- Scaffdev TIDAK membuatkan akun pihak ketiga (Supabase/Midtrans/Xendit/RajaOngkir): user daftar sendiri. Scaffdev hanya menyiapkan kode + panduan di SETUP.md. Semua repo template publik, clone tanpa token/login.",
-    "- 'Builder' adalah nama fitur rancang-sendiri di /builder (pilih template base + centang integrasi, maks 1 per kategori inti; kategori other boleh multi): SUDAH LIVE, butuh CLI 0.2.0+. Katalog Template juga live.",
-    "- Aturan 'maks 1 per kategori' (1 payment, 1 database, dst.) berlaku di Builder (kategori inti). Template katalog tidak terpengaruh (isinya fix). Kalau user bertanya 'apakah bisa custom integrasi?', jawab: bisa, lewat Builder. Contoh: npx scaffdev@latest toko-saya --template=ecommerce-basic-nextjs --with=midtrans,supabase.",
-    "- Saat menyebut command, gunakan format npx scaffdev@latest --template=<slug>.",
+    ...SCAFFDEV_FACTS,
     docParts.length > 0
       ? `DOKUMENTASI RELEVAN:\n${docParts.join("\n\n")}`
       : "DOKUMENTASI RELEVAN: (tidak ada halaman docs yang cocok. Jawab dari FAKTA KUNCI + KATALOG di bawah)",
