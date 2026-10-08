@@ -17,6 +17,7 @@ export interface Integrasi {
   instruksi_setup?: string | null;
   repo_url: string;
   framework_compat: string[];
+  docs_url: string;
   created_at: string;
 }
 

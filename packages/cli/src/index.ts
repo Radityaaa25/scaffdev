@@ -52,6 +52,7 @@ Penggunaan:
   npx scaffdev@latest <folder> --template=<slug>
   npx scaffdev@latest <folder> --template=<slug> --with=<kode1,kode2>
                                                           Tambah modul integrasi (Builder)
+  npx scaffdev add <kode>                                 Suntik 1 modul ke project yang sedang dibuka
   scaffdev validate-module <path-atau-repo>                Validasi manifest modul/template
 
 Opsi:
@@ -62,7 +63,8 @@ Opsi:
   -h, --help         Tampilkan bantuan ini
   -v, --version      Tampilkan versi CLI
 
-Mode interaktif menanyakan dulu: Siap pakai atau Builder (racik base + integrasi).
+Mode interaktif menanyakan dulu: Siap pakai, Builder (racik base + integrasi),
+atau Ambil integrasi (suntik ke project yang sedang dibuka).
 Setiap clone didahului security audit (jawab No bila ingin lewati, butuh CLI 0.3.0+).
     `);
     process.exit(0);
@@ -83,6 +85,15 @@ Setiap clone didahului security audit (jawab No bila ingin lewati, butuh CLI 0.3
     const result = await validateModuleTarget(target);
     for (const line of result.report) console.log(line);
     process.exit(result.ok ? 0 : 1);
+    return;
+  }
+
+  // Subcommand standalone: suntik 1 modul ke project yang sedang dibuka.
+  if (args[0] === "add") {
+    const kodeArg = args[1] && !args[1].startsWith("-") ? args[1] : undefined;
+    const { runAddFlow } = await import("./lib/add-flow");
+    const done = await runAddFlow({ projectDir: process.cwd(), kodeArg });
+    process.exit(done.completed ? 0 : 1);
     return;
   }
 
@@ -132,6 +143,13 @@ Setiap clone didahului security audit (jawab No bila ingin lewati, butuh CLI 0.3
     const mode = await runModeSelect();
     if (!mode) {
       process.exit(0);
+      return;
+    }
+    if (mode === "ambil") {
+      // Mode ambil: suntik modul ke project yang sedang dibuka (tanpa buat folder).
+      const { runAddFlow } = await import("./lib/add-flow");
+      const done = await runAddFlow({ projectDir: process.cwd() });
+      process.exit(done.completed ? 0 : 1);
       return;
     }
     // Mode Interactive Prompt (tanpa flag --template)

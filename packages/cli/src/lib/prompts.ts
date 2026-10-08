@@ -7,7 +7,7 @@ export interface InteractivePromptResult {
   targetFolder: string;
 }
 
-export type BuilderMode = "siap-pakai" | "builder";
+export type BuilderMode = "siap-pakai" | "builder" | "ambil";
 
 /** Kategori inti: maks 1 pilihan (cermin SINGLE_SELECT web Builder). */
 const SINGLE_SELECT = new Set(["payment", "database", "auth", "shipping"]);
@@ -47,6 +47,11 @@ export async function runModeSelect(): Promise<BuilderMode | null> {
         value: "builder",
         label: "Builder",
         hint: "Racik base + centang integrasi sendiri",
+      },
+      {
+        value: "ambil",
+        label: "Ambil integrasi",
+        hint: "Suntik 1 modul ke project yang sedang dibuka",
       },
     ],
   });

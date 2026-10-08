@@ -46,6 +46,7 @@ tersebut. Manifest TETAP satu di root (tidak boleh ada manifest per subfolder).
   },
   "env": ["MIDTRANS_SERVER_KEY", "MIDTRANS_CLIENT_KEY"],
   "setup": "SETUP-FRAGMENT.md",
+  "docsUrl": "https://docs.midtrans.com",
   "removal": {
     "files": ["lib/payments/midtrans.ts", "app/api/payments/midtrans/route.ts", "app/Services/MidtransService.php"],
     "env": ["MIDTRANS_SERVER_KEY", "MIDTRANS_CLIENT_KEY"],
@@ -73,6 +74,7 @@ tersebut. Manifest TETAP satu di root (tidak boleh ada manifest per subfolder).
 | `dependencies.npm` / `.composer` | Tidak | Map nama → range versi, di-merge ke `package.json`/`composer.json` base. Konflik range tak terdamaikan = GAGAL eksplisit. |
 | `env` | Tidak | Daftar key yang dipakai modul. Harus subset dari `daftar_env_var` di database (sumber kebenaran tetap DB). |
 | `setup` | Tidak | Path file markdown di repo modul, digabung ke `SETUP.md` hasil racikan setelah fragmen bawaan. |
+| `docsUrl` | Tidak | URL https dokumentasi resmi. Satu-satunya sumber link docs resmi (dipakai CLI, Builder, halaman integrasi). Tanpa ini, link docs tidak ditampilkan. |
 | `removal` | **Ya bila kategori payment/database/auth/shipping** | Panduan copot untuk skenario "double se-kategori": `files` + `env` milik modul + `stepsFile` (markdown langkah hapus manual). `files` harus TEPAT mencakup semua `dest` di `files[]` (tidak kurang agar tak ada file yatim, tidak lebih agar tak menghapus milik orang). CLI men-generate section "Cara mencopot X" otomatis dari sini. |
 | `conflicts[]` | Tidak | Daftar `kode` integrasi yang tidak disarankan bareng (mis. `midtrans` vs `xendit`). CLI meminta konfirmasi eksplisit, bukan menolak. |
 

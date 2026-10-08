@@ -10,22 +10,37 @@ export interface InjectedModule {
   dir: string;
   manifest: IntegrationManifest;
   installedFiles: string[];
+  skippedFiles: string[];
+  overwrittenFiles: string[];
+  /** Isi fragmen setup bila manifest menyediakannya (relatif root repo). */
+  setupBody?: string;
+  /** Lokasi backup bila mode overwrite (untuk restore manual). */
+  backedUpTo?: string;
+}
+
+/** Mode konflik file: abort = gagal eksplisit (default, perilaku lama). */
+export interface InjectOptions {
+  onConflict?: "abort" | "skip" | "overwrite";
 }
 
 /**
  * Suntik satu modul integrasi ke folder project.
  * Aturan keras:
  * - src harus ada di hasil clone modul,
- * - dest tidak boleh sudah ada (tabrakan = GAGAL eksplisit),
- * - framework base harus didukung manifest.
+ * - framework base harus didukung manifest,
+ * - tabrakan dest mengikuti mode: abort (gagal eksplisit),
+ *   skip (lewati yang ada), overwrite (backup ke .scaff/trash lalu timpa).
  */
+
 export async function injectModule(
   projectDir: string,
   moduleRepoUrl: string,
   framework: string,
-  workRoot: string
+  workRoot: string,
+  opts: InjectOptions = {}
 ): Promise<InjectedModule> {
   const fw = framework.trim().toLowerCase();
+  const onConflict = opts.onConflict ?? "abort";
   const tmpDir = fs.mkdtempSync(path.join(workRoot, "scaff-mod-"));
   try {
     await cloneRepository(moduleRepoUrl, tmpDir);
@@ -68,6 +83,8 @@ export async function injectModule(
     }
 
     // Pra-validasi SEMUA file sebelum menyalin satu pun (atomisitas).
+    // Mode skip/overwrite: kumpulkan tabrakan dulu, putuskan per mode.
+    const colliding: typeof entries = [];
     for (const f of entries) {
       const srcAbs = path.join(srcBase, f.src);
       if (!fs.existsSync(srcAbs) || !fs.statSync(srcAbs).isFile()) {
@@ -76,15 +93,31 @@ export async function injectModule(
         );
       }
       const destAbs = path.join(projectDir, f.dest);
-      if (fs.existsSync(destAbs)) {
-        throw new Error(
-          `TABRAKAN: "${f.dest}" sudah ada di template base.\nPilih base lain atau hubungi pembuat template. Tidak ada file yang ditimpa.`
-        );
+      if (fs.existsSync(destAbs)) colliding.push(f);
+    }
+    if (colliding.length > 0 && onConflict === "abort") {
+      throw new Error(
+        `TABRAKAN: ${colliding.map((f) => `"${f.dest}"`).join(", ")} sudah ada di template base.\nPilih base lain atau hubungi pembuat template. Tidak ada file yang ditimpa.`
+      );
+    }
+    const active = onConflict === "skip" ? entries.filter((f) => !colliding.includes(f)) : entries;
+    const skippedFiles = onConflict === "skip" ? colliding.map((f) => f.dest) : [];
+    // Overwrite: backup dulu ke .scaff/trash agar bisa dikembalikan manual.
+    let backedUpTo: string | undefined;
+    const overwrittenFiles: string[] = [];
+    if (onConflict === "overwrite" && colliding.length > 0) {
+      backedUpTo = path.join(projectDir, ".scaff", "trash", `${manifest.kode}-${Date.now()}`);
+      for (const f of colliding) {
+        const destAbs = path.join(projectDir, f.dest);
+        const bakAbs = path.join(backedUpTo, f.dest);
+        fs.mkdirSync(path.dirname(bakAbs), { recursive: true });
+        fs.copyFileSync(destAbs, bakAbs);
+        overwrittenFiles.push(f.dest);
       }
     }
 
     const installedFiles: string[] = [];
-    for (const f of entries) {
+    for (const f of active) {
       const srcAbs = path.join(srcBase, f.src);
       const destAbs = path.join(projectDir, f.dest);
       fs.mkdirSync(path.dirname(destAbs), { recursive: true });
@@ -101,7 +134,31 @@ export async function injectModule(
       })),
     });
 
-    return { kode: manifest.kode, version: manifest.version, dir: tmpDir, manifest, installedFiles };
+    // Fragmen setup (relatif root repo) untuk ditampilkan ke user.
+    let setupBody: string | undefined;
+    if (manifest.setup) {
+      const setupAbs = path.join(tmpDir, manifest.setup);
+      try {
+        if (fs.existsSync(setupAbs) && fs.statSync(setupAbs).isFile()) {
+          const raw = fs.readFileSync(setupAbs, "utf8");
+          if (raw.trim()) setupBody = raw.slice(0, 4000);
+        }
+      } catch {
+        // Abaikan: setup fragment opsional.
+      }
+    }
+
+    return {
+      kode: manifest.kode,
+      version: manifest.version,
+      dir: tmpDir,
+      manifest,
+      installedFiles,
+      skippedFiles,
+      overwrittenFiles,
+      setupBody,
+      backedUpTo,
+    };
   } catch (err) {
     // Bersihkan temp; project base TIDAK disentuh kecuali file yang sudah
     // tervalidasi penuh (validasi atomis di atas menjamin all-or-nothing).

@@ -37,6 +37,7 @@ export default async function EditIntegrasiPage({
     instruksi_setup: item.instruksi_setup ?? "",
     repo_url: item.repo_url ?? "",
     framework_compat: (item.framework_compat ?? []) as string[],
+    docs_url: item.docs_url ?? "",
   };
 
   const { data: frameworkRows } = await supabase
