@@ -6,6 +6,7 @@ import { getTemplateBySlug, getAllTemplates } from "@/lib/data";
 import { IntegrationBadge } from "@/components/IntegrationBadge";
 import { TemplateActionBox } from "@/components/TemplateActionBox";
 import { IntegrationPickerComingSoon } from "@/components/IntegrationPickerComingSoon";
+import { SecurityTrustBox } from "@/components/SecurityTrustBox";
 import { TemplateCard } from "@/components/TemplateCard";
 import { AskAI } from "@/components/AskAI";
 import { JsonLd } from "@/components/JsonLd";
@@ -233,6 +234,10 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
               </li>
             </ul>
           </section>
+
+          <div className="mt-6">
+            <SecurityTrustBox repoUrl={template.repo_url} />
+          </div>
         </div>
 
         {/* Right Column: Included Integrations & Env Vars */}

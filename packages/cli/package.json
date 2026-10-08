@@ -1,6 +1,6 @@
 {
   "name": "scaffdev",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "CLI untuk generate project boilerplate Scaffdev dengan tampilan visual jadi dan kurasi integrasi konteks Indonesia.",
   "keywords": [
     "scaffolding",
@@ -28,7 +28,8 @@
     "build": "tsup src/index.ts --format cjs --clean",
     "dev": "tsup src/index.ts --format cjs --watch",
     "lint": "eslint src",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:audit": "tsc -p scripts/audit-test/tsconfig.json && node scripts/audit-test/dist/scripts/audit-test/run.js"
   },
   "dependencies": {
     "@clack/prompts": "^0.9.1",

@@ -8,12 +8,18 @@ import { fetchTemplatesFromApi, fetchTemplateDetailFromApi } from "./lib/api-cli
 import { checkPrerequisites } from "./lib/prerequisite-check";
 import { cloneRepository } from "./lib/git";
 import { generateEnvExample, generateSetupDoc } from "./lib/env-generator";
-import { runInteractivePrompt } from "./lib/prompts";
+import { runInteractivePrompt, runModeSelect, pickKategori, pickFramework, pickFolder, runBuilderBaseSelect, runBuilderIntegrationSelect } from "./lib/prompts";
 import { fetchIntegrasiIndex } from "./lib/modules";
 import { injectModule, cleanupModuleDir, mergeNpmDependencies, mergeComposerDependencies } from "./lib/injector";
 import { resolveInstallPlan, runInstallPlan, type InstallOutcome } from "./lib/install";
 import { validateModuleTarget } from "./lib/validate";
 import { startProgress, shortRepo } from "./lib/ui-progress";
+import {
+  runSecurityGate,
+  auditLocalGitDir,
+  renderAuditReport,
+  highestSeverity,
+} from "./lib/security-audit";
 import { TemplateDetailResponse, IntegrasiDetail } from "./types";
 
 /**
@@ -55,6 +61,9 @@ Opsi:
   --no-install       Lewati install dependency
   -h, --help         Tampilkan bantuan ini
   -v, --version      Tampilkan versi CLI
+
+Mode interaktif menanyakan dulu: Siap pakai atau Builder (racik base + integrasi).
+Setiap clone didahului security audit (jawab No bila ingin lewati, butuh CLI 0.3.0+).
     `);
     process.exit(0);
   }
@@ -99,7 +108,7 @@ Opsi:
   const withRaw: string =
     withArg ? withArg.slice("--with=".length) :
     withIdx !== -1 && args[withIdx + 1] ? (args[withIdx + 1] as string) : "";
-  const withCodes = [...new Set(
+  let withCodes: string[] = [...new Set(
     withRaw.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean)
   )];
 
@@ -119,20 +128,95 @@ Opsi:
   }
 
   if (!slug) {
+    // Pilih mode dulu: varian siap-pakai atau racik Builder sendiri.
+    const mode = await runModeSelect();
+    if (!mode) {
+      process.exit(0);
+      return;
+    }
     // Mode Interactive Prompt (tanpa flag --template)
     // Progress 1-baris via helper (animasi di terminal normal, statis di Git Bash/pipe).
     const listProgress = startProgress("Mengambil daftar template aktif...");
     const templates = await fetchTemplatesFromApi();
     listProgress.stop(`Berhasil memuat ${templates.length} template aktif.`);
 
-    const result = await runInteractivePrompt(templates);
-    if (!result) {
-      process.exit(0);
-      return;
-    }
+    if (mode === "builder") {
+      // Mode Builder: pilih base (hidden disembunyikan) + centang integrasi.
+      // Validasi final tetap di engine downstream (sama seperti --with).
+      const kategori = await pickKategori(templates);
+      if (!kategori) {
+        process.exit(0);
+        return;
+      }
+      const templatesForCategory = templates.filter((t) => t.kategori === kategori);
+      const framework = await pickFramework(templatesForCategory);
+      if (!framework) {
+        process.exit(0);
+        return;
+      }
+      const bases = templatesForCategory.filter(
+        (t) => t.framework === framework && t.builder_hidden !== true
+      );
+      if (bases.length === 0) {
+        p.cancel("Tidak ada template base untuk kombinasi ini.");
+        process.exit(0);
+        return;
+      }
+      const base = await runBuilderBaseSelect(bases);
+      if (!base) {
+        process.exit(0);
+        return;
+      }
+      let baseDetail;
+      try {
+        baseDetail = await fetchTemplateDetailFromApi(base.slug);
+      } catch (err) {
+        p.cancel(`Gagal mengambil detail base:\n${(err as Error).message}`);
+        process.exit(1);
+        return;
+      }
+      let builderIndex;
+      try {
+        builderIndex = await fetchIntegrasiIndex();
+      } catch (err) {
+        p.cancel(`Gagal mengambil katalog integrasi:\n${(err as Error).message}`);
+        process.exit(1);
+        return;
+      }
+      const baked = (baseDetail.integrasi ?? []).map((item) => ({
+        kode: item.kode,
+        kategori: (item as { kategori_integrasi?: string }).kategori_integrasi ?? "other",
+      }));
+      const picked = await runBuilderIntegrationSelect({
+        baseName: baseDetail.nama || base.slug,
+        framework: baseDetail.framework,
+        baked,
+        hiddenKategoris: baseDetail.builder_hidden_kategoris ?? [],
+        index: builderIndex,
+      });
+      if (!picked) {
+        process.exit(0);
+        return;
+      }
+      const defaultDir = base.slug.split("-")[0] + "-app";
+      const folder = await pickFolder(defaultDir);
+      if (!folder) {
+        process.exit(0);
+        return;
+      }
+      slug = base.slug;
+      targetFolder = folder;
+      withCodes = [...new Set([...withCodes, ...picked])];
+    } else {
+      const result = await runInteractivePrompt(templates);
+      if (!result) {
+        process.exit(0);
+        return;
+      }
 
-    slug = result.slug;
-    targetFolder = result.targetFolder;
+      slug = result.slug;
+      targetFolder = result.targetFolder;
+    }
   } else {
     // Mode langsung dengan slug
     p.log.info(`Menggunakan template slug: ${slug}`);
@@ -192,12 +276,22 @@ Opsi:
     "Ringkasan Pilihan Project"
   );
 
+  // Security gate: audit remote SEBELUM clone (satu-satunya jalan ke clone).
+  const baseGate = await runSecurityGate({
+    repoUrl: templateDetail.repo_url,
+    kindLabel: "template",
+  });
+  if (!baseGate.proceed) {
+    process.exit(0);
+    return;
+  }
+
   // Clone repository. Teks progress memakai nama pendek repo (tanpa URL
   // panjang) agar 1 baris tetap rapi. URL penuh hanya muncul bila gagal.
   const cloneProgress = startProgress(`Mengkloning template "${templateDetail.nama || templateDetail.slug}"...`);
 
   try {
-    await cloneRepository(templateDetail.repo_url, targetDir);
+    await cloneRepository(templateDetail.repo_url, targetDir, true);
     cloneProgress.stop(`Template "${templateDetail.nama || templateDetail.slug}" terkloning.`);
   } catch (err: unknown) {
     const error = err as Error;
@@ -207,6 +301,46 @@ Opsi:
     );
     process.exit(1);
     return;
+  }
+
+  // Post-clone audit lokal (.git/config + hooks). WAJIB sebelum install.
+  // .git dihapus tepat setelah audit (perilaku lama: direktori bersih).
+  const localFindings = auditLocalGitDir(targetDir);
+  if (localFindings.length > 0) {
+    for (
+      const line of renderAuditReport({
+        repo: `${shortRepo(templateDetail.repo_url)} (lokal)`,
+        inspected: [".git/config", ".git/hooks"],
+        notInspectable: [],
+        findings: localFindings,
+      })
+    ) {
+      console.log(line);
+    }
+    const top = highestSeverity(localFindings);
+    const goLocal = await p.confirm({
+      message:
+        top === "HIGH" || top === "CRITICAL"
+          ? "Temuan lokal berisiko tinggi. Tetap lanjutkan instalasi?"
+          : "Lanjutkan instalasi?",
+      initialValue: !(top === "HIGH" || top === "CRITICAL"),
+    });
+    try {
+      fs.rmSync(path.join(targetDir, ".git"), { recursive: true, force: true });
+    } catch {
+      // Abaikan bila terkunci Windows.
+    }
+    if (p.isCancel(goLocal) || !goLocal) {
+      p.cancel("Operasi dibatalkan setelah audit lokal.");
+      process.exit(0);
+      return;
+    }
+  } else {
+    try {
+      fs.rmSync(path.join(targetDir, ".git"), { recursive: true, force: true });
+    } catch {
+      // Abaikan bila terkunci Windows.
+    }
   }
 
   // ---- Fase Builder: suntik modul --with (dilewati bila kosong) ----
@@ -294,6 +428,15 @@ Opsi:
           process.exit(0);
           return;
         }
+      }
+
+      const modGate = await runSecurityGate({
+        repoUrl: row.repo_url.trim(),
+        kindLabel: `modul integrasi "${row.nama_tampilan}"`,
+      });
+      if (!modGate.proceed) {
+        process.exit(0);
+        return;
       }
 
       const modProgress = startProgress(`Menyuntik modul ${row.nama_tampilan}...`);

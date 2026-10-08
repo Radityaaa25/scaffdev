@@ -21,6 +21,15 @@ export async function validateModuleTarget(target: string): Promise<{ ok: boolea
     } catch (err) {
       return { ok: false, report: [`Gagal clone repo: ${(err as Error).message}`] };
     }
+    // Laporan audit read-only (non-interaktif): tidak mengubah verdict validasi.
+    try {
+      const { auditRemoteRepo, renderAuditReport } = await import("./security-audit");
+      const { report: auditReport } = await auditRemoteRepo(target);
+      report.push("— Laporan security audit (read-only, tidak memengaruhi verdict) —");
+      report.push(...renderAuditReport(auditReport));
+    } catch (err) {
+      report.push(`Audit dilewati: ${(err as Error).message}`);
+    }
   } else {
     dir = path.resolve(process.cwd(), target);
     if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) {
