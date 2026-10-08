@@ -31,7 +31,7 @@ export function TemplateActionBox({ slug, framework }: TemplateActionBoxProps) {
               Siap menggunakan template ini?
             </h3>
             <p className="text-sm text-zinc-400 mt-1">
-              Dapatkan satu baris command terminal untuk men-generate project secara instan — tanpa install apa pun sebelumnya.
+              Dapatkan satu baris command terminal untuk men-generate project secara instan. Tanpa install apa pun sebelumnya.
             </p>
           </div>
           <button

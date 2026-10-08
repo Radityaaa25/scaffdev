@@ -26,7 +26,7 @@ export function planBaseRemoval(projectDir: string, kode: string): RemovalPlan {
   const manifestPath = path.join(projectDir, "scaff.template.json");
   if (!fs.existsSync(manifestPath)) {
     throw new Error(
-      `Template ini tidak memuat scaff.template.json — CLI tidak bisa memastikan file milik "${kode}".\n` +
+      `Template ini tidak memuat scaff.template.json sehingga CLI tidak bisa memastikan file milik "${kode}".\n` +
         `Opsi: (1) pakai varian Basic template ini + modul ${kode}, atau (2) copot manual mengikuti dokumentasi pembuat template.`
     );
   }
@@ -59,7 +59,7 @@ export function planBaseRemoval(projectDir: string, kode: string): RemovalPlan {
     throw new Error(
       `Manifest tidak cocok dengan project (file hilang, repo mungkin berubah):\n` +
         missing.map((f) => `  - ${f}`).join("\n") +
-        `\nBatal demi keamanan — tidak ada file yang dihapus.`
+        `\nBatal demi keamanan. Tidak ada file yang dihapus.`
     );
   }
   const guideRel = parsed.manifest.removalGuides[kode] ?? null;
@@ -72,7 +72,7 @@ export function planBaseRemoval(projectDir: string, kode: string): RemovalPlan {
  * sudah diedit user) dan dilaporkan sebagai kerja manual.
  * referensiHash: map path → sha256 saat file "dikenal baik" (dari receipt
  * untuk file modul; untuk file base, hash dibaca SEKARANG sebagai baseline
- * hanya untuk deteksi — file base selalu dibackup dulu).
+ * hanya untuk deteksi. File base selalu dibackup dulu).
  */
 export function executeRemoval(
   projectDir: string,
@@ -127,7 +127,7 @@ export function executeRemoval(
       }
     }
     throw new Error(
-      `Gagal di tengah pencopotan — semua file yang terhapus DIKEMBALIKAN.\nPenyebab: ${(err as Error).message}`
+      `Gagal di tengah pencopotan. Semua file yang terhapus DIKEMBALIKAN.\nPenyebab: ${(err as Error).message}`
     );
   }
 

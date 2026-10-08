@@ -87,7 +87,7 @@ export function IntegrasiForm({
     const seen = new Set<string>();
     for (const r of cleaned) {
       if (!ENV_KEY_RE.test(r.key)) {
-        return fail(`Key "${r.key || "(kosong)"}" tidak valid — huruf kapital/angka/underscore (contoh: TRIPAY_API_KEY).`);
+        return fail(`Key "${r.key || "(kosong)"}" tidak valid. Pakai huruf kapital/angka/underscore (contoh: TRIPAY_API_KEY).`);
       }
       if (seen.has(r.key)) return fail(`Key duplikat: "${r.key}".`);
       seen.add(r.key);
@@ -153,7 +153,7 @@ export function IntegrasiForm({
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-400">Environment Variables</h2>
-            <p className="mt-1 text-xs text-zinc-500">Ditulis ke `.env.example` oleh CLI — persis apa adanya.</p>
+            <p className="mt-1 text-xs text-zinc-500">Ditulis ke `.env.example` oleh CLI, persis apa adanya.</p>
           </div>
           <button
             type="button"
@@ -196,7 +196,7 @@ export function IntegrasiForm({
 
       <section className="glass-panel rounded-2xl p-5 sm:p-6">
         <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-400">Instruksi Setup</h2>
-        <p className="mt-1 text-xs text-zinc-500">Markdown — digabung ke `SETUP.md` oleh CLI.</p>
+        <p className="mt-1 text-xs text-zinc-500">Markdown yang digabung ke `SETUP.md` oleh CLI.</p>
         <textarea
           value={instruksi}
           onChange={(e) => setInstruksi(e.target.value)}
@@ -215,7 +215,7 @@ export function IntegrasiForm({
           </span>
         </div>
         <p className="mt-1 text-xs text-zinc-500">
-          Repo modul yang disuntik CLI saat Builder launch. Kosongkan bila belum ada — integrasi tetap jalan sebagai bundel bawaan template.
+          Repo modul yang disuntik CLI saat Builder launch. Kosongkan bila belum ada. Integrasi tetap jalan sebagai bundel bawaan template.
         </p>
         <div className="mt-4">
           <label htmlFor="repo_url" className={labelCls}>Link Repo Modul (opsional)</label>
@@ -251,7 +251,7 @@ export function IntegrasiForm({
               );
             })}
             {frameworkOptions.length === 0 && (
-              <p className="text-xs text-zinc-500">Belum ada framework terdaftar — kelola di menu Framework & Kategori.</p>
+              <p className="text-xs text-zinc-500">Belum ada framework terdaftar. Kelola di menu Framework & Kategori.</p>
             )}
           </div>
         </div>

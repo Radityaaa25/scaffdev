@@ -12,7 +12,7 @@ function clientIp(request: NextRequest): string {
   return request.headers.get("x-real-ip") ?? "unknown";
 }
 
-/** Daftar laporan — khusus admin. */
+/** Daftar laporan: khusus admin. */
 export async function GET(request: NextRequest) {
   const auth = await requireAdmin(request);
   if (!auth.ok) return auth.response;
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/** Kirim laporan/pengaduan — publik, tanpa login. */
+  /** Kirim laporan/pengaduan: publik, tanpa login. */
 export async function POST(request: NextRequest) {
   const ip = clientIp(request);
   if (isRateLimited(`lapor:${ip}`, LAPOR_LIMIT, LAPOR_WINDOW_MS)) {

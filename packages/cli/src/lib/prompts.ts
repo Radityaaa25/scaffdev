@@ -73,7 +73,7 @@ export async function runInteractivePrompt(
     frameworkOptions.push({
       value: "laravel-disabled",
       label: "Laravel (PHP)",
-      hint: "Belum ada template Laravel — daftarkan via halaman admin",
+      hint: "Belum ada template Laravel. Daftarkan via halaman admin",
     });
   }
 
@@ -102,7 +102,7 @@ export async function runInteractivePrompt(
     const integrationsText =
       v.opsi_integrasi.length > 0
         ? `[Integrasi: ${v.opsi_integrasi.join(" + ")}]`
-        : "[Basic — Tanpa Integrasi Tambahan]";
+        : "[Basic: Tanpa Integrasi Tambahan]";
 
     return {
       value: v.slug,

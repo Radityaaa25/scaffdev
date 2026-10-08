@@ -16,8 +16,8 @@ import "./globals.css";
 
 export const metadata: Metadata = baseMetadata({
   title: {
-    default: `${SITE_NAME} — Starter Kit Next.js & Laravel Siap Jalan`,
-    template: `%s — ${SITE_NAME}`,
+    default: `${SITE_NAME}: Starter Kit Next.js & Laravel Siap Jalan`,
+    template: `%s | ${SITE_NAME}`,
   },
   description: DEFAULT_OG_DESCRIPTION,
   keywords: [
@@ -39,12 +39,12 @@ export const metadata: Metadata = baseMetadata({
     locale: "id_ID",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: `${SITE_NAME} — Starter Kit Next.js & Laravel Siap Jalan`,
+    title: `${SITE_NAME}: Starter Kit Next.js & Laravel Siap Jalan`,
     description: DEFAULT_OG_DESCRIPTION,
   },
   twitter: {
     card: "summary",
-    title: `${SITE_NAME} — Starter Kit Next.js & Laravel Siap Jalan`,
+    title: `${SITE_NAME}: Starter Kit Next.js & Laravel Siap Jalan`,
     description: DEFAULT_OG_DESCRIPTION,
   },
 });

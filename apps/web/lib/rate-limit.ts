@@ -1,6 +1,6 @@
 /**
  * Rate limit in-memory sederhana (per instance).
- * Untuk endpoint admin bervolume rendah — pola sama seperti route AI.
+ * Untuk endpoint admin bervolume rendah: pola sama seperti route AI.
  * Bukan pengganti WAF/rate-limit edge untuk traffic besar.
  */
 

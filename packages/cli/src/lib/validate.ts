@@ -116,7 +116,7 @@ export async function validateModuleTarget(target: string): Promise<{ ok: boolea
         report.push(`✔ provides[${kode}]: ${files.length} file + panduan ${guide}.`);
       }
       if (Object.keys(t.provides).length === 0) {
-        report.push("ℹ Template polosan (provides kosong) — valid.");
+        report.push("ℹ Template polosan (provides kosong). Valid.");
       }
     }
 

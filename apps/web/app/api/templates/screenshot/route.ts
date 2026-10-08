@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     .upload(path, bytes, { contentType: checked.contentType, upsert: false });
   if (error) {
     const msg = /bucket|not found|row-level|policy|permission/i.test(error.message)
-      ? "Bucket 'template-screenshots' belum siap — jalankan Migrasi 005 di Supabase SQL Editor."
+          ? "Bucket 'template-screenshots' belum siap. Jalankan Migrasi 005 di Supabase SQL Editor."
       : "Gagal mengupload screenshot.";
     return NextResponse.json({ error: msg }, { status: 500 });
   }

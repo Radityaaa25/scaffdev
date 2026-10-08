@@ -19,7 +19,7 @@ export function TemplatesHero() {
     try {
       await navigator.clipboard.writeText(HERO_COMMAND);
     } catch {
-      /* clipboard tidak tersedia — tetap tampilkan status tersalin */
+      /* clipboard tidak tersedia: tetap tampilkan status tersalin */
     }
     setCopied(true);
     setTimeout(() => setCopied(false), 1600);
@@ -43,7 +43,7 @@ export function TemplatesHero() {
           <p className="hero-enter hero-enter-3 mt-4 sm:mt-5 max-w-xl text-sm sm:text-base text-zinc-400 leading-relaxed">
             Starter kit <span className="text-zinc-200 font-medium">Next.js & Laravel</span> dengan
             tampilan visual yang sudah jadi dan struktur folder best-practice.
-            Pilih template, salin command, generate — langsung bisa dikembangkan.
+            Pilih template, salin command, generate. Langsung bisa dikembangkan.
           </p>
 
           <ul className="hero-enter hero-enter-3 mt-5 grid gap-2 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-1 xl:grid-cols-2">
@@ -83,7 +83,7 @@ export function TemplatesHero() {
             </svg>
             <Link
               href="/docs"
-              className="btn-bubbles"
+              className="btn-bubbles w-full text-center sm:w-auto"
             >
               <span className="text">Baca Dokumentasi</span>
             </Link>
@@ -115,7 +115,7 @@ export function TemplatesHero() {
                     <svg width="16px" height="16px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" strokeLinejoin="round" strokeLinecap="round" strokeWidth={2} stroke="currentColor" fill="none">
                       <path d="M7 15L10 12L7 9M13 15H17M7.8 21H16.2C17.8802 21 18.7202 21 19.362 20.673C19.9265 20.3854 20.3854 19.9265 20.673 19.362C21 18.7202 21 17.8802 21 16.2V7.8C21 6.11984 21 5.27976 20.673 4.63803C20.3854 4.07354 19.9265 3.6146 19.362 3.32698C18.7202 3 17.8802 3 16.2 3H7.8C6.11984 3 5.27976 3 4.63803 3.32698C4.07354 3.6146 3.6146 4.07354 3.32698 4.63803C3 5.27976 3 6.11984 3 7.8V16.2C3 17.8802 3 18.7202 3.32698 19.362C3.6146 19.9265 4.07354 20.3854 4.63803 20.673C5.27976 21 6.11984 21 7.8 21Z" />
                     </svg>
-                    terminal — bash
+                    terminal · bash
                   </p>
                   <button
                     className={`hero-term-copy${copied ? " copied" : ""}`}
@@ -140,14 +140,14 @@ export function TemplatesHero() {
                   <pre className="hero-term-pre"><code>$&nbsp;</code><code>npx&nbsp;</code><code className="hero-term-cmd" data-cmd="scaffdev@latest" /></pre>
                   <p className="hero-term-out">
                     <span>✓</span>
-                    <span className="dim">Project berhasil dibuat — happy coding!</span>
+                     <span className="dim">Project berhasil dibuat, happy coding!</span>
                   </p>
                 </div>
               </div>
             </div>
           </div>
           <p className="mt-3 pl-1 text-left font-mono text-[11px] text-zinc-500">
-            {copied ? "✓ Command tersalin — tempel di terminal" : "Satu baris command untuk generate project"}
+            {copied ? "✓ Command tersalin. Tempel di terminal" : "Satu baris command untuk generate project"}
           </p>
         </div>
       </div>

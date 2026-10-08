@@ -17,7 +17,7 @@ export interface InstallPlanResult {
  * Susun rencana install dari scaff.template.json base.
  * Format: "install": [{ "dir": ".", "run": ["npm","install"], "label": "..." }].
  * Tanpa field install → fallback default framework (template lama tetap jalan).
- * Manager BEBAS (npm/pnpm/yarn/bun/composer/...) — CLI generik, tidak hardcode.
+ * Manager BEBAS (npm/pnpm/yarn/bun/composer/...). CLI generik, tidak hardcode.
  */
 export function resolveInstallPlan(projectDir: string, framework: string): InstallPlanResult {
   const manifestPath = path.join(projectDir, "scaff.template.json");

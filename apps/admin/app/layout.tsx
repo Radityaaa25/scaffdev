@@ -5,8 +5,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Admin — Scaff",
-    template: "%s — Admin Scaff",
+    default: "Admin - Scaff",
+    template: "%s - Admin Scaff",
   },
   description: "Admin panel untuk mengelola template Scaff.",
 };

@@ -38,7 +38,7 @@ async function main() {
   // Help & Version flags
   if (args.includes("--help") || args.includes("-h")) {
     console.log(`
-Scaffdev CLI — Modern Full-Stack Starter Kit Generator
+Scaffdev CLI: Modern Full-Stack Starter Kit Generator
 
 Penggunaan:
   npx scaffdev@latest                                     Jalankan interactive terminal prompt
@@ -78,7 +78,7 @@ Opsi:
   }
 
   // Visual Banner Intro
-  p.intro("⚡ Scaffdev — Modern Full-Stack Starter Kit Generator");
+  p.intro("⚡ Scaffdev: Modern Full-Stack Starter Kit Generator");
 
   let slug: string | null = null;
   let targetFolder = "my-scaff-app";
@@ -192,7 +192,7 @@ Opsi:
     "Ringkasan Pilihan Project"
   );
 
-  // Clone repository — teks progress memakai nama pendek repo (tanpa URL
+  // Clone repository. Teks progress memakai nama pendek repo (tanpa URL
   // panjang) agar 1 baris tetap rapi. URL penuh hanya muncul bila gagal.
   const cloneProgress = startProgress(`Mengkloning template "${templateDetail.nama || templateDetail.slug}"...`);
 
@@ -286,7 +286,7 @@ Opsi:
         const proceed = await p.confirm({
           message:
             `Template ini SUDAH memakai integrasi se-kategori ("${incumbent}") untuk "${kat}".\n` +
-            `Tambah "${kode}" juga? Hasilnya double — SETUP.md akan berisi panduan mencopot salah satunya.`,
+            `Tambah "${kode}" juga? Kalau ya hasilnya double karena SETUP.md akan berisi panduan mencopot salah satunya.`,
           initialValue: false,
         });
         if (p.isCancel(proceed) || !proceed) {
@@ -341,7 +341,7 @@ Opsi:
               removalGuides.push({ nama: row.nama_tampilan, body: fs.readFileSync(guideAbs, "utf-8") });
             }
           } catch {
-            /* panduan opsional — lewati bila tak terbaca */
+            /* panduan opsional, lewati bila tak terbaca */
           }
         }
         cleanupModuleDir(injected.dir);
@@ -396,13 +396,13 @@ Opsi:
       }
       if (installOutcome.failed) {
         p.log.warn(
-          `Install gagal di "${installOutcome.failed.label}" — project tetap valid, lanjutkan manual:\n  ${installOutcome.failed.error}`
+          `Install gagal di "${installOutcome.failed.label}". Project tetap valid, lanjutkan manual:\n  ${installOutcome.failed.error}`
         );
       } else {
         p.log.success("Install dependency selesai.");
       }
     } else {
-      p.log.info("Install dilewati — ikuti langkah manual di bawah.");
+      p.log.info("Install dilewati. Ikuti langkah manual di bawah.");
     }
   } else {
     p.log.info("Install dilewati (--no-install).");

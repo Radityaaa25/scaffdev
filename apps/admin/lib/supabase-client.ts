@@ -4,7 +4,7 @@ import { createBrowserClient } from "@supabase/ssr";
 
 /**
  * Supabase client sisi browser (Client Components admin).
- * Memakai anon key — RLS database tetap menjadi penegak akses.
+ * Memakai anon key. RLS database tetap menjadi penegak akses.
  */
 export function createSupabaseBrowserClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";

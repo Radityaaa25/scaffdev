@@ -33,7 +33,7 @@ export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   // Admin panel lives in apps/admin (port 3001) dengan Supabase Auth sendiri.
-  // Tidak ada route /admin di app ini — hanya CORS untuk /api.
+  // Tidak ada route /admin di app ini: hanya CORS untuk /api.
 
   if (isPreflight) {
     return NextResponse.json(

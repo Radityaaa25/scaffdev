@@ -2,7 +2,7 @@ import { getAllDocs } from "@/lib/docs";
 import { getAllTemplates } from "@/lib/data";
 import { SITE_URL, SITE_NAME, SITE_TAGLINE } from "@/lib/seo";
 
-/** llms.txt — ringkasan machine-readable untuk AI search & agent. */
+/** llms.txt: ringkasan machine-readable untuk AI search & agent. */
 export async function GET() {
   let templates: { slug: string; nama: string; framework: string; kategori: string }[] = [];
   try {
@@ -34,9 +34,9 @@ export async function GET() {
     "",
     "## Aturan penting",
     "",
-    "- Scaffdev tidak membuatkan akun pihak ketiga (Supabase/Midtrans/Xendit/RajaOngkir) — user daftar sendiri.",
+    "- Scaffdev tidak membuatkan akun pihak ketiga (Supabase/Midtrans/Xendit/RajaOngkir). User daftar sendiri.",
     "- File env aktif (.env.local / .env) jangan pernah di-commit.",
-    "- Fitur custom kombinasi integrasi (Builder, /builder) sudah live — butuh CLI 0.2.0+.",
+    "- Fitur custom kombinasi integrasi (Builder, /builder) sudah live dan butuh CLI 0.2.0+.",
     "",
     `Selengkapnya: ${SITE_URL}/llms-full.txt`,
     "",

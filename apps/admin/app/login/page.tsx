@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
 import { apiFetch } from "@/lib/api";
 
-/** Catat upaya login untuk audit brute force — fire-and-forget, tanpa ubah UX. */
+/** Catat upaya login untuk audit brute force. Fire-and-forget, tanpa ubah UX. */
 function auditLogin(email: string, success: boolean): void {
   void apiFetch("/api/auth/login-audit", {
     method: "POST",
@@ -37,7 +37,7 @@ export default function LoginPage() {
         setError("Email atau password salah.");
         return;
       }
-      // Pastikan akun ini terdaftar sebagai admin — jika bukan, cabut session.
+      // Pastikan akun ini terdaftar sebagai admin. Jika bukan, cabut session.
       const { data: isAdmin } = await supabase.rpc("is_admin");
       if (!isAdmin) {
         auditLogin(email.trim(), false);

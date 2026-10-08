@@ -176,7 +176,7 @@ export function LaporForm() {
 
       <div>
         <label htmlFor="lapor-kontak" className="mb-1.5 block text-sm font-medium text-zinc-300">
-          Kontak <span className="font-normal text-zinc-500">(opsional — email / no. HP / username)</span>
+          Kontak <span className="font-normal text-zinc-500">(opsional: email / no. HP / username)</span>
         </label>
         <input
           id="lapor-kontak"
@@ -190,7 +190,7 @@ export function LaporForm() {
 
       <div>
         <span className="mb-1.5 block text-sm font-medium text-zinc-300">
-          Gambar bukti <span className="font-normal text-zinc-500">(opsional — png/jpg/webp, maks 1MB)</span>
+          Gambar bukti <span className="font-normal text-zinc-500">(opsional: png/jpg/webp, maks 1MB)</span>
         </span>
         {gambarUrl ? (
           <div className="relative mb-3 overflow-hidden rounded-xl border border-white/10">

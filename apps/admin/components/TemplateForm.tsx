@@ -274,7 +274,7 @@ export function TemplateForm({
         </div>
       </Section>
 
-      <Section title="Repository" hint="Link repo GitHub publik milik pembuat template — CLI melakukan git clone tanpa token.">
+      <Section title="Repository" hint="Link repo GitHub publik milik pembuat template. CLI melakukan git clone tanpa token.">
         <div className="sm:col-span-2">
           <label htmlFor="repo_url" className={labelCls}>Link Repository *</label>
           <input
@@ -287,7 +287,7 @@ export function TemplateForm({
           />
           <p className={`mt-1.5 text-xs ${repoUrl.trim() && !repoValid ? "text-red-400" : "text-zinc-500"}`}>
             {repoUrl.trim() && !repoValid
-              ? "Format belum valid — harus https://github.com/owner/repo(.git)"
+              ? "Format belum valid. Harus https://github.com/owner/repo(.git)"
               : repoUrl.trim()
                 ? "✓ Format valid. Pastikan repo berstatus public."
                 : "Wajib public agar bisa di-clone CLI tanpa token."}
@@ -403,7 +403,7 @@ export function TemplateForm({
               );
             })}
             {kategoriList.length === 0 && (
-              <p className="text-xs text-zinc-500">Belum ada data kategori — semua tampil secara default.</p>
+              <p className="text-xs text-zinc-500">Belum ada data kategori. Semua tampil secara default.</p>
             )}
           </div>
         </div>

@@ -1,4 +1,4 @@
-# Template panduan copot — COPY file ini menjadi REMOVE-<KODE>.md
+# Template panduan copot: COPY file ini menjadi REMOVE-<KODE>.md
 
 > Cara pakai: duplikat file ini, ganti `<KODE>` dengan kode integrasi
 > (huruf KAPITAL untuk judul, huruf kecil untuk path), lalu isi semua
@@ -13,7 +13,7 @@
 
 > Dibutuhkan bila kamu memakai layanan lain se-kategori (mis. via Scaffdev Builder).
 > Ikuti section sesuai framework template-mu (Next.js ATAU Laravel).
-> Estimasi: ±10 menit. Ikuti berurutan — jangan loncat.
+> Estimasi: ±10 menit. Ikuti berurutan dan jangan loncat.
 
 ## 0. Aturan emas (baca dulu!)
 
@@ -24,10 +24,10 @@
 
 ## A. Template Next.js
 
-### A.1. Hapus file (aman — tidak dipakai kode lain)
+### A.1. Hapus file (aman karena tidak dipakai kode lain)
 
-- ✏️`path/ke/file.ts` — deskripsi satu baris fungsi file ini.
-- ✏️`path/ke/file-lain.ts` — deskripsi satu baris fungsi file ini.
+- ✏️`path/ke/file.ts`: deskripsi satu baris fungsi file ini.
+- ✏️`path/ke/file-lain.ts`: deskripsi satu baris fungsi file ini.
 
 ```bash
 ✏️rm path/ke/file.ts path/ke/file-lain.ts
@@ -65,18 +65,18 @@ npm run build
 
 ### A.5. Yang JANGAN dihapus (Next.js)
 
-- ✏️`path/file-bersama.ts` — alasan: dipakai kode apa (spesifik!).
+- ✏️`path/file-bersama.ts` (alasan: dipakai kode apa, spesifik!).
 - ✏️Tulis SEMUA file bersama yang relevan, jangan "dll".
 
 ---
 
 ## B. Template Laravel
 
-### B.1. Hapus file (aman — tidak dipakai kode lain)
+### B.1. Hapus file (aman karena tidak dipakai kode lain)
 
-- ✏️`app/Services/NamaService.php` — deskripsi satu baris.
-- ✏️`app/Http/Controllers/NamaController.php` — deskripsi satu baris.
-- ✏️`resources/views/.../nama-button.blade.php` — deskripsi satu baris.
+- ✏️`app/Services/NamaService.php`: deskripsi satu baris.
+- ✏️`app/Http/Controllers/NamaController.php`: deskripsi satu baris.
+- ✏️`resources/views/.../nama-button.blade.php`: deskripsi satu baris.
 
 ```bash
 ✏️rm "app/Services/NamaService.php" "app/Http/Controllers/NamaController.php" "resources/views/.../nama-button.blade.php"
@@ -113,9 +113,9 @@ php artisan config:clear
 
 ### B.5. Yang JANGAN dihapus (Laravel)
 
-- ✏️`app/Contracts/...` — alasan spesifik.
-- ✏️`routes/...` — alasan spesifik.
-- ✏️view form umum — alasan spesifik.
+- ✏️`app/Contracts/...` (alasan spesifik).
+- ✏️`routes/...` (alasan spesifik).
+- ✏️view form umum (alasan spesifik).
 
 ---
 

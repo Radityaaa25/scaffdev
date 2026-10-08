@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 
 /**
- * Fallback TERAKHIR — dipakai hanya bila root layout sendiri crash.
+ * Fallback TERAKHIR: dipakai hanya bila root layout sendiri crash.
  * WAJIB definisikan <html><body> sendiri dan TIDAK boleh import layout,
  * komponen navbar/footer, font, atau CSS global (semua itu mungkin sumber
  * crash-nya). Sengaja dibuat minimal + inline style agar selalu bisa render.
@@ -41,7 +41,7 @@ export default function GlobalError({
           </p>
           <h1 style={{ fontSize: 32, margin: "12px 0" }}>Aplikasi gagal dimuat</h1>
           <p style={{ fontSize: 14, color: "#A1A1AA", lineHeight: 1.6 }}>
-            Terjadi kesalahan fatal di layout utama. Coba muat ulang — bila
+            Terjadi kesalahan fatal di layout utama. Coba muat ulang. Bila
             masih gagal, kembali lagi nanti atau hubungi kami.
           </p>
           <div style={{ marginTop: 24, display: "flex", gap: 12, justifyContent: "center" }}>
@@ -60,7 +60,7 @@ export default function GlobalError({
             >
               Muat ulang
             </button>
-            {/* NOTED: <a> mentah disengaja — global-error tidak boleh
+            {/* NOTED: <a> mentah disengaja: global-error tidak boleh
                 import next/link (router context mungkin ikut crash). */}
             {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a

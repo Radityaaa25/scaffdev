@@ -20,7 +20,7 @@ const marked = new Marked({ breaks: true });
 
 /**
  * Render markdown jawaban AI menjadi HTML aman.
- * NOTED: output AI = untrusted — WAJIB lewat DOMPurify (XSS via
+ * NOTED: output AI = untrusted: WAJIB lewat DOMPurify (XSS via
  * <script>/<img onerror>/javascript: URL). Allowlist default sudah cukup
  * untuk teks + code + list + link (link asing tetap diklik user manual).
  */
@@ -69,6 +69,15 @@ export function AskAI() {
   // True setelah token pertama tiba (indikator "berpikir" diganti teks mengalir).
   const [streaming, setStreaming] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  // True bila user sedang di dasar chat. Auto-scroll HANYA jalan dalam
+  // kondisi ini — user yang scroll ke atas tidak ditarik paksa saat AI mengetik.
+  const stickRef = useRef(true);
+
+  function onScrollChat() {
+    const el = scrollRef.current;
+    if (!el) return;
+    stickRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+  }
 
   // Typewriter: token AI ditampung di antrean, ditampilkan 1 huruf per tick
   // agar terlihat diketik (tidak tiba-tiba muncul segambreng).
@@ -90,8 +99,8 @@ export function AskAI() {
   useEffect(() => stopPump, []);
 
   // Persistensi browser: tiap ada pesan baru, simpan + perpanjang retensi 7 hari.
-  // NOTED: pesan yang masih streaming (tanpa html) ikut tersimpan sebagai teks —
-  // saat dibuka lagi ia tampil sebagai teks polos, aman.
+  // NOTED: pesan yang masih streaming (tanpa html) ikut tersimpan sebagai teks.
+  // Saat dibuka lagi ia tampil sebagai teks polos, aman.
   useEffect(() => {
     try {
       if (messages.length === 0) {
@@ -103,7 +112,7 @@ export function AskAI() {
         JSON.stringify({ savedAt: Date.now(), messages: messages.slice(-MAX_STORED) })
       );
     } catch {
-      /* storage penuh/diblokir — chat tetap jalan tanpa persistensi */
+      /* storage penuh/diblokir: chat tetap jalan tanpa persistensi */
     }
   }, [messages]);
 
@@ -117,7 +126,11 @@ export function AskAI() {
   }
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    // Tanpa behavior smooth: animasi yang retrigger tiap token justru
+    // melawan scroll user. Scroll instan + hanya bila user di dasar.
+    if (open && stickRef.current) {
+      scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
+    }
   }, [messages, pending, open, streaming]);
 
   function toggleOpen() {
@@ -126,6 +139,7 @@ export function AskAI() {
       setOpen(false);
       return;
     }
+    stickRef.current = true;
     setOpen(true);
     requestAnimationFrame(() => setShown(true));
   }
@@ -176,6 +190,7 @@ export function AskAI() {
     const next: Msg[] = [...messages, { role: "user" as const, content }].slice(-8);
     setMessages(next);
     setInput("");
+    stickRef.current = true;
     setPending(true);
     setStreaming(false);
     // Reset typewriter: antrean + tampilan mulai dari nol tiap pesan baru.
@@ -205,7 +220,7 @@ export function AskAI() {
           }
           errText = payload.error || errText;
         } catch {
-          /* body bukan JSON — pakai pesan default */
+          /* body bukan JSON: pakai pesan default */
         }
       setMessages((prev) => [...prev, { role: "assistant", content: errText }]);
       setPending(false);
@@ -264,20 +279,20 @@ export function AskAI() {
                 queueRef.current += token;
               }
             } catch {
-              /* chunk parsial — lewati */
+              /* chunk parsial: lewati */
             }
           }
         }
       } catch {
         // Stream terputus di tengah: antrekan yang sudah ada tetap diketik,
-        // catatan ditambahkan di ekornya — lalu pompa menyelesaikan sisanya.
+        // catatan ditambahkan di ekornya, lalu pompa menyelesaikan sisanya.
         if (gotToken) {
-          queueRef.current += "\n\n_(Koneksi terputus — coba kirim ulang.)_";
+          queueRef.current += "\n\n_(Koneksi terputus, coba kirim ulang.)_";
         }
       }
       streamDoneRef.current = true;
       if (!gotToken) {
-        // Stream kosong: tidak ada yang bisa diketik — tampilkan error langsung.
+        // Stream kosong: tidak ada yang bisa diketik. Tampilkan error langsung.
         stopPump();
         setMessages((prev) => [...prev, { role: "assistant", content: "AI tidak memberikan jawaban. Coba lagi." }]);
         setPending(false);
@@ -290,7 +305,7 @@ export function AskAI() {
         const last = prev[prev.length - 1];
         // Stream terputus sebelum token pertama: tampilkan error langsung.
         if (last && last.role === "assistant" && last.content && !last.html) {
-          return [...prev.slice(0, -1), { ...last, content: `${last.content}\n\n_(Koneksi terputus — coba kirim ulang.)_` }];
+          return [...prev.slice(0, -1), { ...last, content: `${last.content}\n\n_(Koneksi terputus, coba kirim ulang.)_` }];
         }
         return [...prev, { role: "assistant", content: "Tidak dapat menghubungi asisten. Coba lagi." }];
       });
@@ -343,7 +358,7 @@ export function AskAI() {
             </div>
           </div>
 
-          <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+          <div ref={scrollRef} onScroll={onScrollChat} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
             {messages.length === 0 && (
               <div className="space-y-2">
                 <p className="text-sm text-zinc-400">
@@ -373,7 +388,7 @@ export function AskAI() {
                   {m.role === "user" || !m.html ? (
                     <span className="whitespace-pre-wrap">{m.content}</span>
                   ) : (
-                    // NOTED: html sudah lewat DOMPurify saat finalisasi — aman dirender.
+                    // NOTED: html sudah lewat DOMPurify saat finalisasi: aman dirender.
                     <span className="chat-md" dangerouslySetInnerHTML={{ __html: m.html }} />
                   )}
                 </div>

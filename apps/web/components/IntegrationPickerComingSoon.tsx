@@ -73,7 +73,7 @@ export function IntegrationPickerComingSoon({ baseSlug }: { baseSlug: string }) 
         </span>
       </div>
       <p className="text-sm text-zinc-400 leading-relaxed mb-5">
-        Template ini bisa diracik ulang dengan integrasi favoritmu di Builder —
+        Template ini bisa diracik ulang dengan integrasi favoritmu di Builder:
         centang payment / database / auth (<span className="text-zinc-200 font-medium">maks 1 pilihan per kategori</span>, mis. payment: Midtrans <em>atau</em> Xendit),
         lalu generate command custom.
       </p>
@@ -120,13 +120,13 @@ export function IntegrationPickerComingSoon({ baseSlug }: { baseSlug: string }) 
         </div>
       ) : (
         <p className="text-xs text-zinc-500 italic">
-          Daftar integrasi belum tersedia — katalog integrasi sedang disiapkan.
+                Daftar integrasi belum tersedia. Katalog integrasi sedang disiapkan.
         </p>
       )}
 
       <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-[11px] text-zinc-500">
-          Command generate polosan di atas tetap bisa dipakai langsung — atau racik custom via Builder.
+          Command generate polosan di atas tetap bisa dipakai langsung, atau racik custom via Builder.
         </p>
         <Link
           href={`/builder?base=${encodeURIComponent(baseSlug)}`}

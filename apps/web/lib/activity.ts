@@ -21,6 +21,6 @@ export async function logActivity(
       p_detail: detail ?? null,
     });
   } catch {
-    /* abaikan — log tidak boleh merusak response utama */
+    /* abaikan: log tidak boleh merusak response utama */
   }
 }

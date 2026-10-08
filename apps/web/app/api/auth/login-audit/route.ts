@@ -14,7 +14,7 @@ function clientIp(request: NextRequest): string {
 
 /**
  * Catat upaya login admin (sukses maupun gagal) untuk deteksi brute force.
- * Publik tanpa auth (dipanggil SEBELUM login berhasil) — penulisan lewat
+ * Publik tanpa auth (dipanggil SEBELUM login berhasil): penulisan lewat
  * SECURITY DEFINER log_login_attempt() yang punya guard anti-spam internal.
  * Kegagalan pencatatan tidak boleh mengganggu alur login.
  */
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     const supabase = await createSupabaseServerClient();
     await supabase.rpc("log_login_attempt", { p_email: email, p_success: success });
   } catch {
-    /* abaikan — audit tidak boleh merusak login */
+    /* abaikan: audit tidak boleh merusak login */
   }
   return NextResponse.json({ success: true });
 }

@@ -2,7 +2,7 @@
 
 > Dibutuhkan bila kamu memakai payment lain (mis. via Scaffdev Builder).
 > Ikuti section sesuai framework template-mu (Next.js ATAU Laravel).
-> Estimasi: ±10 menit. Ikuti berurutan — jangan loncat.
+> Estimasi: ±10 menit. Ikuti berurutan dan jangan loncat.
 
 ## 0. Aturan emas (baca dulu!)
 
@@ -13,11 +13,11 @@
 
 ## A. Template Next.js
 
-### A.1. Hapus file (aman — tidak dipakai kode lain)
+### A.1. Hapus file (aman karena tidak dipakai kode lain)
 
-- `lib/payments/xendit.ts` — client Xendit (invoice, charge, callback verify).
-- `app/api/payments/xendit/route.ts` — buat invoice + terima callback.
-- `components/checkout/XenditButton.tsx` — tombol bayar di halaman checkout.
+- `lib/payments/xendit.ts`: client Xendit (invoice, charge, callback verify).
+- `app/api/payments/xendit/route.ts`: buat invoice + terima callback.
+- `components/checkout/XenditButton.tsx`: tombol bayar di halaman checkout.
 
 ```bash
 rm lib/payments/xendit.ts "app/api/payments/xendit/route.ts" components/checkout/XenditButton.tsx
@@ -53,19 +53,19 @@ grep -ri "xendit" app lib components
 
 ### A.5. Yang JANGAN dihapus (Next.js)
 
-- `lib/payments/types.ts` — interface bersama, dipakai semua payment.
-- `app/api/payments/webhook/route.ts` — router umum, bukan khusus Xendit.
-- `components/checkout/CheckoutForm.tsx` — form umum, hanya memanggil tombol payment.
+- `lib/payments/types.ts`: interface bersama, dipakai semua payment.
+- `app/api/payments/webhook/route.ts`: router umum, bukan khusus Xendit.
+- `components/checkout/CheckoutForm.tsx`: form umum, hanya memanggil tombol payment.
 
 ---
 
 ## B. Template Laravel
 
-### B.1. Hapus file (aman — tidak dipakai kode lain)
+### B.1. Hapus file (aman karena tidak dipakai kode lain)
 
-- `app/Services/XenditService.php` — client Xendit (invoice, callback verify).
-- `app/Http/Controllers/XenditController.php` — buat invoice + terima callback.
-- `resources/views/checkout/xendit-button.blade.php` — tombol bayar di checkout.
+- `app/Services/XenditService.php`: client Xendit (invoice, callback verify).
+- `app/Http/Controllers/XenditController.php`: buat invoice + terima callback.
+- `resources/views/checkout/xendit-button.blade.php`: tombol bayar di checkout.
 
 ```bash
 rm "app/Services/XenditService.php" "app/Http/Controllers/XenditController.php" "resources/views/checkout/xendit-button.blade.php"
@@ -103,6 +103,6 @@ grep -ri "xendit" app routes resources config
 
 ### B.5. Yang JANGAN dihapus (Laravel)
 
-- `app/Contracts/PaymentGateway.php` — interface bersama, dipakai semua payment.
-- `routes/payments.php` — router umum, bukan khusus Xendit.
-- `resources/views/checkout/form.blade.php` — form umum, hanya memanggil tombol payment.
+- `app/Contracts/PaymentGateway.php`: interface bersama, dipakai semua payment.
+- `routes/payments.php`: router umum, bukan khusus Xendit.
+- `resources/views/checkout/form.blade.php`: form umum, hanya memanggil tombol payment.

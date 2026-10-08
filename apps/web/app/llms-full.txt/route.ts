@@ -1,11 +1,11 @@
 import { getAllDocs, getDocBySlug } from "@/lib/docs";
 import { SITE_NAME, SITE_TAGLINE } from "@/lib/seo";
 
-/** llms-full.txt — seluruh isi dokumentasi mentah untuk AI search & agent. */
+/** llms-full.txt: seluruh isi dokumentasi mentah untuk AI search & agent. */
 export async function GET() {
   const docs = getAllDocs();
   const parts: string[] = [
-    `# ${SITE_NAME} — Dokumentasi Lengkap`,
+    `# ${SITE_NAME}: Dokumentasi Lengkap`,
     "",
     `> ${SITE_TAGLINE}`,
     "",

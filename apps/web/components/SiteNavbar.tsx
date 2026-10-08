@@ -67,7 +67,7 @@ export function SiteNavbar() {
             />
           </Link>
 
-          {/* Desktop links — kanan, di samping GitHub */}
+          {/* Desktop links: kanan, di samping GitHub */}
           <div className="flex-1" />
 
           <div className="hidden items-center gap-1 md:flex">
@@ -120,7 +120,7 @@ export function SiteNavbar() {
         </nav>
       </header>
 
-      {/* Mobile dropdown — sejajar dengan navbar */}
+      {/* Mobile dropdown: sejajar dengan navbar */}
       {menuOpen && (
         <div className="fixed inset-x-0 top-[4.25rem] z-[80] flex justify-center px-4 md:hidden">
           <div className="w-full max-w-7xl rounded-2xl border border-white/10 bg-[#1B1B21]/95 p-2 shadow-2xl shadow-black/60 backdrop-blur-xl">

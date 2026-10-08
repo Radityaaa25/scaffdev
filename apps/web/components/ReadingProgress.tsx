@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-/** Progress bar baca ala docs modern — penuh saat mencapai akhir artikel. */
+  /** Progress bar baca ala docs modern: penuh saat mencapai akhir artikel. */
 export function ReadingProgress() {
   const [progress, setProgress] = useState(0);
 

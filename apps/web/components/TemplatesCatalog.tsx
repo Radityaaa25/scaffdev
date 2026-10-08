@@ -37,7 +37,7 @@ const selectCls =
 
 /**
  * Katalog interaktif (client). Menerima data awal dari server agar konten
- * langsung ter-render untuk crawler & AI — lalu refresh di background.
+ * langsung ter-render untuk crawler & AI, lalu refresh di background.
  */
 export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Template[] }) {
   const router = useRouter();
@@ -238,7 +238,7 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
       </div>
 
       <div className="container relative mx-auto px-4 py-12 max-w-7xl">
-      {/* Header katalog ringkas — hero besar + marquee pindah ke landing. */}
+      {/* Header katalog ringkas: hero besar + marquee pindah ke landing. */}
       <section className="relative mb-10">
         <div className="relative py-2 sm:py-4">
           <p className="hero-enter hero-enter-1 font-mono text-xs uppercase tracking-widest text-[#8B5CF6]">
@@ -250,7 +250,7 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
           <p className="hero-enter hero-enter-3 mt-3 max-w-2xl text-sm sm:text-base text-zinc-400 leading-relaxed">
             Starter kit <span className="text-zinc-200 font-medium">Next.js & Laravel</span> siap
             jalan dengan kurasi integrasi lokal Indonesia. Pilih template, salin
-            command, generate — langsung bisa dikembangkan.
+            command, generate. Langsung bisa dikembangkan.
           </p>
         </div>
       </section>
@@ -261,7 +261,7 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
           New
         </span>
         <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-          <span className="text-zinc-200 font-medium">Kombinasi integrasi custom sudah live</span> — pilih template
+          <span className="text-zinc-200 font-medium">Kombinasi integrasi custom sudah live</span>: pilih template
           polosan, centang payment / database / auth favoritmu di{" "}
           <Link href="/builder" className="text-[#8B5CF6] hover:underline font-medium">
             Builder →
@@ -270,7 +270,7 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
         </p>
       </div>
 
-      {/* Marquee "Terintegrasi dengan" — hanya di halaman template. */}
+      {/* Marquee "Terintegrasi dengan": hanya di halaman template. */}
       <IntegrationMarquee />
 
       {/* Search + Sort */}
@@ -317,7 +317,7 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
         </div>
       </div>
 
-      {/* Filter Bar — dropdown hemat tempat, opsi mengikuti data admin */}
+      {/* Filter Bar: dropdown hemat tempat, opsi mengikuti data admin */}
       <div className="bg-[#24242C] border border-[#3F3F4C] rounded-xl p-4 mb-4">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
@@ -435,7 +435,7 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
             ))}
           </div>
 
-          {/* Pagination — maks 12 per halaman */}
+          {/* Pagination: maks 12 per halaman */}
           {totalPages > 1 && (
             <nav aria-label="Navigasi halaman" className="flex items-center justify-center gap-1.5 mt-10">
               <button
@@ -494,7 +494,7 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
           </p>
           <p className="text-zinc-500 text-xs mb-4">
             {allTemplates.length === 0
-              ? "Template pertama sedang disiapkan — cek lagi nanti."
+              ? "Template pertama sedang disiapkan. Cek lagi nanti."
               : "Coba kata kunci lain atau reset filter."}
           </p>
           {hasActiveFilter && (

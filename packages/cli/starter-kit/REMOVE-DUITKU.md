@@ -2,7 +2,7 @@
 
 > Dibutuhkan bila kamu memakai payment lain (mis. via Scaffdev Builder).
 > Ikuti section sesuai framework template-mu (Next.js ATAU Laravel).
-> Estimasi: ±10 menit. Ikuti berurutan — jangan loncat.
+> Estimasi: ±10 menit. Ikuti berurutan dan jangan loncat.
 
 ## 0. Aturan emas (baca dulu!)
 
@@ -13,11 +13,11 @@
 
 ## A. Template Next.js
 
-### A.1. Hapus file (aman — tidak dipakai kode lain)
+### A.1. Hapus file (aman karena tidak dipakai kode lain)
 
-- `lib/payments/duitku.ts` — client Duitku (buat transaksi + verifikasi signature callback).
-- `app/api/payments/duitku/route.ts` — buat transaksi + terima callback.
-- `components/checkout/DuitkuButton.tsx` — tombol bayar di halaman checkout.
+- `lib/payments/duitku.ts`: client Duitku (buat transaksi + verifikasi signature callback).
+- `app/api/payments/duitku/route.ts`: buat transaksi + terima callback.
+- `components/checkout/DuitkuButton.tsx`: tombol bayar di halaman checkout.
 
 ```bash
 rm lib/payments/duitku.ts "app/api/payments/duitku/route.ts" components/checkout/DuitkuButton.tsx
@@ -56,19 +56,19 @@ grep -ri "duitku" app lib components
 
 ### A.5. Yang JANGAN dihapus (Next.js)
 
-- `lib/payments/types.ts` — interface bersama, dipakai semua payment.
-- `app/api/payments/webhook/route.ts` — router umum, bukan khusus Duitku.
-- `components/checkout/CheckoutForm.tsx` — form umum, hanya memanggil tombol payment.
+- `lib/payments/types.ts`: interface bersama, dipakai semua payment.
+- `app/api/payments/webhook/route.ts`: router umum, bukan khusus Duitku.
+- `components/checkout/CheckoutForm.tsx`: form umum, hanya memanggil tombol payment.
 
 ---
 
 ## B. Template Laravel
 
-### B.1. Hapus file (aman — tidak dipakai kode lain)
+### B.1. Hapus file (aman karena tidak dipakai kode lain)
 
-- `app/Services/DuitkuService.php` — client Duitku (transaksi + signature callback).
-- `app/Http/Controllers/DuitkuController.php` — buat transaksi + terima callback.
-- `resources/views/checkout/duitku-button.blade.php` — tombol bayar di checkout.
+- `app/Services/DuitkuService.php`: client Duitku (transaksi + signature callback).
+- `app/Http/Controllers/DuitkuController.php`: buat transaksi + terima callback.
+- `resources/views/checkout/duitku-button.blade.php`: tombol bayar di checkout.
 
 ```bash
 rm "app/Services/DuitkuService.php" "app/Http/Controllers/DuitkuController.php" "resources/views/checkout/duitku-button.blade.php"
@@ -109,6 +109,6 @@ grep -ri "duitku" app routes resources config
 
 ### B.5. Yang JANGAN dihapus (Laravel)
 
-- `app/Contracts/PaymentGateway.php` — interface bersama, dipakai semua payment.
-- `routes/payments.php` — router umum, bukan khusus Duitku.
-- `resources/views/checkout/form.blade.php` — form umum, hanya memanggil tombol payment.
+- `app/Contracts/PaymentGateway.php`: interface bersama, dipakai semua payment.
+- `routes/payments.php`: router umum, bukan khusus Duitku.
+- `resources/views/checkout/form.blade.php`: form umum, hanya memanggil tombol payment.

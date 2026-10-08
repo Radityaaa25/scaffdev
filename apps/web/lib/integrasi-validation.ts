@@ -12,7 +12,7 @@ export const ALLOWED_KATEGORI_INTEGRASI = [
 
 const KODE_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const ENV_KEY_RE = /^[A-Z][A-Z0-9_]{1,64}$/;
-// Repo modul harus GitHub publik https — CLI melakukan git clone tanpa token.
+  // Repo modul harus GitHub publik https: CLI melakukan git clone tanpa token.
 const REPO_URL_RE =
   /^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+?(\.git)?\/?$/;
 
@@ -49,7 +49,7 @@ export function validateIntegrasiInput(
   const b = body as Record<string, unknown>;
   const out: Partial<NormalizedIntegrasiInput> = {};
 
-  // kode (immutable — diidentifikasi dari path pada PUT)
+  // kode (immutable: diidentifikasi dari path pada PUT)
   if ("kode" in b || !opts.partial) {
     const kode =
       typeof b.kode === "string" ? b.kode.trim().toLowerCase() : "";

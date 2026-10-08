@@ -3,7 +3,7 @@ import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { isRateLimited } from "@/lib/rate-limit";
 import { validateImageBytes } from "@/lib/upload-validation";
 
-// Bukti visual laporan user: kecil dan ketat — maks 1MB, hanya png/jpg/webp
+// Bukti visual laporan user (kecil dan ketat, maks 1MB, hanya png/jpg/webp
 // asli (magic bytes). SVG/GIF ditolak (risiko XSS via SVG).
 const MAX_BYTES = 1 * 1024 * 1024;
 const BUCKET = "template-screenshots";
@@ -17,7 +17,7 @@ function clientIp(request: NextRequest): string {
 }
 
 /**
- * Upload gambar bukti untuk laporan — publik tanpa login.
+ * Upload gambar bukti untuk laporan: publik tanpa login.
  * File yang diupload tapi laporannya tidak jadi dikirim akan yatim di Storage;
  * itu tradeoff yang diterima (ukuran kecil + rate limit ketat).
  */

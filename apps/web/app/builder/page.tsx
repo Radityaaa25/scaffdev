@@ -5,7 +5,7 @@ import { BuilderFlow } from "@/components/BuilderFlow";
 import { AskAI } from "@/components/AskAI";
 
 export const metadata: Metadata = {
-  title: "Builder — Rancang Sendiri Kombinasimu",
+  title: "Builder: Rancang Sendiri Kombinasimu",
   description:
     "Builder Scaffdev: pilih template base dan centang integrasi favoritmu. Butuh CLI 0.2.0+.",
 };
@@ -25,7 +25,7 @@ export default function BuilderPage() {
                   New
                 </span>
                 <span className="text-zinc-400">
-                  Builder sudah live — racik base + integrasi di bawah, lalu
+                  Builder sudah live: racik base + integrasi di bawah, lalu
                   jalankan command-nya dengan CLI <span className="font-mono text-zinc-200">0.2.0+</span>.
                 </span>
               </p>
