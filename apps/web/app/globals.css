@@ -559,7 +559,7 @@ article.docs-article .terminal-card pre code {
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
-  background: rgba(10, 10, 11, 0.72);
+  background: rgba(27, 27, 33, 0.72);
   backdrop-filter: blur(16px);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55), 0 0 60px rgba(139, 92, 246, 0.12);
 }
@@ -742,7 +742,7 @@ article.docs-article .terminal-card pre code {
   gap: 7px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(10, 10, 11, 0.85);
+  background: rgba(27, 27, 33, 0.85);
   backdrop-filter: blur(12px);
   padding: 8px 12px;
   font-size: 12px;
@@ -974,7 +974,7 @@ article.docs-article .terminal-card pre code {
 
 /* Tombol bubbles hero (lingkaran mengembang dari sudut saat hover) */
 .btn-bubbles {
-  --c1: #0a0a0b;
+  --c1: #1B1B21;
   --c2: #8b5cf6;
   --size-letter: 14px;
   padding: 0.9em 1.6em;
@@ -1102,7 +1102,7 @@ article.docs-article .terminal-card pre code {
 .chat-md pre {
   margin: 0.5em 0 0.75em;
   padding: 0.75em 0.9em;
-  background: #0a0a0b;
+  background: #1B1B21;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   overflow-x: auto;

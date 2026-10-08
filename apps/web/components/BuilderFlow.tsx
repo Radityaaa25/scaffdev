@@ -118,7 +118,7 @@ function StepDot({ n, active, done }: { n: number; active: boolean; done: boolea
           ? "bg-gradient-to-br from-[#8B5CF6] to-[#7C3AED] text-white shadow-md shadow-[#8B5CF6]/40"
           : done
             ? "bg-emerald-500/20 text-emerald-400"
-            : "bg-[#1A1A1E] text-zinc-600"
+            : "bg-[#2C2C36] text-zinc-600"
       }`}
     >
       {done ? "✓" : `0${n}`}
@@ -157,7 +157,7 @@ function RacikanAside({
 }) {
   return (
     <aside aria-label="Ringkasan racikan" className="hidden lg:block">
-      <div className="sticky top-24 overflow-hidden rounded-2xl border border-white/10 bg-[#0A0A0B]/80 backdrop-blur-xl">
+      <div className="sticky top-24 overflow-hidden rounded-2xl border border-white/10 bg-[#1B1B21]/80 backdrop-blur-xl">
       <div className="h-[3px] bg-gradient-to-r from-[#8B5CF6] via-[#8B5CF6]/40 to-[#EC4899]/60" aria-hidden="true" />
       <div className="space-y-4 p-5">
         <div>
@@ -398,7 +398,7 @@ export function BuilderFlow() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse" aria-hidden="true">
         {[1, 2, 3].map((n) => (
-          <div key={n} className="bg-[#131316] border border-[#26262B] rounded-2xl h-56" />
+          <div key={n} className="bg-[#24242C] border border-[#3F3F4C] rounded-2xl h-56" />
         ))}
       </div>
     );
@@ -406,7 +406,7 @@ export function BuilderFlow() {
 
   if (loadError) {
     return (
-      <div className="text-center py-16 bg-[#131316] border border-[#26262B] rounded-2xl">
+      <div className="text-center py-16 bg-[#24242C] border border-[#3F3F4C] rounded-2xl">
         <p className="text-zinc-300 text-sm font-medium mb-2">Gagal memuat katalog builder.</p>
         <button
           onClick={() => window.location.reload()}
@@ -421,7 +421,7 @@ export function BuilderFlow() {
 
   if (templates.length === 0) {
     return (
-      <div className="text-center py-16 bg-[#131316] border border-[#26262B] rounded-2xl">
+      <div className="text-center py-16 bg-[#24242C] border border-[#3F3F4C] rounded-2xl">
         <p className="text-zinc-300 text-sm font-medium mb-1">Katalog masih kosong.</p>
         <p className="text-zinc-500 text-xs mb-4">Tambahkan template via halaman admin dulu.</p>
         <Link
@@ -497,7 +497,7 @@ export function BuilderFlow() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Cari base… (mis. basic, ecommerce, laravel)"
             aria-label="Cari template base"
-            className="mb-4 w-full bg-[#131316] border border-[#26262B] rounded-xl px-4 py-2.5 text-sm text-[#FAFAFA] placeholder:text-zinc-500 focus:outline-none focus:border-[#8B5CF6]/60 focus:ring-1 focus:ring-[#8B5CF6]/40 transition-all"
+            className="mb-4 w-full bg-[#24242C] border border-[#3F3F4C] rounded-xl px-4 py-2.5 text-sm text-[#FAFAFA] placeholder:text-zinc-500 focus:outline-none focus:border-[#8B5CF6]/60 focus:ring-1 focus:ring-[#8B5CF6]/40 transition-all"
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" role="radiogroup" aria-label="Template base">
             {filteredTemplates.map((t) => {
@@ -519,14 +519,14 @@ export function BuilderFlow() {
                   className={`group relative flex gap-4 rounded-2xl border p-4 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] ${
                     active
                       ? "border-[#8B5CF6] bg-gradient-to-br from-[#8B5CF6]/15 to-[#8B5CF6]/[0.03] shadow-xl shadow-[#8B5CF6]/20 ring-1 ring-[#8B5CF6]/40"
-                      : "border-[#26262B] bg-[#131316] hover:border-[#8B5CF6]/40 hover:bg-white/[0.02] hover:shadow-lg hover:shadow-black/30"
+                      : "border-[#3F3F4C] bg-[#24242C] hover:border-[#8B5CF6]/40 hover:bg-white/[0.02] hover:shadow-lg hover:shadow-black/30"
                   }`}
                 >
                   <span className="relative shrink-0">
                     {t.screenshot_url ? (
                       <img src={t.screenshot_url} alt="" loading="lazy" className="h-20 w-32 rounded-xl object-cover border border-white/10 transition-transform duration-300 group-hover:scale-[1.02]" />
                     ) : (
-                      <span className="flex h-20 w-32 items-center justify-center rounded-xl bg-gradient-to-br from-[#1A1A1E] to-[#0A0A0B] border border-white/5 font-mono text-[10px] text-zinc-600">
+                      <span className="flex h-20 w-32 items-center justify-center rounded-xl bg-gradient-to-br from-[#2C2C36] to-[#1B1B21] border border-white/5 font-mono text-[10px] text-zinc-600">
                         no img
                       </span>
                     )}
@@ -645,7 +645,7 @@ export function BuilderFlow() {
                     className={`relative overflow-hidden rounded-2xl border p-4 pt-5 transition-colors ${
                       chosen.length > 0
                         ? "border-[#8B5CF6]/40 bg-[#8B5CF6]/[0.05] shadow-lg shadow-[#8B5CF6]/[0.07]"
-                        : "border-white/10 bg-[#0A0A0B]/60"
+                        : "border-white/10 bg-[#1B1B21]/60"
                     }`}
                   >
                     {chosen.length > 0 && (
@@ -748,7 +748,7 @@ export function BuilderFlow() {
           )}
 
           <div className="sticky bottom-4 z-10 mt-6 rounded-2xl bg-gradient-to-r from-[#8B5CF6]/40 via-white/10 to-[#EC4899]/30 p-[1px] shadow-2xl shadow-black/50 lg:hidden">
-          <div className="rounded-2xl bg-[#0A0A0B]/95 p-3 pr-20 backdrop-blur-xl">
+          <div className="rounded-2xl bg-[#1B1B21]/95 p-3 pr-20 backdrop-blur-xl">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <p className="flex-1 px-1 text-xs text-zinc-400 leading-relaxed" aria-live="polite">
                 {withCodes.length === 0 ? (
@@ -801,7 +801,7 @@ export function BuilderFlow() {
             title="Command custom-mu jadi"
             desc="Salin, tempel di terminal, lalu execute. Membutuhkan CLI 0.2.0."
           />
-          <div className="rounded-2xl border border-[#26262B] bg-[#131316] p-5">
+          <div className="rounded-2xl border border-[#3F3F4C] bg-[#24242C] p-5">
             <p className="text-xs text-zinc-500 mb-1">Base</p>
             <p className="text-sm font-semibold text-[#FAFAFA]">{base.nama}</p>
             <p className="mt-3 text-xs text-zinc-500 mb-1.5">Tambahan (--with)</p>
@@ -823,7 +823,7 @@ export function BuilderFlow() {
               placeholder="project-saya"
               spellCheck={false}
               maxLength={60}
-              className="w-full sm:max-w-xs bg-[#131316] border border-[#26262B] rounded-xl px-3 py-2.5 text-sm font-mono text-[#FAFAFA] placeholder:text-zinc-600 focus:outline-none focus:border-[#8B5CF6]/60 transition-colors"
+              className="w-full sm:max-w-xs bg-[#24242C] border border-[#3F3F4C] rounded-xl px-3 py-2.5 text-sm font-mono text-[#FAFAFA] placeholder:text-zinc-600 focus:outline-none focus:border-[#8B5CF6]/60 transition-colors"
             />
           </div>
 
@@ -864,7 +864,7 @@ export function BuilderFlow() {
           </fieldset>
 
           <div className="overflow-hidden rounded-2xl border border-[#8B5CF6]/30 bg-gradient-to-br from-[#8B5CF6]/20 via-transparent to-[#EC4899]/10 p-[1px]">
-            <div className="rounded-2xl bg-[#0A0A0B]/95 p-5 backdrop-blur-xl">
+            <div className="rounded-2xl bg-[#1B1B21]/95 p-5 backdrop-blur-xl">
               <p className="text-sm font-semibold text-[#FAFAFA] mb-3">Jalankan di terminal:</p>
               <CommandBox command={command} />
               <p className="mt-3 text-[11px] text-zinc-500">

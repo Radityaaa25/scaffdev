@@ -9,7 +9,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
   return (
     <>
       {/* Topbar fixed dengan backdrop blur */}
-      <div className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#0A0A0B]/80 backdrop-blur-xl supports-[backdrop-filter]:bg-[#0A0A0B]/60">
+      <div className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#1B1B21]/80 backdrop-blur-xl supports-[backdrop-filter]:bg-[#1B1B21]/60">
         <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center">
             <DocsTopbar docs={docs} />

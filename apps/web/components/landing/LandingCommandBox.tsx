@@ -31,7 +31,7 @@ export function LandingCommandBox({ command, className = "" }: LandingCommandBox
 
   return (
     <div
-      className={`relative flex min-w-0 w-full max-w-full overflow-hidden items-center justify-between gap-2 bg-[#131316] border border-[#26262B] rounded-lg px-3 py-2.5 font-mono text-xs shadow-inner group hover:border-[#8B5CF6]/50 transition-colors sm:gap-3 sm:px-4 sm:py-3 sm:text-sm ${className}`}
+      className={`relative flex min-w-0 w-full max-w-full overflow-hidden items-center justify-between gap-2 bg-[#24242C] border border-[#3F3F4C] rounded-lg px-3 py-2.5 font-mono text-xs shadow-inner group hover:border-[#8B5CF6]/50 transition-colors sm:gap-3 sm:px-4 sm:py-3 sm:text-sm ${className}`}
     >
       <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto select-all scrollbar-none">
         <span className="text-[#8B5CF6] select-none font-bold">$</span>
@@ -41,7 +41,7 @@ export function LandingCommandBox({ command, className = "" }: LandingCommandBox
       <button
         onClick={handleCopy}
         type="button"
-        className="flex shrink-0 items-center gap-1.5 rounded px-2.5 py-1 text-xs font-medium text-[#FAFAFA] transition-all bg-[#26262B] hover:bg-[#8B5CF6] active:scale-95 focus:outline-none focus:ring-1 focus:ring-[#8B5CF6]"
+        className="flex shrink-0 items-center gap-1.5 rounded px-2.5 py-1 text-xs font-medium text-[#FAFAFA] transition-all bg-[#3F3F4C] hover:bg-[#8B5CF6] active:scale-95 focus:outline-none focus:ring-1 focus:ring-[#8B5CF6]"
         title="Salin ke clipboard"
       >
         {copied ? (

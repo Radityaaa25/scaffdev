@@ -10,7 +10,7 @@ import Grainient from "./Grainient";
  *   (bukan setinggi dokumen) + animasi yang sama terlihat di semua section.
  * - Grid CSS murni (murah) full-height; mask radial lembut, tanpa garis.
  * - Intensitas diredupkan agar konten dominan. Gerakan tidak diubah.
- * Token: docs/16 (bg #0A0A0B).
+ * Token: docs/16 (bg #1B1B21).
  */
 export function LandingBackdrop() {
   return (
@@ -22,7 +22,7 @@ export function LandingBackdrop() {
       aria-hidden="true"
     >
       {/* Base */}
-      <div className="absolute inset-0 bg-[#0A0A0B]" />
+      <div className="absolute inset-0 bg-[#1B1B21]" />
       {/* Underlay statis: SANGAT redup, hanya anti-kedip ~1 dtk saat refresh
           (kanvas fade-in di atasnya). Bukan wash warna — ungu hanya boleh
           muncul dari animasi awan, sisanya gelap background. */}
@@ -31,7 +31,7 @@ export function LandingBackdrop() {
         aria-hidden="true"
         style={{
           background:
-            "radial-gradient(40% 28% at 50% 0%, rgba(76,29,149,0.22) 0%, rgba(10,10,11,0) 100%)",
+            "radial-gradient(40% 28% at 50% 0%, rgba(76,29,149,0.22) 0%, rgba(27, 27, 33,0) 100%)",
         }}
       />
       {/* Canvas viewport-locked: menempel saat scroll → mulus di semua section.
@@ -40,8 +40,8 @@ export function LandingBackdrop() {
         <div className="absolute inset-0 opacity-45">
           <Grainient
             color1="#5B21B6"
-            color2="#0a0a0b"
-            color3="#0a0a0b"
+            color2="#1B1B21"
+            color3="#1B1B21"
             timeSpeed={1.4}
             colorBalance={-0.95}
           warpStrength={1.0}

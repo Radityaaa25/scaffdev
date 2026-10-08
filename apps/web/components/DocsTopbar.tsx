@@ -129,7 +129,7 @@ function Spotlight({ docs, onClose }: { docs: SpotlightDoc[]; onClose: () => voi
       aria-label="Pencarian dokumentasi"
     >
       <div
-        className="w-full max-w-2xl overflow-hidden rounded-2xl border border-white/10 bg-[#0A0A0B]/95 shadow-2xl shadow-black/80 backdrop-blur-2xl"
+        className="w-full max-w-2xl overflow-hidden rounded-2xl border border-white/10 bg-[#1B1B21]/95 shadow-2xl shadow-black/80 backdrop-blur-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search Input */}

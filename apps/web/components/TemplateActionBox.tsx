@@ -23,7 +23,7 @@ export function TemplateActionBox({ slug, framework }: TemplateActionBoxProps) {
   const isNextjs = framework.toLowerCase() === "nextjs";
 
   return (
-    <div id="pakai-template" className="bg-[#131316] border border-[#26262B] rounded-2xl p-6 mt-8 scroll-mt-24">
+    <div id="pakai-template" className="bg-[#24242C] border border-[#3F3F4C] rounded-2xl p-6 mt-8 scroll-mt-24">
       {!showCommand ? (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
@@ -48,7 +48,7 @@ export function TemplateActionBox({ slug, framework }: TemplateActionBoxProps) {
             <span className="text-sm font-semibold text-[#FAFAFA]">
               Jalankan command ini di terminal Anda:
             </span>
-            <div className="flex items-center gap-1 bg-[#0A0A0B] border border-[#26262B] rounded-lg p-1 self-start">
+            <div className="flex items-center gap-1 bg-[#1B1B21] border border-[#3F3F4C] rounded-lg p-1 self-start">
               {(["standar", "folder"] as const).map((m) => (
                 <button
                   key={m}
@@ -77,7 +77,7 @@ export function TemplateActionBox({ slug, framework }: TemplateActionBoxProps) {
                 onChange={(e) => setFolder(e.target.value)}
                 placeholder="project-saya"
                 spellCheck={false}
-                className="flex-1 bg-[#0A0A0B] border border-[#26262B] rounded-lg px-3 py-2 text-sm font-mono text-[#FAFAFA] placeholder:text-zinc-600 focus:outline-none focus:border-[#8B5CF6]/60 transition-colors"
+                className="flex-1 bg-[#1B1B21] border border-[#3F3F4C] rounded-lg px-3 py-2 text-sm font-mono text-[#FAFAFA] placeholder:text-zinc-600 focus:outline-none focus:border-[#8B5CF6]/60 transition-colors"
                 maxLength={60}
               />
             </div>
@@ -86,7 +86,7 @@ export function TemplateActionBox({ slug, framework }: TemplateActionBoxProps) {
           <CommandBox command={command} />
 
           {/* Prerequisite Notice */}
-          <div className="flex items-start gap-2 text-xs text-zinc-400 bg-[#0A0A0B] border border-[#26262B] rounded-xl p-3">
+          <div className="flex items-start gap-2 text-xs text-zinc-400 bg-[#1B1B21] border border-[#3F3F4C] rounded-xl p-3">
             <span className="text-emerald-400 font-bold shrink-0">✓</span>
             <div className="leading-relaxed">
               {isNextjs ? (

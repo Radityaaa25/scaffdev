@@ -113,7 +113,7 @@ export function SiteSearch({ open, onClose }: { open: boolean; onClose: () => vo
       aria-label="Pencarian situs"
     >
       <div
-        className="w-full max-w-2xl overflow-hidden rounded-2xl border border-white/10 bg-[#0A0A0B]/95 shadow-2xl shadow-black/80 backdrop-blur-2xl"
+        className="w-full max-w-2xl overflow-hidden rounded-2xl border border-white/10 bg-[#1B1B21]/95 shadow-2xl shadow-black/80 backdrop-blur-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-3 border-b border-white/10 px-5 py-4">

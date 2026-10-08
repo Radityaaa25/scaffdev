@@ -49,7 +49,7 @@ export function SiteNavbar() {
       <header className="fixed inset-x-0 top-3 z-[80] flex justify-center px-4 pointer-events-none">
         <nav
           aria-label="Navigasi utama"
-          className="pointer-events-auto flex w-full max-w-7xl items-center gap-2 rounded-2xl border border-white/10 bg-[#0A0A0B]/85 py-2 pl-3 pr-2 shadow-2xl shadow-black/50 backdrop-blur-xl"
+          className="pointer-events-auto flex w-full max-w-7xl items-center gap-2 rounded-2xl border border-white/10 bg-[#1B1B21]/85 py-2 pl-3 pr-2 shadow-2xl shadow-black/50 backdrop-blur-xl"
         >
           {/* Brand */}
           <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Scaffdev - Beranda">
@@ -123,7 +123,7 @@ export function SiteNavbar() {
       {/* Mobile dropdown — sejajar dengan navbar */}
       {menuOpen && (
         <div className="fixed inset-x-0 top-[4.25rem] z-[80] flex justify-center px-4 md:hidden">
-          <div className="w-full max-w-7xl rounded-2xl border border-white/10 bg-[#0A0A0B]/95 p-2 shadow-2xl shadow-black/60 backdrop-blur-xl">
+          <div className="w-full max-w-7xl rounded-2xl border border-white/10 bg-[#1B1B21]/95 p-2 shadow-2xl shadow-black/60 backdrop-blur-xl">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}

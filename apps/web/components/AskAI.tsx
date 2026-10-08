@@ -306,11 +306,11 @@ export function AskAI() {
     <>
       {open && (
         <div
-          className={`fixed bottom-24 right-5 z-[80] flex h-[min(520px,calc(100dvh-8rem))] w-[min(92vw,380px)] origin-bottom-right flex-col overflow-hidden rounded-2xl border border-[#26262B] bg-[#101014]/95 shadow-2xl shadow-black/50 backdrop-blur-2xl transition-all duration-200 ${
+          className={`fixed bottom-24 right-5 z-[80] flex h-[min(520px,calc(100dvh-8rem))] w-[min(92vw,380px)] origin-bottom-right flex-col overflow-hidden rounded-2xl border border-[#3F3F4C] bg-[#202027]/95 shadow-2xl shadow-black/50 backdrop-blur-2xl transition-all duration-200 ${
             shown ? "scale-100 opacity-100" : "scale-95 opacity-0"
           }`}
         >
-          <div className="border-b border-[#26262B] bg-gradient-to-r from-[#8B5CF6]/20 to-transparent px-4 py-3">
+          <div className="border-b border-[#3F3F4C] bg-gradient-to-r from-[#8B5CF6]/20 to-transparent px-4 py-3">
               <div className="flex items-center gap-2.5">
                 <img
                   src="/logo-icon.png"
@@ -354,7 +354,7 @@ export function AskAI() {
                     key={s}
                     type="button"
                     onClick={() => send(s)}
-                    className="block w-full rounded-xl border border-[#26262B] bg-white/[0.03] px-3 py-2 text-left text-xs text-zinc-300 transition-all hover:border-[#8B5CF6]/40 hover:bg-[#8B5CF6]/10 active:scale-[0.98]"
+                    className="block w-full rounded-xl border border-[#3F3F4C] bg-white/[0.03] px-3 py-2 text-left text-xs text-zinc-300 transition-all hover:border-[#8B5CF6]/40 hover:bg-[#8B5CF6]/10 active:scale-[0.98]"
                   >
                     {s}
                   </button>
@@ -367,7 +367,7 @@ export function AskAI() {
                   className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
                     m.role === "user"
                       ? "whitespace-pre-wrap rounded-br-md bg-[#8B5CF6] text-white shadow-lg shadow-[#8B5CF6]/25"
-                      : "rounded-bl-md border border-[#26262B] bg-white/[0.04] text-zinc-200"
+                      : "rounded-bl-md border border-[#3F3F4C] bg-white/[0.04] text-zinc-200"
                   }`}
                 >
                   {m.role === "user" || !m.html ? (
@@ -382,7 +382,7 @@ export function AskAI() {
             {thinking && (
               <div className="flex justify-start">
                 <div
-                  className="flex items-center gap-2.5 rounded-2xl rounded-bl-md border border-[#26262B] bg-white/[0.04] px-4 py-3"
+                  className="flex items-center gap-2.5 rounded-2xl rounded-bl-md border border-[#3F3F4C] bg-white/[0.04] px-4 py-3"
                   role="status"
                   aria-label="Scaffbot sedang berpikir"
                 >
@@ -403,14 +403,14 @@ export function AskAI() {
 
           <form
             onSubmit={(e) => { e.preventDefault(); send(); }}
-            className="flex gap-2 border-t border-[#26262B] p-3"
+            className="flex gap-2 border-t border-[#3F3F4C] p-3"
           >
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Tulis pertanyaan…"
               maxLength={500}
-              className="flex-1 rounded-xl border border-[#26262B] bg-[#0A0A0B] px-3.5 py-2 text-sm text-[#FAFAFA] placeholder:text-zinc-600 focus:border-[#8B5CF6]/60 focus:outline-none"
+              className="flex-1 rounded-xl border border-[#3F3F4C] bg-[#1B1B21] px-3.5 py-2 text-sm text-[#FAFAFA] placeholder:text-zinc-600 focus:border-[#8B5CF6]/60 focus:outline-none"
             />
             <button
               type="submit"
@@ -428,7 +428,7 @@ export function AskAI() {
         type="button"
         onClick={toggleOpen}
         aria-label={open ? "Tutup asisten AI" : "Buka asisten AI"}
-        className={`fixed bottom-6 right-6 z-[80] flex h-14 w-14 items-center justify-center rounded-full border border-[#8B5CF6]/50 bg-[#0A0A0B]/90 text-white shadow-xl shadow-[#8B5CF6]/40 backdrop-blur transition-all duration-300 hover:scale-110 hover:shadow-[#8B5CF6]/60 hover:border-[#8B5CF6] active:scale-90 ${open ? "rotate-90" : ""}`}
+        className={`fixed bottom-6 right-6 z-[80] flex h-14 w-14 items-center justify-center rounded-full border border-[#8B5CF6]/50 bg-[#1B1B21]/90 text-white shadow-xl shadow-[#8B5CF6]/40 backdrop-blur transition-all duration-300 hover:scale-110 hover:shadow-[#8B5CF6]/60 hover:border-[#8B5CF6] active:scale-90 ${open ? "rotate-90" : ""}`}
       >
         {open ? (
           <XIcon className="h-5 w-5" />
