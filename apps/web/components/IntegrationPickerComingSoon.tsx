@@ -94,7 +94,7 @@ export function IntegrationPickerComingSoon({ baseSlug }: { baseSlug: string }) 
             <fieldset
               key={group.kategori}
               disabled
-              className="rounded-xl border border-white/10 bg-[#0A0A0B]/60 p-4 opacity-80"
+              className="rounded-xl border border-white/10 bg-[#1B1B21]/60 p-4 opacity-80"
             >
               <legend className="px-2 text-xs font-semibold uppercase tracking-wider text-zinc-300">
                 {group.label} <span className="text-zinc-500 normal-case font-normal">• max 1</span>

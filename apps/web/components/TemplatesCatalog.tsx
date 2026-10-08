@@ -33,7 +33,7 @@ function prettyLabel(value: string, labels: Record<string, string>): string {
 }
 
 const selectCls =
-  "bg-[#131316] border border-[#26262B] rounded-xl px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#8B5CF6]/60 [&>option]:bg-[#131316] max-w-full";
+  "bg-[#24242C] border border-[#3F3F4C] rounded-xl px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#8B5CF6]/60 [&>option]:bg-[#24242C] max-w-full";
 
 /**
  * Katalog interaktif (client). Menerima data awal dari server agar konten
@@ -284,7 +284,7 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
             value={searchQuery}
             onChange={(e) => updateParams({ q: e.target.value })}
             placeholder="Cari nama, kategori, framework… (mis. toko, laravel, midtrans)"
-            className="w-full bg-[#131316] border border-[#26262B] rounded-xl pl-10 pr-9 py-2.5 text-sm text-[#FAFAFA] placeholder:text-zinc-500 focus:outline-none focus:border-[#8B5CF6]/60 focus:ring-1 focus:ring-[#8B5CF6]/40 transition-all"
+            className="w-full bg-[#24242C] border border-[#3F3F4C] rounded-xl pl-10 pr-9 py-2.5 text-sm text-[#FAFAFA] placeholder:text-zinc-500 focus:outline-none focus:border-[#8B5CF6]/60 focus:ring-1 focus:ring-[#8B5CF6]/40 transition-all"
             aria-label="Cari template"
           />
           {searchQuery && (
@@ -318,7 +318,7 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
       </div>
 
       {/* Filter Bar — dropdown hemat tempat, opsi mengikuti data admin */}
-      <div className="bg-[#131316] border border-[#26262B] rounded-xl p-4 mb-4">
+      <div className="bg-[#24242C] border border-[#3F3F4C] rounded-xl p-4 mb-4">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label htmlFor="filter-kategori" className="mb-1.5 block text-xs font-semibold text-zinc-400 uppercase tracking-wider">
@@ -404,7 +404,7 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map((n) => (
-            <div key={n} className="bg-[#131316] border border-[#26262B] rounded-2xl overflow-hidden animate-pulse">
+            <div key={n} className="bg-[#24242C] border border-[#3F3F4C] rounded-2xl overflow-hidden animate-pulse">
               <div className="aspect-video bg-zinc-800/60" />
               <div className="p-5 space-y-3">
                 <div className="h-5 w-2/3 bg-zinc-800/80 rounded" />
@@ -416,7 +416,7 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
           ))}
         </div>
       ) : loadError ? (
-        <div className="text-center py-16 bg-[#131316] border border-[#26262B] rounded-2xl">
+        <div className="text-center py-16 bg-[#24242C] border border-[#3F3F4C] rounded-2xl">
           <p className="text-zinc-300 text-sm font-medium mb-2">Gagal memuat katalog.</p>
           <p className="text-zinc-500 text-xs mb-4">Periksa koneksi internet lalu coba lagi.</p>
           <button
@@ -442,7 +442,7 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
                 onClick={() => goToPage(safePage - 1)}
                 disabled={safePage <= 1}
                 type="button"
-                className="px-3 py-2 text-xs font-medium rounded-lg bg-[#26262B] text-zinc-300 hover:text-white hover:bg-zinc-700 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                className="px-3 py-2 text-xs font-medium rounded-lg bg-[#3F3F4C] text-zinc-300 hover:text-white hover:bg-zinc-700 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 ← Prev
               </button>
@@ -460,7 +460,7 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
                       className={`min-w-9 px-3 py-2 text-xs font-medium rounded-lg transition-all ${
                         n === safePage
                           ? "bg-[#8B5CF6] text-white shadow-sm shadow-[#8B5CF6]/30"
-                          : "bg-[#26262B] text-zinc-300 hover:text-white hover:bg-zinc-700"
+                          : "bg-[#3F3F4C] text-zinc-300 hover:text-white hover:bg-zinc-700"
                       }`}
                     >
                       {n}
@@ -472,7 +472,7 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
                 onClick={() => goToPage(safePage + 1)}
                 disabled={safePage >= totalPages}
                 type="button"
-                className="px-3 py-2 text-xs font-medium rounded-lg bg-[#26262B] text-zinc-300 hover:text-white hover:bg-zinc-700 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                className="px-3 py-2 text-xs font-medium rounded-lg bg-[#3F3F4C] text-zinc-300 hover:text-white hover:bg-zinc-700 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 Next →
               </button>
@@ -480,8 +480,8 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
           )}
         </>
       ) : (
-        <div className="text-center py-16 bg-[#131316] border border-[#26262B] rounded-2xl">
-          <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-[#26262B] flex items-center justify-center">
+        <div className="text-center py-16 bg-[#24242C] border border-[#3F3F4C] rounded-2xl">
+          <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-[#3F3F4C] flex items-center justify-center">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-5 w-5 text-zinc-500">
               <circle cx="11" cy="11" r="8" />
               <path d="M21 21l-4.3-4.3" />

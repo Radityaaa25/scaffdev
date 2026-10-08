@@ -61,7 +61,7 @@ export function BuilderTeaser() {
           <div className="grid w-full min-w-0 grid-cols-1 gap-4 sm:grid-cols-3">
             {MINI_STEPS.map((s, i) => (
               <Reveal key={s.no} delay={i * 80} className="w-full min-w-0">
-                <div className="landing-spot group relative h-full w-full min-w-0 overflow-hidden rounded-2xl border border-[#26262B] bg-[#131316] p-5 transition-colors hover:border-[#8B5CF6]/50 sm:p-6">
+                <div className="landing-spot group relative h-full w-full min-w-0 overflow-hidden rounded-2xl border border-[#3F3F4C] bg-[#24242C] p-5 transition-colors hover:border-[#8B5CF6]/50 sm:p-6">
                   <span className="pointer-events-none absolute -top-10 -right-10 h-28 w-28 rounded-full bg-[#8B5CF6]/10 blur-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" aria-hidden="true" />
                   <div className="flex items-center justify-between">
                     <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#8B5CF6]/30 bg-[#8B5CF6]/10 text-[#A78BFA]">
@@ -78,7 +78,7 @@ export function BuilderTeaser() {
 
           {/* Terminal command custom — full width, lega */}
           <Reveal delay={120} className="w-full min-w-0">
-            <div className="landing-spot relative w-full min-w-0 overflow-hidden rounded-2xl border border-[#8B5CF6]/30 bg-gradient-to-b from-[#8B5CF6]/[0.1] to-[#131316]">
+            <div className="landing-spot relative w-full min-w-0 overflow-hidden rounded-2xl border border-[#8B5CF6]/30 bg-gradient-to-b from-[#8B5CF6]/[0.1] to-[#24242C]">
               <div className="hero-term-head w-full min-w-0">
                 <div className="hero-term-dots" aria-hidden="true">
                   <span />

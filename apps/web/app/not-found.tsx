@@ -36,7 +36,7 @@ export default function NotFound() {
       {/* Kartu terminal — motif khas Scaffdev, murni dekoratif */}
       <div
         aria-hidden="true"
-        className="mt-8 w-full max-w-md overflow-hidden rounded-2xl border border-[#26262B] bg-[#0A0A0B] text-left shadow-2xl shadow-black/50"
+        className="mt-8 w-full max-w-md overflow-hidden rounded-2xl border border-[#3F3F4C] bg-[#1B1B21] text-left shadow-2xl shadow-black/50"
       >
         <div className="flex items-center gap-1.5 border-b border-white/[0.06] px-4 py-2.5">
           <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F57]" />

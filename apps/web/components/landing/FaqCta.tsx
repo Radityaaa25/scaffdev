@@ -8,7 +8,7 @@ import { FAQS } from "@/lib/faq";
 
 function FaqItem({ q, a, open, onToggle }: { q: string; a: string; open: boolean; onToggle: () => void }) {
   return (
-    <div className={`overflow-hidden rounded-xl border transition-colors ${open ? "border-[#8B5CF6]/40 bg-[#131316]" : "border-[#26262B] bg-[#131316]/60 hover:border-white/15"}`}>
+    <div className={`overflow-hidden rounded-xl border transition-colors ${open ? "border-[#8B5CF6]/40 bg-[#24242C]" : "border-[#3F3F4C] bg-[#24242C]/60 hover:border-white/15"}`}>
       <button
         type="button"
         onClick={onToggle}
@@ -61,7 +61,7 @@ export function FaqCta() {
           </Reveal>
 
           <Reveal delay={120}>
-            <div className="landing-spot relative flex h-full flex-col justify-center overflow-hidden rounded-2xl border border-[#8B5CF6]/30 bg-gradient-to-b from-[#8B5CF6]/[0.12] to-[#131316] p-8 sm:p-10">
+            <div className="landing-spot relative flex h-full flex-col justify-center overflow-hidden rounded-2xl border border-[#8B5CF6]/30 bg-gradient-to-b from-[#8B5CF6]/[0.12] to-[#24242C] p-8 sm:p-10">
               <p className="font-mono text-xs uppercase tracking-widest text-[#A78BFA]">
                 ◆ Mulai sekarang
               </p>

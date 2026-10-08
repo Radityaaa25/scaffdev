@@ -89,7 +89,7 @@ export default function DocsPage() {
 
       {/* Quick Start Command Box */}
       <div className="mb-12 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#8B5CF6]/10 via-transparent to-transparent p-[1px]">
-        <div className="rounded-2xl bg-[#0A0A0B]/90 p-8 backdrop-blur-xl">
+        <div className="rounded-2xl bg-[#1B1B21]/90 p-8 backdrop-blur-xl">
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div className="flex-1">
               <div className="mb-2 flex items-center gap-2">

@@ -109,7 +109,7 @@ export function DocsSidebar({ docs }: { docs: SidebarDoc[] }) {
           <ChevronRightIcon className={`h-4 w-4 text-zinc-400 transition-transform duration-200 ${mobileOpen ? "rotate-90" : ""}`} />
         </button>
         {mobileOpen && (
-          <div className="animate-docs-popup mt-3 rounded-xl border border-white/10 bg-[#0A0A0B]/95 p-5 backdrop-blur-xl">
+          <div className="animate-docs-popup mt-3 rounded-xl border border-white/10 bg-[#1B1B21]/95 p-5 backdrop-blur-xl">
             {nav}
           </div>
         )}

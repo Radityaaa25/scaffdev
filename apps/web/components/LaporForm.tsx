@@ -10,7 +10,7 @@ const KATEGORI_OPTIONS = [
 ];
 
 const inputCls =
-  "w-full bg-[#131316] border border-[#26262B] rounded-xl px-4 py-2.5 text-sm text-[#FAFAFA] placeholder:text-zinc-600 focus:outline-none focus:border-[#8B5CF6]/60 focus:ring-1 focus:ring-[#8B5CF6]/40 transition-all";
+  "w-full bg-[#24242C] border border-[#3F3F4C] rounded-xl px-4 py-2.5 text-sm text-[#FAFAFA] placeholder:text-zinc-600 focus:outline-none focus:border-[#8B5CF6]/60 focus:ring-1 focus:ring-[#8B5CF6]/40 transition-all";
 
 /** Form laporan/pengaduan publik (tanpa login). */
 export function LaporForm() {
@@ -116,7 +116,7 @@ export function LaporForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-2xl border border-[#26262B] bg-[#131316] p-6 sm:p-8 space-y-5">
+    <form onSubmit={handleSubmit} className="rounded-2xl border border-[#3F3F4C] bg-[#24242C] p-6 sm:p-8 space-y-5">
       <div>
         <span className="mb-2 block text-sm font-medium text-zinc-300">Jenis laporan *</span>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">

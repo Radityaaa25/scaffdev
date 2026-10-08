@@ -14,8 +14,8 @@ export default function BuilderPage() {
   return (
     <main className="flex flex-1 flex-col">
       <div className="mx-auto w-full max-w-7xl px-4 pt-8 sm:px-6">
-        <div className="overflow-hidden rounded-2xl border border-amber-500/25 bg-gradient-to-br from-amber-500/[0.09] via-[#0A0A0B] to-[#0A0A0B] p-[1px]">
-          <div className="flex items-start sm:items-center gap-3.5 rounded-2xl bg-[#0A0A0B]/90 px-4 sm:px-5 py-4 backdrop-blur-xl">
+        <div className="overflow-hidden rounded-2xl border border-amber-500/25 bg-gradient-to-br from-amber-500/[0.09] via-[#1B1B21] to-[#1B1B21] p-[1px]">
+          <div className="flex items-start sm:items-center gap-3.5 rounded-2xl bg-[#1B1B21]/90 px-4 sm:px-5 py-4 backdrop-blur-xl">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 border border-amber-500/30 text-base mt-0.5 sm:mt-0" aria-hidden="true">
               ✦
             </span>

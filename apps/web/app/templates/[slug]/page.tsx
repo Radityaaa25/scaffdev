@@ -116,7 +116,7 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
             <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold uppercase tracking-wider bg-[#8B5CF6]/20 text-[#8B5CF6] border border-[#8B5CF6]/30">
               {template.kategori}
             </span>
-            <span className="px-2.5 py-0.5 rounded-md text-xs font-mono bg-[#26262B] text-zinc-300 border border-[#26262B]">
+            <span className="px-2.5 py-0.5 rounded-md text-xs font-mono bg-[#3F3F4C] text-zinc-300 border border-[#3F3F4C]">
               Framework: {template.framework}
             </span>
             {template.integrasi.length > 0 ? (
@@ -152,14 +152,14 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
               target="_blank"
               rel="noreferrer"
               title="Lihat source code template di GitHub"
-              className="px-5 py-2.5 rounded-xl font-medium text-sm text-zinc-300 border border-[#26262B] hover:bg-[#131316] hover:text-white transition-all active:scale-[0.98]"
+              className="px-5 py-2.5 rounded-xl font-medium text-sm text-zinc-300 border border-[#3F3F4C] hover:bg-[#24242C] hover:text-white transition-all active:scale-[0.98]"
             >
               Lihat Repo ↗
             </a>
           ) : null}
           <Link
             href="/templates"
-            className="text-xs font-medium text-zinc-400 hover:text-white px-3 py-2.5 rounded-xl border border-[#26262B] hover:bg-[#131316] transition-colors"
+            className="text-xs font-medium text-zinc-400 hover:text-white px-3 py-2.5 rounded-xl border border-[#3F3F4C] hover:bg-[#24242C] transition-colors"
           >
             ← Katalog
           </Link>
@@ -167,7 +167,7 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
       </div>
 
       {/* Large Screenshot Preview (16:9) */}
-      <div className="relative aspect-video w-full rounded-2xl overflow-hidden border border-[#26262B] bg-[#131316] shadow-2xl mb-2">
+      <div className="relative aspect-video w-full rounded-2xl overflow-hidden border border-[#3F3F4C] bg-[#24242C] shadow-2xl mb-2">
         {template.screenshot_url ? (
           <img
             src={template.screenshot_url}
@@ -175,7 +175,7 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-zinc-600 font-mono text-sm bg-gradient-to-br from-[#131316] to-[#0A0A0B]">
+          <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-zinc-600 font-mono text-sm bg-gradient-to-br from-[#24242C] to-[#1B1B21]">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="h-10 w-10 opacity-50">
               <rect x="3" y="3" width="18" height="18" rx="2" />
               <circle cx="8.5" cy="8.5" r="1.5" />
@@ -199,7 +199,7 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
         {/* Left Column: Description & Repo Details */}
         <div className="md:col-span-2 space-y-6">
-          <section className="bg-[#131316] border border-[#26262B] rounded-2xl p-6">
+          <section className="bg-[#24242C] border border-[#3F3F4C] rounded-2xl p-6">
             <h2 className="text-base font-semibold text-[#FAFAFA] mb-3">
               Tentang Template Ini
             </h2>
@@ -208,20 +208,20 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
             </p>
           </section>
 
-          <section className="bg-[#131316] border border-[#26262B] rounded-2xl p-6">
+          <section className="bg-[#24242C] border border-[#3F3F4C] rounded-2xl p-6">
             <h2 className="text-base font-semibold text-[#FAFAFA] mb-4">
               Spesifikasi Repository
             </h2>
             <ul className="text-sm text-zinc-400 space-y-2 font-mono">
-              <li className="flex items-center justify-between gap-3 border-b border-[#26262B] pb-2">
+              <li className="flex items-center justify-between gap-3 border-b border-[#3F3F4C] pb-2">
                 <span>Slug Sistem:</span>
                 <span className="text-[#8B5CF6] truncate">{template.slug}</span>
               </li>
-              <li className="flex items-center justify-between gap-3 border-b border-[#26262B] pb-2">
+              <li className="flex items-center justify-between gap-3 border-b border-[#3F3F4C] pb-2">
                 <span>Framework:</span>
                 <span className="text-zinc-200">{template.framework}</span>
               </li>
-              <li className="flex items-center justify-between gap-3 border-b border-[#26262B] pb-2">
+              <li className="flex items-center justify-between gap-3 border-b border-[#3F3F4C] pb-2">
                 <span>Visibilitas:</span>
                 <span className="text-emerald-400">Public (No Token Required)</span>
               </li>
@@ -237,7 +237,7 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
 
         {/* Right Column: Included Integrations & Env Vars */}
         <div className="space-y-6">
-          <div className="bg-[#131316] border border-[#26262B] rounded-2xl p-6">
+          <div className="bg-[#24242C] border border-[#3F3F4C] rounded-2xl p-6">
             <h2 className="text-base font-semibold text-[#FAFAFA] mb-1">
               Integrasi Bawaan
             </h2>
@@ -249,7 +249,7 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
                 {template.integrasi.map((item) => (
                   <div
                     key={item.kode}
-                    className="p-3.5 rounded-xl bg-[#0A0A0B] border border-[#26262B]"
+                    className="p-3.5 rounded-xl bg-[#1B1B21] border border-[#3F3F4C]"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <IntegrationBadge name={item.nama_tampilan} />

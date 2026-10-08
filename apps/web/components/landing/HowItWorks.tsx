@@ -83,7 +83,7 @@ export function HowItWorks() {
         <div className="mt-6 grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
           {/* Panel sticky */}
           <div className="lg:sticky lg:top-28 lg:self-start">
-            <div className="landing-spot relative overflow-hidden rounded-2xl border border-[#26262B] bg-[#131316] p-6 sm:p-8">
+            <div className="landing-spot relative overflow-hidden rounded-2xl border border-[#3F3F4C] bg-[#24242C] p-6 sm:p-8">
               <div className="flex items-baseline justify-between">
                 <p key={step.no} className="font-mono text-5xl font-extrabold text-[#8B5CF6]">
                   {step.no}
@@ -149,10 +149,10 @@ export function HowItWorks() {
                   <div
                     className={`w-full rounded-2xl border p-6 transition-all duration-500 sm:p-8 ${
                       isActive
-                        ? "border-[#8B5CF6]/50 bg-[#131316] shadow-[0_16px_50px_rgba(139,92,246,0.15)]"
+                        ? "border-[#8B5CF6]/50 bg-[#24242C] shadow-[0_16px_50px_rgba(139,92,246,0.15)]"
                         : isDone
-                          ? "border-white/[0.08] bg-[#131316]/70 opacity-70"
-                          : "border-white/[0.06] bg-[#131316]/40 opacity-50"
+                          ? "border-white/[0.08] bg-[#24242C]/70 opacity-70"
+                          : "border-white/[0.06] bg-[#24242C]/40 opacity-50"
                     }`}
                   >
                     <div className="flex items-center gap-4">

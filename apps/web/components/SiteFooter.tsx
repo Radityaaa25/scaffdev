@@ -18,7 +18,7 @@ const HELP_LINKS = [
 
 export function SiteFooter() {
   return (
-    <footer className="mt-auto border-t border-white/[0.06] bg-[#0A0A0B]">
+    <footer className="mt-auto border-t border-white/[0.06] bg-[#1B1B21]">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr]">
           {/* Brand */}
