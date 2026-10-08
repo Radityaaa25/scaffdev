@@ -162,7 +162,7 @@ function Spotlight({ docs, onClose }: { docs: SpotlightDoc[]; onClose: () => voi
         <ul className="max-h-[50vh] overflow-y-auto p-2">
           {results.length === 0 && (
             <li className="px-5 py-12 text-center text-sm text-zinc-500">
-              Tidak ketemu — coba kata kunci lain atau tanyakan ke asisten AI ✦
+                Tidak ketemu? Coba kata kunci lain atau tanyakan ke asisten AI ✦
             </li>
           )}
           {results.map((d, i) => (

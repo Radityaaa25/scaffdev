@@ -23,7 +23,7 @@ export async function createSupabaseAdminServerClient() {
             cookieStore.set(name, value, options)
           );
         } catch {
-          /* Server Component read-only — middleware me-refresh session */
+          /* Server Component read-only. Middleware me-refresh session */
         }
       },
     },

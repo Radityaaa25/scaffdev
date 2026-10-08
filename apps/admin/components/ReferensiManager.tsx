@@ -56,7 +56,7 @@ export function ReferensiManager({
         ))}
       </div>
 
-      {/* key={tab} memaksa remount saat ganti tab — tanpa ini state tabel
+      {/* key={tab} memaksa remount saat ganti tab. Tanpa ini state tabel
           tertinggal dari tab sebelumnya (React memakai ulang instance
           komponen yang sama). */}
       <ReferensiSection
@@ -104,7 +104,7 @@ function ReferensiSection({ kind, initial }: { kind: Kind; initial: ReferensiRow
     setRows((prev) => [...prev, { ...created, dipakai: 0 }].sort((a, b) => a.nama_tampilan.localeCompare(b.nama_tampilan)));
     setKode("");
     setNama("");
-    toast.success(`"${created.nama_tampilan}" tersimpan — langsung jadi opsi form & filter.`);
+    toast.success(`"${created.nama_tampilan}" tersimpan dan langsung jadi opsi form & filter.`);
     router.refresh();
   }
 

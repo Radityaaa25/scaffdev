@@ -137,7 +137,7 @@ function SectionTitle({ no, title, desc }: { no: string; title: string; desc: st
 }
 
 /**
- * Panel ringkasan racikan — sticky desktop di samping grid langkah 2.
+ * Panel ringkasan racikan: sticky desktop di samping grid langkah 2.
  * Mobile memakai sticky bottom bar (lihat bawah) sehingga panel ini hidden.
  */
 function RacikanAside({
@@ -172,7 +172,7 @@ function RacikanAside({
           <p className="font-mono text-[10px] font-bold tracking-[0.2em] text-zinc-500">TAMBAHAN</p>
           {withCodes.length === 0 ? (
             <p className="mt-1.5 text-xs leading-relaxed text-zinc-500">
-              Belum ada tambahan — centang minimal 1 integrasi.
+              Belum ada tambahan: centang minimal 1 integrasi.
             </p>
           ) : (
             <ul className="mt-1.5 space-y-1.5">
@@ -189,7 +189,7 @@ function RacikanAside({
           )}
           {hasDouble && (
             <p className="mt-2 text-[11px] leading-relaxed text-amber-400">
-              Double se-kategori — perlu konfirmasi.
+              Double se-kategori: perlu konfirmasi.
             </p>
           )}
         </div>
@@ -204,8 +204,8 @@ function RacikanAside({
         </button>
         <button
           type="button"
-          onClick={onSkip}
-          title="Base ini tidak butuh integrasi — langsung ke command polosan"
+            onClick={onSkip}
+            title="Base ini tidak butuh integrasi: langsung ke command polosan"
           className="w-full px-5 py-2 text-xs font-medium text-zinc-500 hover:text-zinc-200 transition-colors"
         >
           atau lewati, generate polosan →
@@ -218,7 +218,7 @@ function RacikanAside({
 
 /**
  * Builder flow: base → centang integrasi → command custom.
- * Berbadge New — Builder live, butuh CLI 0.2.0+.
+ * Berbadge New: Builder live, butuh CLI 0.2.0+.
  */
 export function BuilderFlow() {
   const searchParams = useSearchParams();
@@ -239,7 +239,7 @@ export function BuilderFlow() {
 
   // Muat katalog + indeks integrasi paralel sekali saat mount.
   // Timeout 20 dtk: dev server yang lambat/hang tidak boleh membuat
-  // skeleton abadi — gagal cepat ke layar error + tombol Muat Ulang.
+  // skeleton abadi: gagal cepat ke layar error + tombol Muat Ulang.
   useEffect(() => {
     async function load() {
       const ctrl = new AbortController();
@@ -272,7 +272,7 @@ export function BuilderFlow() {
   // Muat detail base saat base dipilih/diganti. State loading diset di
   // event handler pemilih (bukan di effect) agar patuh aturan lint.
   // Timeout 20 dtk: request yang hang (mis. dev server lambat compile route
-  // dinamis) tidak boleh membuat skeleton abadi — halaman tetap bisa dipakai
+  // dinamis) tidak boleh membuat skeleton abadi. Halaman tetap bisa dipakai
   // dengan data base dari daftar (framework + nama), tanpa info bawaan.
   useEffect(() => {
     if (!baseSlug) return;
@@ -378,7 +378,7 @@ export function BuilderFlow() {
   }
 
   // Lewati: base seperti landing page / web berita yang memang tidak butuh
-  // integrasi tambahan — langsung ke command polosan.
+  // integrasi tambahan: langsung ke command polosan.
   function skipToCommand() {
     setPicked({});
     setConfirmDouble(false);
@@ -471,7 +471,7 @@ export function BuilderFlow() {
       <div className="container relative mx-auto px-4 py-10 sm:px-6 max-w-7xl">
       <div className="mb-6 flex flex-wrap items-center gap-2">
         <h1 className="text-2xl sm:text-3xl font-extrabold text-[#FAFAFA] tracking-tight">
-          Builder — Rancang Sendiri
+          Builder: Rancang Sendiri
         </h1>
         <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
           New
@@ -484,7 +484,7 @@ export function BuilderFlow() {
 
       <StepIndicator step={step} onSelect={(n) => setStep(n)} />
 
-      {/* LANGKAH 1 — base */}
+      {/* LANGKAH 1: base */}
       {step === 1 && (
         <section aria-label="Langkah 1: pilih template base" className="mt-8 hero-enter">
           <SectionTitle
@@ -580,13 +580,13 @@ export function BuilderFlow() {
         </section>
       )}
 
-      {/* LANGKAH 2 — centang integrasi */}
+      {/* LANGKAH 2: centang integrasi */}
       {step === 2 && (
         <section aria-label="Langkah 2: centang integrasi" className="mt-8 hero-enter">
           <SectionTitle
             no="02"
             title="Centang integrasi favoritmu"
-            desc="Maks 1 per kategori inti. Yang berlabel terkunci adalah bawaan base — tidak bisa diubah, hanya bisa ditambah."
+            desc="Maks 1 per kategori inti. Yang berlabel terkunci adalah bawaan base: tidak bisa diubah, hanya bisa ditambah."
           />
           {base && (
             <button
@@ -666,7 +666,7 @@ export function BuilderFlow() {
                     <div className="space-y-2 mt-1">
                       {baked && (
                         <div className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm bg-white/[0.03] border border-[#8B5CF6]/40">
-                          <span aria-hidden="true" title="Terkunci — bawaan base"><LockIcon className="h-4 w-4" /></span>
+                          <span aria-hidden="true" title="Terkunci: bawaan base"><LockIcon className="h-4 w-4" /></span>
                           <span className="text-zinc-200 font-medium">{baked.nama}</span>
                           <span className="ml-auto text-[10px] font-mono text-zinc-500">bawaan • terkunci</span>
                         </div>
@@ -752,7 +752,7 @@ export function BuilderFlow() {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <p className="flex-1 px-1 text-xs text-zinc-400 leading-relaxed" aria-live="polite">
                 {withCodes.length === 0 ? (
-                  <>Belum ada tambahan — centang minimal <span className="text-zinc-200 font-semibold">1 integrasi</span> untuk lanjut.</>
+                  <>Belum ada tambahan: centang minimal <span className="text-zinc-200 font-semibold">1 integrasi</span> untuk lanjut.</>
                 ) : (
                   <>Racikan: <span className="font-mono text-[#A78BFA]">{withCodes.join(" + ")}</span></>
                 )}
@@ -771,7 +771,7 @@ export function BuilderFlow() {
                 <button
                   type="button"
                   onClick={skipToCommand}
-                  title="Base ini tidak butuh integrasi — langsung ke command polosan"
+                  title="Base ini tidak butuh integrasi: langsung ke command polosan"
                   className="flex-1 sm:flex-none whitespace-nowrap px-2.5 py-2.5 sm:px-5 rounded-xl font-medium text-xs sm:text-sm text-zinc-300 border border-dashed border-white/15 bg-transparent hover:border-white/30 hover:text-white transition-all active:scale-[0.98]"
                 >
                   Lewati
@@ -793,7 +793,7 @@ export function BuilderFlow() {
         </section>
       )}
 
-      {/* LANGKAH 3 — command */}
+      {/* LANGKAH 3: command */}
       {step === 3 && base && (
         <section aria-label="Langkah 3: command custom" className="mt-8 space-y-4 hero-enter">
           <SectionTitle
@@ -834,7 +834,7 @@ export function BuilderFlow() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {(
                 [
-                  ["ask", "Tanya dulu", "Default — CLI bertanya [Y/n]"],
+                  ["ask", "Tanya dulu", "Default: CLI bertanya [Y/n]"],
                   ["install", "--install", "Langsung jalan"],
                   ["no-install", "--no-install", "Lewati"],
                 ] as const

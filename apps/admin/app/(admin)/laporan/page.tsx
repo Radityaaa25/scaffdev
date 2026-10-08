@@ -28,7 +28,7 @@ export default async function LaporanPage() {
       <div className="animate-admin-enter">
         <h1 className="text-2xl font-extrabold tracking-tight text-white">Laporan Pengguna</h1>
         <p className="mt-1 text-sm text-zinc-400">
-          {rows.length} laporan masuk{baru > 0 ? ` — ${baru} belum dibaca` : ""}. Dari halaman publik /lapor.
+          {rows.length} laporan masuk{baru > 0 ? `, ${baru} belum dibaca` : ""}. Dari halaman publik /lapor.
         </p>
       </div>
 

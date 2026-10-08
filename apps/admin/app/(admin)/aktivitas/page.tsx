@@ -26,7 +26,7 @@ export default async function AktivitasPage() {
       <div className="animate-admin-enter">
         <h1 className="text-2xl font-extrabold tracking-tight text-white">Log Aktivitas</h1>
         <p className="mt-1 text-sm text-zinc-400">
-          100 aktivitas terakhir — siapa melakukan apa di katalog.
+          100 aktivitas terakhir: siapa melakukan apa di katalog.
         </p>
       </div>
       <ActivityTimeline initial={rows} />

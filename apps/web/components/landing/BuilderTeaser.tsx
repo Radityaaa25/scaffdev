@@ -6,7 +6,7 @@ const MINI_STEPS = [
   {
     no: "01",
     title: "Pilih base",
-    desc: "Satu template sebagai fondasi — Next.js atau Laravel.",
+    desc: "Satu template sebagai fondasi: Next.js atau Laravel.",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-5 w-5">
         <rect x="3" y="3" width="7" height="7" rx="1.5" />
@@ -29,7 +29,7 @@ const MINI_STEPS = [
   {
     no: "03",
     title: "Salin command",
-    desc: "Execute di terminal — file tersuntik, SETUP.md kebentuk.",
+    desc: "Execute di terminal: file tersuntik, SETUP.md kebentuk.",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-5 w-5">
         <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l3 3-3 3M12 15h8M4 21h16a1 1 0 001-1V4a1 1 0 00-1-1H4a1 1 0 00-1 1v16a1 1 0 001 1z" />
@@ -52,12 +52,12 @@ export function BuilderTeaser() {
           </h2>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-zinc-400">
             Pilih base favoritmu, centang payment / database / auth, generate
-            command custom — tanpa tulis boilerplate dari nol.
+              command custom: tanpa tulis boilerplate dari nol.
           </p>
         </Reveal>
 
         <div className="mt-8 flex w-full min-w-0 flex-col gap-4">
-          {/* Langkah mini — full width, 3 kolom */}
+          {/* Langkah mini: full width, 3 kolom */}
           <div className="grid w-full min-w-0 grid-cols-1 gap-4 sm:grid-cols-3">
             {MINI_STEPS.map((s, i) => (
               <Reveal key={s.no} delay={i * 80} className="w-full min-w-0">
@@ -76,7 +76,7 @@ export function BuilderTeaser() {
             ))}
           </div>
 
-          {/* Terminal command custom — full width, lega */}
+          {/* Terminal command custom: full width, lega */}
           <Reveal delay={120} className="w-full min-w-0">
             <div className="landing-spot relative w-full min-w-0 overflow-hidden rounded-2xl border border-[#8B5CF6]/30 bg-gradient-to-b from-[#8B5CF6]/[0.1] to-[#24242C]">
               <div className="hero-term-head w-full min-w-0">

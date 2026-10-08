@@ -12,7 +12,7 @@ const SUPPORTED = [
 // Tiap paruh loop berisi 2x daftar agar aliran selalu padat tanpa celah.
 const MARQUEE_HALF = [...SUPPORTED, ...SUPPORTED];
 
-/** Marquee "Terintegrasi dengan" — hanya dipakai halaman /templates. */
+/** Marquee "Terintegrasi dengan": hanya dipakai halaman /templates. */
 export function IntegrationMarquee() {
   return (
     <div className="relative mt-10 sm:mt-12 mb-10 w-full">

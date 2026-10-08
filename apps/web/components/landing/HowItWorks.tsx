@@ -9,19 +9,19 @@ const STEPS = [
   {
     no: "01",
     title: "Pilih template",
-    desc: "Jelajahi katalog template. Setiap kartu menampilkan framework, kategori, dan integrasi yang dibawa — data live dari database yang sama dengan CLI.",
+    desc: "Jelajahi katalog template. Setiap kartu menampilkan framework, kategori, dan integrasi yang dibawa: data live dari database yang sama dengan CLI.",
     link: { href: "/templates", label: "Buka katalog →" },
   },
   {
     no: "02",
     title: "Salin command",
-    desc: "Setiap template punya slug dan command unik. Salin command-nya — mau interaktif (npx scaffdev@latest) atau langsung (--template=<slug>).",
+    desc: "Setiap template punya slug dan command unik. Salin command-nya. Mau interaktif (npx scaffdev@latest) atau langsung (--template=<slug>).",
     link: { href: "/docs/cara-install", label: "Cara install →" },
   },
   {
     no: "03",
     title: "Generate & kembangkan",
-    desc: "Jalankan satu baris di terminal. Dapat folder project siap jalan: UI jadi, .env.example, dan SETUP.md — langsung bisa dikembangkan. Butuh kombinasi sendiri? Racik di Builder dengan --with.",
+    desc: "Jalankan satu baris di terminal. Dapat folder project siap jalan: UI jadi, .env.example, dan SETUP.md. Langsung bisa dikembangkan. Butuh kombinasi sendiri? Racik di Builder dengan --with.",
     link: { href: "/docs/env-dan-setup", label: "Setup environment →" },
   },
 ];
@@ -114,7 +114,7 @@ export function HowItWorks() {
                 />
               </div>
               <p className="mt-2 hidden font-mono text-[11px] text-zinc-500 lg:block" aria-live="polite">
-                Scroll untuk langkah berikutnya — {Math.round(progress * 100)}%
+                Scroll untuk langkah berikutnya: {Math.round(progress * 100)}%
               </p>
               <div className="mt-6">
                 <LandingCommandBox command="npx scaffdev@latest" />

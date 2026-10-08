@@ -167,7 +167,7 @@ export function AdminUsersManager({ initial, selfId }: { initial: AdminRow[]; se
 
 function friendlyRpcError(message: string): string {
   if (message.includes("belum terdaftar di Authentication")) {
-    return "Email belum punya akun Auth — buat dulu di Supabase dashboard → Authentication.";
+    return "Email belum punya akun Auth. Buat dulu di Supabase dashboard → Authentication.";
   }
   if (message.includes("tidak bisa menghapus akun sendiri")) {
     return "Tidak bisa menghapus akun sendiri.";

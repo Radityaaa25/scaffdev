@@ -33,7 +33,7 @@ git --version
 
 ### 3. Koneksi internet
 
-Dibutuhkan untuk dua hal: mengunduh metadata template dari API Scaffdev dan meng-clone repository GitHub. Tidak ada mode offline — semua repo template diambil live dari GitHub.
+Dibutuhkan untuk dua hal: mengunduh metadata template dari API Scaffdev dan meng-clone repository GitHub. Tidak ada mode offline karena semua repo template diambil live dari GitHub.
 
 ### 4. Prasyarat per framework (sesuai template yang dipilih)
 
@@ -42,17 +42,17 @@ Dibutuhkan untuk dua hal: mengunduh metadata template dari API Scaffdev dan meng
 | Next.js | Node.js v18+ (sudah mencakup prasyarat CLI) | `node --version` |
 | Laravel | PHP 8.2+ dan Composer | `php --version` dan `composer --version` |
 
-Unduh Composer di [getcomposer.org](https://getcomposer.org). CLI memeriksa prasyarat ini otomatis sebelum meng-clone dan akan memberi tahu lebih awal bila ada yang kurang — jadi kamu tidak perlu menebak-nebak.
+Unduh Composer di [getcomposer.org](https://getcomposer.org). CLI memeriksa prasyarat ini otomatis sebelum meng-clone dan akan memberi tahu lebih awal bila ada yang kurang, jadi kamu tidak perlu menebak-nebak.
 
 > **Catatan penting:** Scaffdev saat ini masih dalam masa pengembangan dan baru mendukung 2 framework template yaitu **Next.js** dan **Laravel**. Dukungan framework lain akan terus ditambahkan seiring waktu.
 
-> Tips Windows: gunakan terminal yang sama untuk semua langkah (CMD, PowerShell, atau Git Bash). Kalau `node` dikenali di satu terminal tapi tidak di terminal lain, biasanya masalah `PATH` — install ulang Node.js dengan opsi "Add to PATH" dicentang.
+> Tips Windows: gunakan terminal yang sama untuk semua langkah (CMD, PowerShell, atau Git Bash). Kalau `node` dikenali di satu terminal tapi tidak di terminal lain, biasanya masalah `PATH`. Install ulang Node.js dengan opsi "Add to PATH" yang dicentang.
 
 ---
 
 ## 1. Mode Sekali Pakai via `npx` (Sangat Direkomendasikan)
 
-Kamu tidak perlu menginstall Scaff secara permanen. Cukup gunakan `npx` — setiap eksekusi selalu memakai versi terbaru:
+Kamu tidak perlu menginstall Scaff secara permanen. Cukup gunakan `npx` karena setiap eksekusi selalu memakai versi terbaru:
 
 ```bash
 npx scaffdev@latest
@@ -60,10 +60,10 @@ npx scaffdev@latest
 
 Command di atas menampilkan terminal interaktif berisi pertanyaan berurutan:
 
-1. **Kategori** — E-commerce, Landing Page, atau Portfolio.
-2. **Framework** — Next.js atau Laravel.
-3. **Varian integrasi** — Basic atau yang berintegrasi (mis. Supabase + Midtrans).
-4. **Nama folder** — folder tujuan project (harus kosong atau belum ada).
+1. **Kategori**: E-commerce, Landing Page, atau Portfolio.
+2. **Framework**: Next.js atau Laravel.
+3. **Varian integrasi**: Basic atau yang berintegrasi (mis. Supabase + Midtrans).
+4. **Nama folder**: folder tujuan project (harus kosong atau belum ada).
 
 Mode ini cocok kalau kamu belum memilih template di web atau ingin eksplorasi dulu. Kekurangannya: tiap eksekusi mengunduh ulang CLI terbaru (butuh internet dan sedikit waktu download pertama kali).
 
@@ -89,7 +89,7 @@ Hasilnya: folder `toko-saya/` berisi hasil clone template `ecommerce-supabase-mi
 
 ### Menambah Modul Integrasi (`--with`, Builder)
 
-> Status: Live — flag ini butuh CLI `0.2.0+` dan template/modul yang mendukung
+> Status: Live. Flag ini butuh CLI `0.2.0+` dan template/modul yang mendukung
 > Builder (punya manifest). Lihat tata caranya di [Panduan Builder](/docs/panduan-builder).
 
 Untuk menempel modul integrasi ke template base (mis. tambah Midtrans ke
@@ -103,7 +103,7 @@ Aturannya:
 
 - Modul diambil dari repo yang didaftarkan admin (kolom repo modul di menu Integrasi).
 - Maksimal 1 per kategori inti (payment/database/auth/shipping); kategori `other` boleh multi.
-- Modul yang tidak cocok framework-nya ditolak dengan pesan jelas — bukan di-skip diam-diam.
+- Modul yang tidak cocok framework-nya ditolak dengan pesan jelas, bukan di-skip diam-diam.
 - File yang tabrakan dengan base = generate GAGAL eksplisit (tidak ada timpa diam-diam).
 
 ### Install Dependency Otomatis
@@ -117,7 +117,7 @@ npx scaffdev@latest toko-saya --template=<slug> --install      # langsung jalan 
 ```
 
 Template monorepo (install di beberapa folder) didukung via rencana install
-di `scaff.template.json` — CLI menjalankannya berurutan dengan output live.
+di `scaff.template.json`. CLI menjalankannya berurutan dengan output live.
 Gagal install tidak menggagalkan generate (project tetap valid, lanjutkan manual).
 
 ### Validasi Modul/Template untuk Pembuatnya
@@ -129,18 +129,18 @@ scaffdev validate-module .
 scaffdev validate-module https://github.com/username/scaff-modul-midtrans.git
 ```
 
-Wajib lulus sebelum repo didaftarkan ke admin. Salah tulis seperti `--template <slug>` (pakai spasi) tidak dikenali — selalu pakai `=`.
+Wajib lulus sebelum repo didaftarkan ke admin. Salah tulis seperti `--template <slug>` (pakai spasi) tidak dikenali. Selalu pakai `=`.
 
 ### Kapan memakai mode interaktif vs slug langsung?
 
-- **Interaktif** (`npx scaffdev@latest` tanpa argumen) — untuk eksplorasi, belum tahu mau template apa, atau ingin melihat daftar varian yang tersedia.
-- **Slug langsung** (`npx scaffdev@latest --template=<slug>`) — untuk eksekusi cepat dan repeatable: command dari web bisa di-share ke tim, ditempel ke dokumentasi, atau dipakai ulang tanpa salah pilih.
+- **Interaktif** (`npx scaffdev@latest` tanpa argumen) untuk eksplorasi, belum tahu mau template apa, atau ingin melihat daftar varian yang tersedia.
+- **Slug langsung** (`npx scaffdev@latest --template=<slug>`) untuk eksekusi cepat dan repeatable: command dari web bisa di-share ke tim, ditempel ke dokumentasi, atau dipakai ulang tanpa salah pilih.
 
 ---
 
 ## Langkah Lanjutan per Framework
 
-Setelah generate selesai, CLI menampilkan langkah yang sesuai framework. Jangan lewati — project belum bisa jalan sebelum langkah ini selesai.
+Setelah generate selesai, CLI menampilkan langkah yang sesuai framework. Jangan lewati karena project belum bisa jalan sebelum langkah ini selesai.
 
 ### Next.js
 
@@ -153,10 +153,10 @@ npm run dev
 
 Penjelasan tiap baris:
 
-1. `cd nama-project` — masuk ke folder hasil generate.
-2. `npm install` — install dependency (butuh internet, bisa 1–5 menit tergantung template).
-3. `cp .env.example .env.local` — salin kerangka env menjadi file aktif. Di Windows CMD yang tidak punya `cp`, gunakan `copy .env.example .env.local`. Lalu isi API key sesuai `SETUP.md`.
-4. `npm run dev` — jalankan dev server, biasanya di `http://localhost:3000`.
+1. `cd nama-project`: masuk ke folder hasil generate.
+2. `npm install`: install dependency (butuh internet, bisa 1–5 menit tergantung template).
+3. `cp .env.example .env.local`: salin kerangka env menjadi file aktif. Di Windows CMD yang tidak punya `cp`, gunakan `copy .env.example .env.local`. Lalu isi API key sesuai `SETUP.md`.
+4. `npm run dev`: jalankan dev server, biasanya di `http://localhost:3000`.
 
 ### Laravel
 
@@ -170,11 +170,11 @@ php artisan serve
 
 Penjelasan tiap baris:
 
-1. `cd nama-project` — masuk ke folder hasil generate.
-2. `composer install` — install dependency PHP.
-3. `cp .env.example .env` — salin kerangka env menjadi file aktif, lalu isi API key.
-4. `php artisan key:generate` — **wajib untuk Laravel**, men-generate `APP_KEY`. Tanpa ini aplikasi error.
-5. `php artisan serve` — jalankan dev server, biasanya di `http://127.0.0.1:8000`.
+1. `cd nama-project`: masuk ke folder hasil generate.
+2. `composer install`: install dependency PHP.
+3. `cp .env.example .env`: salin kerangka env menjadi file aktif, lalu isi API key.
+4. `php artisan key:generate`: **wajib untuk Laravel**, men-generate `APP_KEY`. Tanpa ini aplikasi error.
+5. `php artisan serve`: jalankan dev server, biasanya di `http://127.0.0.1:8000`.
 
 Detail pengisian key ada di [Environment & SETUP.md](/docs/env-dan-setup). Kalau menemui error, lihat [Troubleshooting](/docs/troubleshooting).
 
@@ -224,13 +224,13 @@ npm uninstall -g scaffdev
 
 Ketika kamu menjalankan Scaff CLI, urutan prosesnya selalu sama:
 
-1. **Resolusi Slug** — CLI menghubungi API Scaffdev untuk mencari URL repository GitHub dan metadata integrasi dari slug yang kamu berikan. Kalau slug salah ketik atau template masih draft, proses berhenti di sini dengan pesan error yang jelas.
-2. **Pengecekan Prasyarat** — CLI memverifikasi versi runtime di komputermu (Node.js, PHP/Composer bila template Laravel, dan `git`). Kalau ada yang kurang, kamu diberi tahu sebelum clone dimulai.
-3. **Git Clone** — template di-clone langsung ke folder tujuan yang kamu tentukan. Folder harus kosong atau belum ada; CLI tidak akan menimpa diam-diam.
-4. **Generate Dokumen Otomatis** — CLI membuat dua file dari metadata integrasi:
-   - `.env.example` — berisi seluruh environment variable yang dibutuhkan (nama + komentar deskripsi, nilainya kosong).
-   - `SETUP.md` — panduan langkah-demi-langkah cara setup dan konfigurasi API key setiap layanan pihak ketiga.
-5. **Instruksi Pasca-Generate** — CLI mencetak langkah lanjutan sesuai framework (seperti blok Next.js / Laravel di atas).
+1. **Resolusi Slug**: CLI menghubungi API Scaffdev untuk mencari URL repository GitHub dan metadata integrasi dari slug yang kamu berikan. Kalau slug salah ketik atau template masih draft, proses berhenti di sini dengan pesan error yang jelas.
+2. **Pengecekan Prasyarat**: CLI memverifikasi versi runtime di komputermu (Node.js, PHP/Composer bila template Laravel, dan `git`). Kalau ada yang kurang, kamu diberi tahu sebelum clone dimulai.
+3. **Git Clone**: template di-clone langsung ke folder tujuan yang kamu tentukan. Folder harus kosong atau belum ada; CLI tidak akan menimpa diam-diam.
+4. **Generate Dokumen Otomatis**: CLI membuat dua file dari metadata integrasi:
+   - `.env.example`: berisi seluruh environment variable yang dibutuhkan (nama + komentar deskripsi, nilainya kosong).
+   - `SETUP.md`: panduan langkah-demi-langkah cara setup dan konfigurasi API key setiap layanan pihak ketiga.
+5. **Instruksi Pasca-Generate**: CLI mencetak langkah lanjutan sesuai framework (seperti blok Next.js / Laravel di atas).
 
 Setelah proses selesai, cukup buka folder project-mu:
 
@@ -240,4 +240,4 @@ npm install
 npm run dev
 ```
 
-Lalu ikuti `SETUP.md` di folder itu untuk mengisi API key. Tanpa mengisi env, template berintegrasi tetap bisa di-install dan di-build, tapi fitur yang butuh layanan luar (login, payment, ongkir) belum berfungsi sampai key diisi — ini normal.
+Lalu ikuti `SETUP.md` di folder itu untuk mengisi API key. Tanpa mengisi env, template berintegrasi tetap bisa di-install dan di-build, tapi fitur yang butuh layanan luar (login, payment, ongkir) belum berfungsi sampai key diisi. Ini normal.

@@ -54,7 +54,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // /api/* dikecualikan agar selalu mengembalikan JSON (401/403),
-    // bukan redirect HTML — route API memeriksa session sendiri.
+    // bukan redirect HTML. Route API memeriksa session sendiri.
     "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

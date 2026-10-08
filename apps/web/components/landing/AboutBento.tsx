@@ -48,13 +48,13 @@ export function AboutBento({ templateCount }: { templateCount: number }) {
             Kenalan dengan Scaffdev.
           </h2>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-zinc-400">
-            Scaffolding generator untuk developer Indonesia — starter kit siap jalan,
+            Scaffolding generator untuk developer Indonesia: starter kit siap jalan,
             bukan folder kosong.
           </p>
         </Reveal>
 
         <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
-          {/* Profil — kartu lebar */}
+          {/* Profil: kartu lebar */}
           <Reveal className="md:col-span-2" delay={0}>
             <div className="landing-spot relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-2xl border border-[#3F3F4C] bg-[#24242C] p-6 transition-colors hover:border-[#8B5CF6]/50 sm:p-8">
               <div>
@@ -66,7 +66,7 @@ export function AboutBento({ templateCount }: { templateCount: number }) {
                 <h3 className="mt-4 text-xl font-bold text-white">Apa itu Scaffdev?</h3>
                 <p className="mt-2 max-w-lg text-sm leading-relaxed text-zinc-400">
                   Scaffdev membuatkan project baru siap jalan dalam hitungan detik lewat satu
-                  baris command — lengkap dengan tampilan visual yang sudah jadi, struktur
+                  baris command: lengkap dengan tampilan visual yang sudah jadi, struktur
                   folder best-practice, file <span className="font-mono text-zinc-200">.env.example</span>,
                   dan panduan <span className="font-mono text-zinc-200">SETUP.md</span> otomatis.
                   Saat ini tersedia template <span className="text-zinc-200">Next.js</span> dan{" "}
@@ -88,7 +88,7 @@ export function AboutBento({ templateCount }: { templateCount: number }) {
                     <div />
                   </span>
                 </Link>
-                {/* btn-gooey: filter SVG-nya sudah dirender sekali di hero (TemplatesHero) — jangan diduplikat (id harus unik). */}
+                {/* btn-gooey: filter SVG-nya sudah dirender sekali di hero (TemplatesHero): jangan diduplikat (id harus unik). */}
                 <Link
                   href="/templates"
                   className="btn-gooey group w-full max-w-56 text-center"
@@ -157,7 +157,7 @@ export function AboutBento({ templateCount }: { templateCount: number }) {
               </span>
               <h3 className="mt-4 text-base font-semibold text-white">Tools dan integrasi tersedia</h3>
               <p className="mt-2 text-sm leading-relaxed text-zinc-400">
-                Payment & database yang benar-benar dipakai di sini — kurasi lokal
+                Payment & database yang benar-benar dipakai di sini: kurasi lokal
                 Indonesia, siap dicentang di Builder.
               </p>
               <div className="hero-marquee mt-4" aria-label="Framework dan integrasi yang didukung">

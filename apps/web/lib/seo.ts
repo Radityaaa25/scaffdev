@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 
-/** Canonical production URL — ganti di satu tempat bila domain berubah. */
+/** Canonical production URL: ganti di satu tempat bila domain berubah. */
 export const SITE_URL = "https://scaffdev.vercel.app";
 export const SITE_NAME = "Scaffdev";
 export const SITE_TAGLINE =
   "Scaffolding generator: starter kit Next.js & Laravel siap jalan dengan kurasi integrasi lokal Indonesia.";
 
 export const DEFAULT_OG_DESCRIPTION =
-  "Generate project boilerplate dengan tampilan visual jadi dan kurasi integrasi untuk konteks Indonesia — Supabase, Midtrans, Xendit, RajaOngkir. Satu baris command: npx scaffdev@latest.";
+  "Generate project boilerplate dengan tampilan visual jadi dan kurasi integrasi untuk konteks Indonesia: Supabase, Midtrans, Xendit, RajaOngkir. Satu baris command: npx scaffdev@latest.";
 
 export function absoluteUrl(path: string): string {
   return `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;

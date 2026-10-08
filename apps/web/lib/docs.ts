@@ -3,7 +3,7 @@ import path from "path";
 import { Marked } from "marked";
 import { markedHighlight } from "marked-highlight";
 import hljs from "highlight.js";
-// NOTED: SENGAJA tidak memakai isomorphic-dompurify di server — ia menarik
+// NOTED: SENGAJA tidak memakai isomorphic-dompurify di server: ia menarik
 // jsdom yang gagal di-load di serverless Vercel ("Failed to load external
 // module jsdom" → 500 kosong di semua route pengimpor lib ini). Sebagai ganti,
 // sanitasi ringan khusus di bawah (cukup karena docs/*.md adalah konten
@@ -67,10 +67,10 @@ function slugifyHeading(text: string): string {
 }
 
 /**
- * Sanitasi ringan khusus HTML hasil render docs — tanpa jsdom/DOMPurify
+ * Sanitasi ringan khusus HTML hasil render docs: tanpa jsdom/DOMPurify
  * (tidak bisa jalan di serverless Vercel).
  * Menghapus: blok <script>, atribut event-handler (on*), dan javascript: URL.
- * BUKAN sanitizer general-purpose — jangan pakai untuk konten user/AI.
+ * BUKAN sanitizer general-purpose: jangan pakai untuk konten user/AI.
  */
 function sanitizeDocsHtml(html: string): string {
   return (
@@ -176,7 +176,7 @@ export async function getDocBySlug(slug: string): Promise<DocItem | null> {
 
   const html = await marked.parse(body);
 
-  // W2: marked meneruskan raw HTML apa adanya → strip pola aktif berbahaya
+  // W2: marked meneruskan raw HTML apa adanya: strip pola aktif berbahaya
   // (<script>, event-handler, javascript: URL) agar tidak tereksekusi di
   // browser pembaca docs. Cukup untuk konten first-party; output AI/bubble
   // chat (untrusted) tetap lewat DOMPurify penuh di sisi client (AskAI).

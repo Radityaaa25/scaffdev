@@ -33,7 +33,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         const supabase = await createSupabaseServerClient();
         await supabase.rpc("increment_template_downloads", { p_slug: slug });
       } catch {
-        /* abaikan — statistik tidak boleh merusak response utama */
+        /* abaikan: statistik tidak boleh merusak response utama */
       }
     }
   }
@@ -54,7 +54,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     );
   }
 
-  // Slug immutable — diidentifikasi dari path, tidak boleh diganti via body.
+      // Slug immutable: diidentifikasi dari path, tidak boleh diganti via body.
   const { data: existing } = await supabase
     .from("templates")
     .select("*")

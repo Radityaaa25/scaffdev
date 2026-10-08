@@ -5,7 +5,7 @@ import { Renderer, Program, Mesh, Triangle } from "ogl";
 import styles from "./Grainient.module.css";
 
 /**
- * Grainient dari React Bits (ogl/WebGL) — gradient noise animasi.
+ * Grainient dari React Bits (ogl/WebGL): gradient noise animasi.
  * Dikonversi ke TypeScript + CSS module agar lolos aturan Next.js App Router.
  * Dipakai sebagai background full-page landing (satu layer, tidak per-section).
  */
@@ -184,7 +184,7 @@ export default function Grainient({
     const container = containerRef.current;
     if (!container) return;
 
-    // NOTED performa: DPR di-cap 1.5 (gradient blur tidak butuh retina penuh —
+    // NOTED performa: DPR di-cap 1.5 (gradient blur tidak butuh retina penuh:
     // hemat fill-rate besar di layar hi-dpi), antialias mati (sudah dari sananya).
     const renderer = new Renderer({
       webgl: 2,
@@ -247,7 +247,7 @@ export default function Grainient({
     ro.observe(container);
     setSize();
 
-    // Tandai frame pertama jadi (idempoten — aman dipanggil tiap frame).
+    // Tandai frame pertama jadi (idempoten: aman dipanggil tiap frame).
     const markReady = () => {
       if (!readyRef.current) {
         readyRef.current = true;
@@ -256,7 +256,7 @@ export default function Grainient({
     };
 
     // Aksesibilitas + performa: pengguna prefers-reduced-motion mendapat SATU
-    // frame statis (tanpa rAF loop, tanpa observer) — GPU diam total.
+    // frame statis (tanpa rAF loop, tanpa observer): GPU diam total.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       renderer.render({ scene: mesh });
       markReady();
@@ -331,7 +331,7 @@ export default function Grainient({
     };
   }, []); // renderer dibuat sekali
 
-  // Effect 2: sinkronkan props ke uniform — tanpa teardown GPU
+  // Effect 2: sinkronkan props ke uniform: tanpa teardown GPU
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;

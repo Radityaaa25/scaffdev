@@ -11,7 +11,7 @@ export function generateEnvExample(
   const envFileName = isLaravel ? ".env" : ".env.local";
   const lines: string[] = [
     "# ============================================================",
-    "# Environment Variables — Di-generate otomatis oleh Scaffdev CLI",
+    "# Environment Variables. Di-generate otomatis oleh Scaffdev CLI",
     `# Salin file ini menjadi ${envFileName} lalu isi kredensial Anda:`,
     isLaravel
       ? "#   cp .env.example .env"
@@ -85,7 +85,7 @@ export function generateSetupDoc(
         "```",
       ];
   const lines: string[] = [
-    `# Panduan Setup Project — ${templateName}`,
+    `# Panduan Setup Project: ${templateName}`,
     "",
     "Selamat! Project Anda berhasil di-generate menggunakan **Scaffdev**.",
     "",

@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting
-description: Katalog error umum CLI dan web beserta solusinya — dari slug tidak ditemukan sampai prasyarat hilang.
+description: Katalog error umum CLI dan web beserta solusinya, dari slug tidak ditemukan sampai prasyarat hilang.
 order: 6
 section: Panduan
 ---
@@ -11,7 +11,7 @@ section: Panduan
 
 Temukan pesan errormu di bawah ini dan ikuti solusinya berurutan. Setiap error punya pola yang sama: **pesan error → penyebab → solusi langkah demi langkah**. Kalau belum ketemu, salin pesan error lengkap (termasuk 5–10 baris sebelum dan sesudahnya) lalu tanyakan ke asisten AI di pojok kanan bawah.
 
-> Tips umum sebelum mulai: pastikan Node.js v18+, `git`, dan koneksi internet (lihat [Cara Install](/docs/cara-install)), lalu ulangi command yang gagal untuk memastikan error-nya konsisten — bukan gangguan sesaat.
+> Tips umum sebelum mulai: pastikan Node.js v18+, `git`, dan koneksi internet (lihat [Cara Install](/docs/cara-install)), lalu ulangi command yang gagal untuk memastikan error-nya konsisten, bukan gangguan sesaat.
 
 ---
 
@@ -82,7 +82,7 @@ $env:SCAFF_API_BASE_URL="http://localhost:3000"
 npx scaffdev@latest --template=<slug>
 ```
 
-4. Pengguna biasa (bukan kontributor) tidak perlu set variable ini — cukup pastikan command memakai API default dan internet stabil.
+4. Pengguna biasa (bukan kontributor) tidak perlu set variable ini. Cukup pastikan command memakai API default dan internet stabil.
 
 ---
 
@@ -96,13 +96,13 @@ Belum ada template aktif yang terdaftar
 
 **Penyebab:**
 
-- API jalan tapi katalog kosong — belum ada template berstatus published. Umum di instalasi API lokal yang baru.
+- API jalan tapi katalog kosong, belum ada template berstatus published. Umum di instalasi API lokal yang baru.
 
 **Solusi:**
 
 1. Ini normal untuk instalasi baru, bukan bug di komputermu.
 2. Daftarkan template lewat panel admin, isi metadata (slug, repo URL, integrasi), lalu ubah status menjadi published.
-3. Jalankan ulang CLI — katalog seharusnya sudah terisi.
+3. Jalankan ulang CLI, katalog seharusnya sudah terisi.
 
 ---
 
@@ -120,7 +120,7 @@ Belum ada template aktif yang terdaftar
 node --version
 ```
 
-Unduh di [nodejs.org](https://nodejs.org) (pilih LTS). Setelah install, tutup dan buka ulang terminal. Pastikan keluar `v18` atau lebih baru — versi 16 ke bawah ditolak CLI.
+Unduh di [nodejs.org](https://nodejs.org) (pilih LTS). Setelah install, tutup dan buka ulang terminal. Pastikan keluar `v18` atau lebih baru, karena versi 16 ke bawah ditolak CLI.
 
 - Template Laravel butuh **PHP 8.2+ dan Composer**. Cek satu per satu:
 
@@ -153,7 +153,7 @@ Folder sudah ada dan tidak kosong
 npx scaffdev@latest nama-folder-baru --template=<slug>
 ```
 
-2. Atau jawab "ya" saat ditanya overwrite — hanya bila kamu yakin isi folder boleh ditimpa (mis. folder percobaan kosong).
+2. Atau jawab "ya" saat ditanya overwrite, hanya bila kamu yakin isi folder boleh ditimpa (mis. folder percobaan kosong).
 3. Kalau folder terlihat kosong tapi tetap ditolak, tampilkan file tersembunyi (`.git`, `.DS_Store` dihitung sebagai isi). Hapus folder sepenuhnya lalu generate ulang.
 
 ---
@@ -162,7 +162,7 @@ npx scaffdev@latest nama-folder-baru --template=<slug>
 
 **Penyebab:**
 
-- Ini di luar kendali CLI — biasanya jaringan (registry / packagist tidak terjangkau), versi runtime tidak cocok dengan dependency template, atau cache install rusak.
+- Ini di luar kendali CLI. Biasanya jaringan (registry / packagist tidak terjangkau), versi runtime tidak cocok dengan dependency template, atau cache install rusak.
 
 **Solusi:**
 
@@ -204,7 +204,7 @@ git --version
 ```
 
 2. Pastikan kamu punya akses internet ke github.com (buka di browser sebagai test cepat).
-3. Semua repo template bersifat publik — tidak perlu token atau login GitHub. Kalau error menyebut autentikasi, kemungkinan URL remote salah ketik atau file hosts / proxy mengganggu — coba clone URL yang sama manual untuk memastikan.
+3. Semua repo template bersifat publik, tidak perlu token atau login GitHub. Kalau error menyebut autentikasi, kemungkinan URL remote salah ketik atau file hosts / proxy mengganggu. Coba clone URL yang sama manual untuk memastikan.
 4. Di jaringan terbatas (kampus / kantor), pastikan port 443 ke github.com tidak diblokir firewall.
 
 ---
@@ -248,7 +248,7 @@ php artisan serve --port=8001
 **Solusi:**
 
 1. Pastikan file aktif ada (`.env.local` untuk Next.js, `.env` untuk Laravel) dan sudah diisi mengikuti `SETUP.md`.
-2. Restart dev server — Next.js dan Laravel membaca env saat proses dimulai.
+2. Restart dev server. Next.js dan Laravel membaca env saat proses dimulai.
 3. Bandingkan nama variable dengan `.env.example` huruf per huruf. Detail lengkap ada di [Environment & Setup](/docs/env-dan-setup).
 
 ---
@@ -264,7 +264,7 @@ ketemu dalam 2 menit, bukan 2 jam:
 2. **Pisahkan "apa" dari "di mana".** Contoh `npm ERR! code ERESOLVE` → "apa"-nya
    konflik dependency, "di mana"-nya nama package yang disebut di bawahnya.
 3. **Ulangi command sekali lagi.** Error jaringan/sementara hilang di percobaan
-   kedua. Kalau hasilnya beda-beda tiap run, curigai koneksi — bukan kode.
+   kedua. Kalau hasilnya beda-beda tiap run, curigai koneksi, bukan kode.
 4. **Kecilkan masalah:** error saat `npm install`? Jalankan manual di folder project
    agar pesan aslinya terlihat (CLI merangkum output dan bisa menyembunyikan detail).
 
@@ -285,7 +285,7 @@ composer --version
 
 Versi yang sehat: Node.js v18+, npm v9+, git sembarang versi modern,
 PHP 8.2+, Composer v2+. Kalau salah satunya error `command not found`,
-berhenti di sini dan bereskan instalasinya dulu — 80% error misterius
+berhenti di sini dan bereskan instalasinya dulu, karena 80% error misterius
 berasal dari prasyarat yang belum lolos.
 
 ---
@@ -317,9 +317,9 @@ npm install
 ```
 
 2. Jangan paksa dengan `--force` / `--legacy-peer-deps` kecuali kamu paham
-   konsekuensinya — flag itu menyembunyikan konflik, bukan menyelesaikannya,
+   konsekuensinya, karena flag itu menyembunyikan konflik, bukan menyelesaikannya,
    dan bisa meledak saat `npm run build`.
-3. Kalau error menyebut package spesifik, catat nama + versinya — itu bahan
+3. Kalau error menyebut package spesifik, catat nama + versinya. Itu bahan
    laporan bug ke pembuat template.
 
 ---
@@ -347,7 +347,7 @@ composer install: your php version does not satisfy that requirement
    per project tanpa uninstall.
 2. Untuk PHP: install PHP 8.2+ dan pastikan `php --version` di terminal yang
    SAMA dengan tempat menjalankan Composer (Windows sering punya dua PHP:
-   satu dari XAMPP, satu standalone — pastikan yang 8.2+ yang dikenali).
+   satu dari XAMPP, satu standalone. Pastikan yang 8.2+ yang dikenali).
 3. Setelah ganti versi, hapus `node_modules` / `vendor` lalu install ulang.
 
 ---
@@ -414,7 +414,7 @@ console browser menyebut key `undefined` atau `... is not defined`.
 
 1. Cek env: client/public key berprefix `NEXT_PUBLIC_`, secret/server key TANPA prefix.
 2. Restart dev server, hard-refresh browser (Ctrl+Shift+R) agar env baru terbaca.
-3. Buka console browser (F12) dan baca error merah pertama — 90% jawabannya ada di sana.
+3. Buka console browser (F12) dan baca error merah pertama, karena 90% jawabannya ada di sana.
 4. Pastikan memakai key **sandbox** selama development (Midtrans `SB-...`, Xendit `xnd_development_...`).
 
 ---
@@ -425,7 +425,7 @@ console browser menyebut key `undefined` atau `... is not defined`.
 
 **Penyebab:**
 
-- URL callback di dashboard payment menunjuk `localhost` — server payment tidak
+- URL callback di dashboard payment menunjuk `localhost`, server payment tidak
   bisa menjangkau komputermu, jadi notifikasi tidak pernah sampai.
 - Signature verifikasi gagal (format salah) sehingga aplikasi menolak notifikasi.
 
@@ -435,10 +435,10 @@ console browser menyebut key `undefined` atau `... is not defined`.
    tunnel sementara di dashboard sandbox payment.
 2. Pastikan handler callback memverifikasi signature sesuai dokumentasi resmi
    (satu karakter meleset = ditolak).
-3. Jangan update status order dari redirect frontend saja — selalu konfirmasi
+3. Jangan update status order dari redirect frontend saja. Selalu konfirmasi
    via callback server-to-server.
 4. Cek log endpoint callback-mu: request masuk tapi ditolak, atau tidak masuk
-   sama sekali — dua hal berbeda dengan solusi berbeda.
+   sama sekali. Keduanya hal berbeda dengan solusi berbeda.
 
 ---
 
@@ -488,7 +488,7 @@ Could not resolve ... / Unknown at rule
 
 **Solusi:**
 
-1. Jalankan `npm install` sampai tuntas dulu, baru `npm run build` — sebagian
+1. Jalankan `npm install` sampai tuntas dulu, baru `npm run build`. Sebagian
    besar "build gagal" sebenarnya "install belum beres".
 2. Baca error TypeScript pertama dari atas; perbaiki satu per satu (error
    turunan di bawahnya sering hilang sendiri).
@@ -505,21 +505,21 @@ Could not resolve ... / Unknown at rule
 
 **Solusi per kasus:**
 
-1. `cp: command not found` (CMD tidak punya `cp`) — gunakan padanannya:
+1. `cp: command not found` (CMD tidak punya `cp`), gunakan padanannya:
 
 ```bash
 copy .env.example .env.local   # Next.js (CMD)
 copy .env.example .env         # Laravel (CMD)
 ```
 
-2. PowerShell menolak menjalankan script (`execution policy`) — jalankan
+2. PowerShell menolak menjalankan script (`execution policy`), jalankan
    terminal sebagai user biasa dan set policy minimal untuk user-mu, atau
    gunakan Git Bash/CMD untuk command tersebut.
-3. `node`/`php` dikenali di satu terminal tapi tidak di terminal lain — masalah
+3. `node`/`php` dikenali di satu terminal tapi tidak di terminal lain, masalah
    `PATH`: install ulang runtime dengan opsi "Add to PATH" dicentang, tutup
    SEMUA terminal, buka ulang.
 4. Path dengan spasi (`C:\Users\Nama Panjang\...`) kadang bermasalah dengan
-   tools tertentu — generate project di path tanpa spasi bila menemui error aneh.
+   tools tertentu. Generate project di path tanpa spasi bila menemui error aneh.
 
 ---
 
@@ -537,7 +537,7 @@ copy .env.example .env         # Laravel (CMD)
    masalahnya di konfigurasi git/proxy, bukan internet mati.
 2. Kalau memakai proxy, konfigurasi git dan npm untuk proxy tersebut.
 3. Jangan matikan verifikasi SSL (`http.sslVerify false`) kecuali sementara
-   untuk diagnosis — itu membuka serangan man-in-the-middle.
+   untuk diagnosis, karena itu membuka serangan man-in-the-middle.
 4. Coba jaringan lain (tethering HP) untuk memastikan apakah masalahnya
    spesifik jaringan tersebut.
 

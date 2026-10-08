@@ -56,7 +56,7 @@ export async function injectModule(
     }
 
     // Basis sumber: {repo}/{framework}/ bila ada, else root repo.
-    // Hanya entri yang berlaku untuk framework ini yang disuntik —
+    // Hanya entri yang berlaku untuk framework ini yang disuntik, supaya
     // file PHP tidak akan nyasar ke project Next.js dan sebaliknya.
     const fwDir = path.join(tmpDir, fw);
     const srcBase = fs.existsSync(fwDir) && fs.statSync(fwDir).isDirectory() ? fwDir : tmpDir;
@@ -130,7 +130,7 @@ export function mergeComposerDependencies(
 ): string[] {
   const composerPath = path.join(projectDir, "composer.json");
   if (!fs.existsSync(composerPath)) {
-    throw new Error("Template base tidak memiliki composer.json — tidak bisa merge dependency composer.");
+    throw new Error("Template base tidak memiliki composer.json sehingga tidak bisa merge dependency composer.");
   }
   const composer = JSON.parse(fs.readFileSync(composerPath, "utf-8")) as {
     require?: Record<string, string>;
@@ -165,7 +165,7 @@ export function mergeNpmDependencies(
 ): string[] {
   const pkgPath = path.join(projectDir, "package.json");
   if (!fs.existsSync(pkgPath)) {
-    throw new Error("Template base tidak memiliki package.json — tidak bisa merge dependency npm.");
+    throw new Error("Template base tidak memiliki package.json sehingga tidak bisa merge dependency npm.");
   }
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8")) as PkgJson;
   pkg.dependencies = pkg.dependencies ?? {};

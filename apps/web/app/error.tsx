@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 
 /**
- * Error boundary segmen root — menangkap error runtime saat render
+ * Error boundary segmen root: menangkap error runtime saat render
  * (mis. fetch API gagal total). WAJIB client component ("use client") + terima
  * props { error, reset } dari Next.js. Tidak boleh melempar error lagi.
  */
@@ -29,7 +29,7 @@ export default function RootError({
         Ada yang rusak di sini
       </h1>
       <p className="mt-4 max-w-md text-sm leading-relaxed text-zinc-400 sm:text-base">
-        Halaman gagal dimuat — biasanya karena koneksi ke API terputus atau
+        Halaman gagal dimuat. Biasanya karena koneksi ke API terputus atau
         server sedang restart. Datamu aman, tidak ada yang hilang.
       </p>
 
@@ -41,7 +41,7 @@ export default function RootError({
           <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F57]" />
           <span className="h-2.5 w-2.5 rounded-full bg-[#FEBC2E]" />
           <span className="h-2.5 w-2.5 rounded-full bg-[#28C840]" />
-          <span className="ml-2 font-mono text-[11px] text-zinc-600">scaffdev — zsh</span>
+          <span className="ml-2 font-mono text-[11px] text-zinc-600">scaffdev · zsh</span>
         </div>
         <div className="space-y-1.5 px-4 py-3.5 font-mono text-xs leading-relaxed sm:text-[13px]">
           <p className="text-zinc-500">

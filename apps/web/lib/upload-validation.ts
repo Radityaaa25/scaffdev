@@ -1,5 +1,5 @@
 /**
- * Validasi file gambar nivels server — dipakai semua endpoint upload.
+ * Validasi file gambar di level server: dipakai semua endpoint upload.
  * Prinsip: JANGAN percaya ekstensi nama file / header Content-Type dari client.
  * Hanya PNG/JPEG/WEBP asli (dicek via magic bytes). SVG/GIF/APNG ditolak
  * karena SVG bisa membawa JavaScript (XSS via <script>/<foreignObject>)

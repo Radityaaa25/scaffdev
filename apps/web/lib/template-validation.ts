@@ -1,6 +1,6 @@
 /**
  * Validasi server-side untuk payload template (POST/PUT /api/templates).
- * Dipakai sebelum write ke database — jangan percaya input client apa adanya.
+ * Dipakai sebelum write ke database: jangan percaya input client apa adanya.
  */
 
 /**
@@ -13,7 +13,7 @@ export const ALLOWED_FRAMEWORKS = ["nextjs", "laravel"] as const;
 export const ALLOWED_KATEGORI = ["ecommerce", "landing-page", "portfolio"] as const;
 
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-// Hanya repo GitHub publik https — mencegah URL arbitrer (file://, ssh, dsb)
+  // Hanya repo GitHub publik https: mencegah URL arbitrer (file://, ssh, dsb)
 // yang bisa disalahgunakan saat CLI melakukan git clone.
 const REPO_URL_RE =
   /^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+?(\.git)?\/?$/;
@@ -93,7 +93,7 @@ export function validateTemplateInput(
     out.kategori = kategori;
   }
 
-  // slug (opsional — di-generate otomatis bila kosong)
+  // slug (opsional: di-generate otomatis bila kosong)
   if ("slug" in b && b.slug !== "" && b.slug != null) {
     const slug = asString(b.slug)?.toLowerCase() ?? "";
     if (!SLUG_RE.test(slug)) {

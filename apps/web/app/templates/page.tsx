@@ -9,7 +9,7 @@ import { absoluteUrl, baseMetadata, itemListJsonLd } from "@/lib/seo";
 export const revalidate = 3600;
 
 export const metadata: Metadata = baseMetadata({
-  title: "Katalog Template — Scaffdev",
+  title: "Katalog Template | Scaffdev",
   description:
     "Jelajahi starter kit Next.js & Laravel siap pakai: e-commerce, landing page, portfolio dengan integrasi Supabase, Midtrans, Xendit, RajaOngkir. Generate via npx scaffdev@latest.",
   keywords: [
@@ -25,7 +25,7 @@ export const metadata: Metadata = baseMetadata({
   openGraph: {
     type: "website",
     url: absoluteUrl("/templates"),
-    title: "Katalog Template — Scaffdev",
+    title: "Katalog Template | Scaffdev",
     description:
       "Starter kit Next.js & Laravel siap jalan: e-commerce, landing page, portfolio + integrasi lokal. Generate via npx scaffdev@latest.",
   },

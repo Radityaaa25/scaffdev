@@ -3,7 +3,7 @@
 import Grainient from "./Grainient";
 
 /**
- * Backdrop landing: SATU layer kontinu untuk seluruh halaman — grid + gradient
+ * Backdrop landing: SATU layer kontinu untuk seluruh halaman: grid + gradient
  * animasi yang sama di belakang semua section, sehingga tidak ada garis/batas
  * antar-section (tidak per-section = tidak ada sambungan yang bisa retak).
  * - Canvas dikunci viewport (sticky h-screen): buffer selalu seukuran layar
@@ -24,7 +24,7 @@ export function LandingBackdrop() {
       {/* Base */}
       <div className="absolute inset-0 bg-[#1B1B21]" />
       {/* Underlay statis: SANGAT redup, hanya anti-kedip ~1 dtk saat refresh
-          (kanvas fade-in di atasnya). Bukan wash warna — ungu hanya boleh
+          (kanvas fade-in di atasnya). Bukan wash warna: ungu hanya boleh
           muncul dari animasi awan, sisanya gelap background. */}
       <div
         className="absolute inset-0"

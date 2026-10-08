@@ -70,7 +70,7 @@ export function MonitorClient({ initial }: { initial: UsageRow[] }) {
 
   return (
     <div className="animate-admin-enter space-y-4">
-      {/* Filter scope — siap untuk pemisahan AI admin vs user */}
+      {/* Filter scope, siap untuk pemisahan AI admin vs user */}
       <div className="glass-panel flex flex-wrap items-center gap-2 rounded-2xl p-4">
         <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">Sumber:</span>
         {(["all", "admin", "user"] as ScopeFilter[]).map((s) => (
@@ -137,7 +137,7 @@ export function MonitorClient({ initial }: { initial: UsageRow[] }) {
         <h2 className="text-sm font-semibold text-white">Error Terbaru</h2>
         {recentErrors.length === 0 ? (
           <p className="mt-2 flex items-center gap-2 text-sm text-emerald-400">
-            <span className="font-bold">✓</span> Bersih — tidak ada error tercatat.
+            <span className="font-bold">✓</span> Bersih. Tidak ada error tercatat.
           </p>
         ) : (
           <ul className="mt-3 space-y-2">

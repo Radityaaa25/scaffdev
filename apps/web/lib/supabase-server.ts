@@ -7,7 +7,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
 /**
  * Supabase client server-side (API Routes / Server Components).
- * Memakai anon key + session cookie user — RLS tetap ditegakkan database.
+ * Memakai anon key + session cookie user: RLS tetap ditegakkan database.
  * Service role key TIDAK PERNAH dipakai di kode aplikasi.
  */
 export async function createSupabaseServerClient() {
@@ -26,7 +26,7 @@ export async function createSupabaseServerClient() {
             cookieStore.set(name, value, options)
           );
         } catch {
-          // Dipanggil dari Server Component (read-only context) — aman diabaikan
+          // Dipanggil dari Server Component (read-only context), aman diabaikan
           // karena middleware me-refresh session cookie.
         }
       },
@@ -91,7 +91,7 @@ export async function requireAdmin(
 
   // Dukungan token Bearer dari apps/admin (cross-origin, tanpa cookie).
   // Seluruh operasi berikutnya (cek admin + write DB) berjalan sebagai user
-  // pemilik token via token client — bukan anon.
+  // pemilik token via token client, bukan anon.
   const authHeader = request?.headers.get("authorization");
   if (authHeader?.toLowerCase().startsWith("bearer ")) {
     const token = authHeader.slice(7).trim();

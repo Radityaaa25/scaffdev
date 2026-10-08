@@ -105,7 +105,7 @@ export function ActivityTimeline({ initial }: { initial: ActivityRow[] }) {
                   </div>
                   <p className="mt-1 text-sm text-zinc-300">
                     <span className="font-medium text-zinc-100">{r.actor_email}</span>
-                    {r.detail ? <span className="text-zinc-500"> — {r.detail}</span> : null}
+                    {r.detail ? <span className="text-zinc-500">: {r.detail}</span> : null}
                   </p>
                 </li>
               );

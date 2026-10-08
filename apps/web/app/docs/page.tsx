@@ -7,7 +7,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { absoluteUrl, baseMetadata, itemListJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = baseMetadata({
-  title: "Dokumentasi Scaffdev — Panduan CLI, Template & Integrasi",
+  title: "Dokumentasi Scaffdev | Panduan CLI, Template & Integrasi",
   description:
     "Panduan lengkap Scaffdev berbahasa Indonesia: cara install CLI, konsep dasar, builder, environment & setup, integrasi Midtrans/Xendit/Supabase, troubleshooting, dan FAQ.",
   keywords: [
@@ -21,7 +21,7 @@ export const metadata: Metadata = baseMetadata({
   openGraph: {
     type: "website",
     url: absoluteUrl("/docs"),
-    title: "Dokumentasi Scaffdev — Panduan CLI, Template & Integrasi",
+    title: "Dokumentasi Scaffdev | Panduan CLI, Template & Integrasi",
     description:
       "Panduan lengkap Scaffdev: CLI, template, environment, integrasi lokal, troubleshooting, FAQ.",
   },

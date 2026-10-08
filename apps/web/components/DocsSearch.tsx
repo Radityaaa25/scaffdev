@@ -70,7 +70,7 @@ export function DocsSearch({ docs }: { docs: DocsSearchItem[] }) {
             </svg>
           </div>
           <p className="text-sm text-zinc-500">
-            Tidak ada panduan yang cocok. Coba kata kunci lain — atau tanyakan ke asisten AI di pojok kanan bawah.
+                Tidak ada panduan yang cocok. Coba kata kunci lain, atau tanyakan ke asisten AI di pojok kanan bawah.
           </p>
         </div>
       ) : (

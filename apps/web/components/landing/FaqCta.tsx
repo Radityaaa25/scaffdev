@@ -69,7 +69,7 @@ export function FaqCta() {
                 Ship project hari ini, bukan minggu depan.
               </h2>
               <p className="mt-3 text-sm leading-relaxed text-zinc-400">
-                Tanpa install apa pun — cukup Node.js v18+, Git, dan koneksi internet.
+                Tanpa install apa pun: cukup Node.js v18+, Git, dan koneksi internet.
               </p>
               <div className="mt-6">
                 <LandingCommandBox command="npx scaffdev@latest" />

@@ -7,7 +7,7 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-/** Ubah status laporan — khusus admin. */
+  /** Ubah status laporan: khusus admin. */
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   const { id } = await params;
   const auth = await requireAdmin(request);
@@ -46,7 +46,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   return NextResponse.json({ laporan: data });
 }
 
-/** Hapus laporan — khusus admin. */
+  /** Hapus laporan: khusus admin. */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   const { id } = await params;
   const auth = await requireAdmin(request);

@@ -4,7 +4,7 @@ export interface Faq {
 }
 
 /**
- * FAQ landing — satu sumber data untuk accordion (`FaqCta`) dan
+ * FAQ landing: satu sumber data untuk accordion (`FaqCta`) dan
  * FAQPage JSON-LD, supaya teks yang di-crawl selalu sama dengan yang dibaca user.
  */
 export const FAQS: Faq[] = [
@@ -14,11 +14,11 @@ export const FAQS: Faq[] = [
   },
   {
     q: "Apakah template-nya benar-benar siap pakai?",
-    a: "Ya. Berbeda dengan boilerplate kosong, setiap template punya tampilan visual yang sudah jadi — e-commerce, landing page, portfolio — plus kurasi integrasi lokal seperti Supabase, Midtrans, Xendit, dan Duitku.",
+    a: "Ya. Berbeda dengan boilerplate kosong, setiap template punya tampilan visual yang sudah jadi (e-commerce, landing page, portfolio) plus kurasi integrasi lokal seperti Supabase, Midtrans, Xendit, dan Duitku.",
   },
   {
     q: "Bagaimana CLI tahu template yang tersedia?",
-    a: "CLI 100% API-driven: pilihan template = data is_published=true dari database yang sama dengan web ini. Kalau DB kosong, CLI menampilkan error eksplisit — tidak ada template hardcode/palsu.",
+    a: "CLI 100% API-driven: pilihan template = data is_published=true dari database yang sama dengan web ini. Kalau DB kosong, CLI menampilkan error eksplisit. Tidak ada template hardcode/palsu.",
   },
   {
     q: "Apakah gratis?",
@@ -26,7 +26,7 @@ export const FAQS: Faq[] = [
   },
   {
     q: "Di mana saya bisa bertanya atau lapor bug?",
-    a: "Gunakan asisten AI di website, baca dokumentasi berbahasa Indonesia, atau kirim laporan via halaman Lapor Bug — bisa melampirkan gambar bukti.",
+    a: "Gunakan asisten AI di website, baca dokumentasi berbahasa Indonesia, atau kirim laporan via halaman Lapor Bug. Bisa melampirkan gambar bukti.",
   },
 ];
 

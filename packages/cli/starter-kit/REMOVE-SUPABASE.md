@@ -2,7 +2,7 @@
 
 > Dibutuhkan bila kamu memakai database/auth lain (mis. via Scaffdev Builder).
 > Ikuti section sesuai framework template-mu (Next.js ATAU Laravel).
-> Estimasi: ±10 menit. Ikuti berurutan — jangan loncat.
+> Estimasi: ±10 menit. Ikuti berurutan dan jangan loncat.
 
 ## 0. Aturan emas (baca dulu!)
 
@@ -13,10 +13,10 @@
 
 ## A. Template Next.js
 
-### A.1. Hapus file (aman — tidak dipakai kode lain)
+### A.1. Hapus file (aman karena tidak dipakai kode lain)
 
-- `lib/supabase.ts` — inisialisasi Supabase client.
-- `lib/auth.ts` — helper register/login/logout via Supabase Auth.
+- `lib/supabase.ts`: inisialisasi Supabase client.
+- `lib/auth.ts`: helper register/login/logout via Supabase Auth.
 
 ```bash
 rm lib/supabase.ts lib/auth.ts
@@ -35,7 +35,7 @@ Hapus barisnya, jangan dikosongkan saja.
 npm uninstall @supabase/supabase-js @supabase/ssr
 ```
 
-(Sesuaikan dengan package yang benar-benar terdaftar di `package.json` — hapus hanya yang berhubungan Supabase.)
+(Sesuaikan dengan package yang benar-benar terdaftar di `package.json`. Hapus hanya yang berhubungan Supabase.)
 
 ### A.4. Verifikasi (wajib lolos semua)
 
@@ -53,18 +53,18 @@ grep -ri "supabase" app lib components
 
 ### A.5. Yang JANGAN dihapus (Next.js)
 
-- `lib/db-types.ts` — definisi tipe data bersama (Product, Order, dsb.), bukan khusus Supabase.
-- `middleware.ts` — middleware umum aplikasi, bukan khusus Supabase.
-- Halaman login/register (`app/(auth)/`) — UI-nya generik; yang diganti hanya pemanggil `lib/auth.ts` di dalamnya.
+- `lib/db-types.ts`: definisi tipe data bersama (Product, Order, dsb.), bukan khusus Supabase.
+- `middleware.ts`: middleware umum aplikasi, bukan khusus Supabase.
+- Halaman login/register (`app/(auth)/`): UI-nya generik. Yang diganti hanya pemanggil `lib/auth.ts` di dalamnya.
 
 ---
 
 ## B. Template Laravel
 
-### B.1. Hapus file (aman — tidak dipakai kode lain)
+### B.1. Hapus file (aman karena tidak dipakai kode lain)
 
-- `app/Services/SupabaseService.php` — client Supabase (database + auth).
-- `app/Http/Controllers/Auth/SupabaseAuthController.php` — register/login/logout.
+- `app/Services/SupabaseService.php`: client Supabase (database + auth).
+- `app/Http/Controllers/Auth/SupabaseAuthController.php`: register/login/logout.
 
 ```bash
 rm "app/Services/SupabaseService.php" "app/Http/Controllers/Auth/SupabaseAuthController.php"
@@ -102,6 +102,6 @@ grep -ri "supabase" app routes resources config
 
 ### B.5. Yang JANGAN dihapus (Laravel)
 
-- `app/Models/` — model Eloquent generik, bukan khusus Supabase.
-- `database/migrations/` — migrasi skema generik (sesuaikan isinya, jangan hapus file-nya membabi buta).
-- View login/register (`resources/views/auth/`) — UI-nya generik; yang diganti hanya pemanggil service di controller-nya.
+- `app/Models/`: model Eloquent generik, bukan khusus Supabase.
+- `database/migrations/`: migrasi skema generik (sesuaikan isinya, jangan hapus file-nya membabi buta).
+- View login/register (`resources/views/auth/`): UI-nya generik. Yang diganti hanya pemanggil service di controller-nya.

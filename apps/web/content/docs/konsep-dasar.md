@@ -7,7 +7,7 @@ section: Mulai
 
 # Konsep Dasar Scaffdev
 
-Scaffdev adalah **scaffolding generator**: tools yang membuatkan project baru siap jalan dalam hitungan detik — bukan folder kosong, melainkan starter kit lengkap dengan tampilan visual yang sudah jadi, struktur folder best-practice, dan panduan setup integrasi.
+Scaffdev adalah **scaffolding generator**: tools yang membuatkan project baru siap jalan dalam hitungan detik. Bukan folder kosong, melainkan starter kit lengkap dengan tampilan visual yang sudah jadi, struktur folder best-practice, dan panduan setup integrasi.
 
 Bedanya dengan `create-next-app` atau `composer create-project` biasa: hasil generate Scaffdev langsung terlihat seperti aplikasi jadi (ada halaman, navigasi, komponen UI), bukan halaman selamat datang kosong. Kamu tinggal isi API key layanan yang dipakai, lalu lanjut ke logika bisnismu.
 
@@ -15,10 +15,10 @@ Bedanya dengan `create-next-app` atau `composer create-project` biasa: hasil gen
 
 ## Untuk Siapa Scaffdev?
 
-- **Freelancer / indie hacker** — butuh demo cepat ke klien dalam hitungan jam, bukan hari.
-- **Mahasiswa / peserta lomba** — butuh starter kit rapi dengan struktur yang bisa dijelaskan ke juri.
-- **Tim kecil / agency** — butuh standar awal yang konsisten untuk tiap project baru (struktur folder, env, dokumentasi setup).
-- **Backend / frontend pemula** — butuh contoh nyata integrasi lokal Indonesia (Midtrans, Xendit, RajaOngkir, Supabase) yang sudah dirangkai, bukan sekadar baca docs terpisah.
+- **Freelancer / indie hacker**: butuh demo cepat ke klien dalam hitungan jam, bukan hari.
+- **Mahasiswa / peserta lomba**: butuh starter kit rapi dengan struktur yang bisa dijelaskan ke juri.
+- **Tim kecil / agency**: butuh standar awal yang konsisten untuk tiap project baru (struktur folder, env, dokumentasi setup).
+- **Backend / frontend pemula**: butuh contoh nyata integrasi lokal Indonesia (Midtrans, Xendit, RajaOngkir, Supabase) yang sudah dirangkai, bukan sekadar baca docs terpisah.
 
 Kalau kamu hanya butuh folder kosong, Scaffdev berlebihan. Kalau kamu butuh project yang langsung bisa di-screenshot dan di-demo, Scaffdev menghemat 1–3 hari setup awal.
 
@@ -26,11 +26,11 @@ Kalau kamu hanya butuh folder kosong, Scaffdev berlebihan. Kalau kamu butuh proj
 
 Scaffdev terdiri dari tiga bagian yang saling terhubung:
 
-1. **Web katalog (`scaffdev.vercel.app`)** — tempat browsing template secara visual: filter kategori, pilih framework, lihat screenshot, baca daftar integrasi dan env yang dibutuhkan, lalu copy satu baris command.
-2. **CLI (`scaffdev`)** — tools terminal yang dieksekusi via `npx`. Tugasnya: resolve slug ke URL GitHub, cek prasyarat runtime, `git clone` template, lalu generate `.env.example` + `SETUP.md` yang digabungkan dari semua integrasi template itu.
-3. **API katalog** — backend yang menyimpan metadata template (slug, repo URL, daftar integrasi, env var). CLI bertanya ke sini setiap kali generate, jadi daftar template selalu sinkron dengan yang tampil di web.
+1. **Web katalog (`scaffdev.vercel.app`)**: tempat browsing template secara visual: filter kategori, pilih framework, lihat screenshot, baca daftar integrasi dan env yang dibutuhkan, lalu copy satu baris command.
+2. **CLI (`scaffdev`)**: tools terminal yang dieksekusi via `npx`. Tugasnya: resolve slug ke URL GitHub, cek prasyarat runtime, `git clone` template, lalu generate `.env.example` + `SETUP.md` yang digabungkan dari semua integrasi template itu.
+3. **API katalog**: backend yang menyimpan metadata template (slug, repo URL, daftar integrasi, env var). CLI bertanya ke sini setiap kali generate, jadi daftar template selalu sinkron dengan yang tampil di web.
 
-Alurnya satu arah: web untuk memilih, API untuk metadata, CLI untuk mengeksekusi di komputermu. Tidak ada proses build di server — semua file project hanya ada di komputermu setelah clone.
+Alurnya satu arah: web untuk memilih, API untuk metadata, CLI untuk mengeksekusi di komputermu. Tidak ada proses build di server karena semua file project hanya ada di komputermu setelah clone.
 
 ## Alur Kerja (3 Langkah Detail)
 
@@ -40,7 +40,7 @@ Buka katalog di [templates](/templates), lalu:
 
 - Pilih **kategori** sesuai jenis project: E-commerce (toko online, katalog, keranjang, payment), Landing Page (promosi produk / SaaS), atau Portfolio (showcase karya personal).
 - Pilih **framework**: Next.js (JavaScript/TypeScript, App Router) atau Laravel (PHP).
-- Buka halaman detail template: perhatikan screenshot besar, deskripsi, spesifikasi repo, dan yang paling penting — **daftar integrasi beserta environment variable** yang dibutuhkan. Dari sinilah kamu tahu API key apa saja yang nanti harus disiapkan (mis. Supabase URL + anon key, Midtrans server + client key).
+- Buka halaman detail template: perhatikan screenshot besar, deskripsi, spesifikasi repo, dan yang paling penting, **daftar integrasi beserta environment variable** yang dibutuhkan. Dari sinilah kamu tahu API key apa saja yang nanti harus disiapkan (mis. Supabase URL + anon key, Midtrans server + client key).
 - Klik **Pakai Template Ini** untuk memunculkan command siap copy, contoh:
 
 ```bash
@@ -70,18 +70,18 @@ Detail pengisian env ada di [Environment & Setup](/docs/env-dan-setup). Kalau me
 
 ## Istilah Penting
 
-- **Template** — satu starter kit lengkap (kode + tampilan + struktur). Contoh: E-commerce Basic, SaaS Landing Page. Setiap template hidup sebagai repository GitHub publik.
-- **Slug** — kode pendek unik tiap template, contoh `ecommerce-basic-nextjs`. Slug inilah yang kamu pakai di command CLI (`--template=ecommerce-basic-nextjs`). Tidak perlu hafal URL GitHub — CLI yang me-resolve slug ke URL via API.
-- **Framework** — teknologi utama template: Next.js (JavaScript/TypeScript, App Router) atau Laravel (PHP). Saat ini baru dua framework ini yang didukung, dan daftarnya akan terus bertambah seiring waktu.
-- **Kategori** — jenis project: `ecommerce`, `landing-page`, `portfolio` (bisa bertambah). Kategori menentukan struktur halaman bawaan (mis. e-commerce punya katalog, keranjang, checkout).
-- **Integrasi** — layanan pihak ketiga yang sudah disiapkan kode + panduannya, mis. Supabase (database + auth), Midtrans / Xendit (payment), RajaOngkir (ongkir). Daftar lengkap ada di [Daftar Integrasi](/docs/daftar-integrasi).
-- **Basic vs Berintegrasi** — template Basic tanpa layanan tambahan (data masih di memory / state lokal, cocok untuk prototipe UI); template berintegrasi menyertakan SDK + panduan setup layanan tertentu (siap transaksi nyata setelah env diisi).
-- **`.env.example`** — kerangka env var yang di-generate CLI dari metadata integrasi. Berisi nama variable + komentar deskripsi, nilainya kosong untuk kamu isi.
-- **`SETUP.md`** — panduan setup yang di-generate CLI di folder project. Strukturnya selalu sama: Langkah Cepat (install → env → run), lalu satu section per integrasi (daftar akun di mana, key apa yang diambil, ditempel ke variable apa).
+- **Template**: satu starter kit lengkap (kode + tampilan + struktur). Contoh: E-commerce Basic, SaaS Landing Page. Setiap template hidup sebagai repository GitHub publik.
+- **Slug**: kode pendek unik tiap template, contoh `ecommerce-basic-nextjs`. Slug inilah yang kamu pakai di command CLI (`--template=ecommerce-basic-nextjs`). Tidak perlu hafal URL GitHub karena CLI yang me-resolve slug ke URL via API.
+- **Framework**: teknologi utama template: Next.js (JavaScript/TypeScript, App Router) atau Laravel (PHP). Saat ini baru dua framework ini yang didukung, dan daftarnya akan terus bertambah seiring waktu.
+- **Kategori**: jenis project: `ecommerce`, `landing-page`, `portfolio` (bisa bertambah). Kategori menentukan struktur halaman bawaan (mis. e-commerce punya katalog, keranjang, checkout).
+- **Integrasi**: layanan pihak ketiga yang sudah disiapkan kode + panduannya, mis. Supabase (database + auth), Midtrans / Xendit (payment), RajaOngkir (ongkir). Daftar lengkap ada di [Daftar Integrasi](/docs/daftar-integrasi).
+- **Basic vs Berintegrasi**: template Basic tanpa layanan tambahan (data masih di memory / state lokal, cocok untuk prototipe UI); template berintegrasi menyertakan SDK + panduan setup layanan tertentu (siap transaksi nyata setelah env diisi).
+- **`.env.example`**: kerangka env var yang di-generate CLI dari metadata integrasi. Berisi nama variable + komentar deskripsi, nilainya kosong untuk kamu isi.
+- **`SETUP.md`**: panduan setup yang di-generate CLI di folder project. Strukturnya selalu sama: Langkah Cepat (install → env → run), lalu satu section per integrasi (daftar akun di mana, key apa yang diambil, ditempel ke variable apa).
 
 ## Kenapa Tidak Clone Manual Saja?
 
-Bisa saja clone repo GitHub-nya langsung — semua repo template bersifat publik. Tapi lewat CLI kamu dapat tiga hal ekstra:
+Bisa saja clone repo GitHub-nya langsung, semua repo template bersifat publik. Tapi lewat CLI kamu dapat tiga hal ekstra:
 
 | | Clone manual | Via CLI Scaffdev |
 |---|---|---|

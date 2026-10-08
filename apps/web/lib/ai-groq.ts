@@ -5,7 +5,7 @@
  * berurutan; pindah ke key berikutnya bila 429 / 5xx / timeout / 401.
  * 1 key pun tetap jalan (kompatibel mundur).
  *
- * Route ADMIN (/api/assistant) SENGAJA tidak memakai helper ini —
+ * Route ADMIN (/api/assistant) SENGAJA tidak memakai helper ini:
  * admin tetap 1 key, tidak diubah.
  *
  * Aturan keamanan: key tidak pernah masuk respons/log/error message.
@@ -95,7 +95,7 @@ export async function groqChatCompletion(o: GroqCallOptions): Promise<string> {
     try {
       res = await tryOnce(key, { ...o, stream: false });
     } catch {
-      // Timeout / network — key berikutnya.
+      // Timeout / network: coba key berikutnya.
       continue;
     }
     if (res.ok) {
@@ -107,7 +107,7 @@ export async function groqChatCompletion(o: GroqCallOptions): Promise<string> {
       return answer;
     }
     if (res.status === 400) {
-      // Payload salah (model tidak dikenal, dsb.) — rotasi tidak membantu.
+      // Payload salah (model tidak dikenal, dsb.): rotasi tidak membantu.
       await drain(res);
       throw new GroqError("FAILED", "Request ditolak Groq (400). Cek GROQ_MODEL di env.");
     }

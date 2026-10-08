@@ -79,7 +79,7 @@ export default async function DashboardPage() {
   const recent = templates.slice(0, 5);
   const maxDownloads = Math.max(1, ...templates.map((t) => t.downloads_count ?? 0));
 
-  // Aktivitas 14 hari terakhir (dari created_at — tanpa kolom baru).
+  // Aktivitas 14 hari terakhir (dari created_at, tanpa kolom baru).
   const days: { label: string; full: string; count: number }[] = [];
   for (let i = 13; i >= 0; i--) {
     const d = new Date();

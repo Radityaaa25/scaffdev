@@ -19,7 +19,7 @@ export function TemplatesTable({ initial }: { initial: Template[] }) {
   const [deleting, setDeleting] = useState<string | null>(null);
   const [toggling, setToggling] = useState<string | null>(null);
 
-  // Opsi framework mengikuti data yang ada — nilai baru dari form otomatis muncul.
+  // Opsi framework mengikuti data yang ada. Nilai baru dari form otomatis muncul.
   const frameworkOptions = useMemo(
     () => [...new Set(rows.map((r) => r.framework).filter(Boolean))].sort(),
     [rows]
@@ -50,7 +50,7 @@ export function TemplatesTable({ initial }: { initial: Template[] }) {
       toast.error(res.error || "Gagal mengubah status.");
       return;
     }
-    toast.success(next ? `"${t.nama}" live — tampil di web & CLI.` : `"${t.nama}" jadi draft — disembunyikan dari publik.`);
+    toast.success(next ? `"${t.nama}" live dan tampil di web & CLI.` : `"${t.nama}" jadi draft dan disembunyikan dari publik.`);
     router.refresh();
   }
 

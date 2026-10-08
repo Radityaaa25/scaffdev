@@ -27,7 +27,7 @@ export function validateReferensiInput(
   const out: Partial<NormalizedReferensiInput> = {};
   const label = opts.entity.toLowerCase();
 
-  // kode (immutable — diidentifikasi dari path pada PUT)
+  // kode (immutable: diidentifikasi dari path pada PUT)
   if ("kode" in b || !opts.partial) {
     const kode = typeof b.kode === "string" ? b.kode.trim().toLowerCase() : "";
     if (!kode) return { ok: false, error: `Field 'kode' ${label} wajib diisi.` };

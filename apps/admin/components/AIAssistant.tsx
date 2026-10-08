@@ -35,7 +35,7 @@ function writeStoredSession(id: string | null) {
     if (id) localStorage.setItem(STORAGE_KEY, id);
     else localStorage.removeItem(STORAGE_KEY);
   } catch {
-    /* abaikan — mode privat dsb. */
+    /* abaikan. Mode privat dsb. */
   }
 }
 
@@ -74,7 +74,7 @@ export function AIAssistant() {
       const payload = (await res.json()) as { sessions?: SessionItem[] };
       if (res.ok) setSessions(payload.sessions ?? []);
     } catch {
-      /* abaikan — bubble tetap bisa dipakai */
+      /* abaikan. Bubble tetap bisa dipakai */
     } finally {
       setLoadingList(false);
     }
@@ -298,7 +298,7 @@ export function AIAssistant() {
                 {messages.length === 0 && (
                   <div className="animate-admin-enter space-y-2">
                     <p className="text-sm text-zinc-400">
-                      Tanya apa saja soal katalog — mis. template terlaris atau status publish.
+                      Tanya apa saja soal katalog, mis. template terlaris atau status publish.
                     </p>
                     {SUGGESTIONS.map((s) => (
                       <button

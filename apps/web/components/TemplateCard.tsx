@@ -90,12 +90,12 @@ export function TemplateCard({ template }: TemplateCardProps) {
             </>
           ) : (
             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border bg-zinc-800/60 text-zinc-400 border-zinc-700/50">
-              Basic — tanpa integrasi tambahan
+                Basic: tanpa integrasi tambahan
             </span>
           )}
         </div>
 
-        {/* Builder live hint — hanya bila template tersedia di Builder */}
+          {/* Builder live hint: hanya bila template tersedia di Builder */}
         {!template.builder_hidden && (
         <p className="flex items-center gap-1.5 text-[11px] text-zinc-500 mb-4">
           <span className="inline-flex items-center px-1.5 py-px rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">

@@ -5,14 +5,14 @@ import { JsonLd } from "@/components/JsonLd";
 import { absoluteUrl, baseMetadata, breadcrumbJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = baseMetadata({
-  title: "Lapor Bug & Pengaduan — Scaffdev",
+  title: "Lapor Bug & Pengaduan | Scaffdev",
   description:
     "Laporkan bug, error, saran, atau pengaduan seputar Scaffdev. Tanpa login, langsung dibaca tim kami.",
   alternates: { canonical: absoluteUrl("/lapor") },
   openGraph: {
     type: "website",
     url: absoluteUrl("/lapor"),
-    title: "Lapor Bug & Pengaduan — Scaffdev",
+    title: "Lapor Bug & Pengaduan | Scaffdev",
     description: "Laporkan bug, saran, atau pengaduan seputar Scaffdev tanpa login.",
   },
 });
@@ -41,7 +41,7 @@ export default function LaporPage() {
           Lapor Bug & Pengaduan
         </h1>
         <p className="mt-3 text-sm sm:text-base text-zinc-400 leading-relaxed">
-          Temu bug, error, atau punya saran? Ceritakan di sini — tanpa perlu login.
+          Temu bug, error, atau punya saran? Ceritakan di sini, tanpa perlu login.
           Untuk panduan mandiri, cek{" "}
           <Link href="/docs/troubleshooting" className="text-[#A78BFA] hover:underline">Troubleshooting</Link>{" "}
           dulu. Atau email langsung ke{" "}

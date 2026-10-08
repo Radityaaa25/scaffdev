@@ -8,7 +8,7 @@ import { CheckIcon } from "@/components/DocsIcons";
  *
  * Dipisah dari `components/CommandBox.tsx` supaya styling responsif yang
  * dipakai landing (padding/font mengecil di mobile, `w-full`, `flex-1` pada
- * konten) tidak ikut mengubah tampilan halaman docs/builder/templates —
+ * konten) tidak ikut mengubah tampilan halaman docs/builder/templates:
  * komponen shared tetap persis seperti di `main`.
  */
 interface LandingCommandBoxProps {

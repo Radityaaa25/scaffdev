@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: TemplateDetailPageProps): Pro
   }
   const name = template.nama || template.slug;
   const frameworkLabel = template.framework === "laravel" ? "Laravel" : "Next.js";
-  const title = `${name} — Template ${frameworkLabel} Siap Pakai`;
+  const title = `${name}: Template ${frameworkLabel} Siap Pakai`;
   const description =
     template.deskripsi ||
     `Starter kit ${frameworkLabel} ${template.kategori} siap jalan dengan ${
@@ -125,7 +125,7 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
               </span>
             ) : (
               <span className="px-2.5 py-0.5 rounded-md text-xs font-medium bg-zinc-800/80 text-zinc-400 border border-zinc-700/50">
-                Basic — polosan siap generate
+                Basic: polosan siap generate
               </span>
             )}
           </div>
@@ -189,7 +189,7 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
       {/* Action Box: Pakai Template Ini */}
       <TemplateActionBox slug={template.slug} framework={template.framework} />
 
-      {/* Kombinasi custom via Builder (live) — preview + deep-link ?base=.
+      {/* Kombinasi custom via Builder (live): preview + deep-link ?base=.
           Disembunyikan bila template tidak tersedia di Builder. */}
       {!template.builder_hidden && (
         <IntegrationPickerComingSoon baseSlug={template.slug} />
@@ -264,7 +264,7 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
                       </span>
                       <ul className="list-disc list-inside space-y-0.5 font-mono text-[11px] text-zinc-400">
                         {item.daftar_env_var.map((v) => (
-                          <li key={v.key} className="truncate" title={`${v.key} — ${v.deskripsi}`}>
+                          <li key={v.key} className="truncate" title={`${v.key}: ${v.deskripsi}`}>
                             {v.key}
                           </li>
                         ))}
@@ -275,7 +275,7 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
               </div>
             ) : (
               <p className="text-xs text-zinc-500 italic leading-relaxed">
-                Template ini berjenis Basic tanpa konfigurasi integrasi database atau payment tambahan — generate langsung jalan.
+                Template ini berjenis Basic tanpa konfigurasi integrasi database atau payment tambahan. Generate langsung jalan.
               </p>
             )}
           </div>

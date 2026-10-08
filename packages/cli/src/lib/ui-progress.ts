@@ -8,7 +8,7 @@ import * as p from "@clack/prompts";
  * Git Bash (mintty/MSYSTEM) tidak menanganinya → tiap frame jadi baris baru
  * (ratusan baris `•/o/0` saat clone lama). Mode statis hanya mencetak 1 baris
  * saat selesai (+ pesan error lengkap bila gagal), sehingga output selalu rapi.
- * Override paksa: SCAFF_NO_ANIM=1 (statis) — berguna untuk log file/CI.
+ * Override paksa: SCAFF_NO_ANIM=1 (statis) yang berguna untuk log file/CI.
  */
 export interface Progress {
   /** Perbarui teks berjalan. No-op di mode statis (anti-spam). */

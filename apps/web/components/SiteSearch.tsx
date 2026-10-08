@@ -50,7 +50,7 @@ export function SiteSearch({ open, onClose }: { open: boolean; onClose: () => vo
           setDocs(d.docs ?? []);
         }
       } catch {
-        /* hasil kosong — tampilkan pesan tidak ketemu */
+              /* hasil kosong: tampilkan pesan tidak ketemu */
       }
     }
     load();
@@ -147,7 +147,7 @@ export function SiteSearch({ open, onClose }: { open: boolean; onClose: () => vo
         <ul className="max-h-[50vh] overflow-y-auto p-2">
           {results.length === 0 && (
             <li className="px-5 py-12 text-center text-sm text-zinc-500">
-              Tidak ketemu — coba kata kunci lain ✦
+                Tidak ketemu? Coba kata kunci lain ✦
             </li>
           )}
           {results.map((hit, i) => (

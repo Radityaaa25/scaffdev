@@ -33,8 +33,8 @@ export async function generateMetadata({ params }: DocArticlePageProps): Promise
   if (!doc) {
     return baseMetadata({ title: "Dokumentasi tidak ditemukan" });
   }
-  const title = `${doc.title} — Dokumentasi Scaffdev`;
-  const description = doc.description || `Panduan ${doc.title} — dokumentasi Scaffdev berbahasa Indonesia.`;
+  const title = `${doc.title} | Dokumentasi Scaffdev`;
+  const description = doc.description || `Panduan ${doc.title} dari dokumentasi Scaffdev berbahasa Indonesia.`;
   return baseMetadata({
     title,
     description,

@@ -49,7 +49,7 @@ export default async function NewTemplatePage() {
     <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
       <h1 className="animate-admin-enter text-2xl font-extrabold tracking-tight text-white">Daftarkan Template Baru</h1>
       <p className="animate-admin-enter mb-6 mt-1 text-sm text-zinc-400" style={{ animationDelay: "60ms" }}>
-        Tempel link repo GitHub publik milik teman — centang publish agar langsung live.
+        Tempel link repo GitHub publik milik teman. Centang publish agar langsung live.
       </p>
       <TemplateForm mode="new" integrasiOptions={integrasiOptions} frameworkOptions={frameworkOptions} kategoriOptions={kategoriOptions} kategoriList={kategoriList} />
     </main>

@@ -29,7 +29,7 @@ export function validateLaporanInput(
   }
   const b = body as Record<string, unknown>;
 
-  // Honeypot anti-spam: field tak terlihat "website" — bila diisi bot, terima diam-diam tanpa simpan.
+  // Honeypot anti-spam: field tak terlihat "website": bila diisi bot, terima diam-diam tanpa simpan.
   if (typeof b.website === "string" && b.website.trim() !== "") {
     return {
       ok: true,
@@ -51,7 +51,7 @@ export function validateLaporanInput(
   const kontak = typeof b.kontak === "string" ? b.kontak.trim() : "";
   if (kontak.length > MAX_KONTAK) return { ok: false, error: "Field 'kontak' maksimal 200 karakter." };
   // URL gambar bukti: hanya https (hasil upload /api/laporan/gambar).
-  // Tidak divalidasi isi file di sini — file-nya sudah divalidasi magic bytes saat upload.
+  // Tidak divalidasi isi file di sini. File-nya sudah divalidasi magic bytes saat upload.
   const gambarUrl = typeof b.gambar_url === "string" ? b.gambar_url.trim() : "";
   if (gambarUrl && (gambarUrl.length > MAX_GAMBAR_URL || !HTTPS_URL_RE.test(gambarUrl))) {
     return { ok: false, error: "Field 'gambar_url' harus URL https yang valid (upload via form)." };

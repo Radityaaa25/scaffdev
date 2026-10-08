@@ -19,7 +19,7 @@ export default async function PengaturanPage() {
     );
   }
 
-  // Hanya status terisi/tidak — NILAI TIDAK PERNAH ditampilkan.
+  // Hanya status terisi/tidak. NILAI TIDAK PERNAH ditampilkan.
   const envs = [
     { name: "NEXT_PUBLIC_SUPABASE_URL", ...envStatus(process.env.NEXT_PUBLIC_SUPABASE_URL) },
     { name: "NEXT_PUBLIC_SUPABASE_ANON_KEY", ...envStatus(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) },
@@ -45,7 +45,7 @@ export default async function PengaturanPage() {
 
       <section className="glass-panel animate-admin-enter rounded-2xl p-5 sm:p-6" style={{ animationDelay: "80ms" }}>
         <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-400">Environment</h2>
-        <p className="mt-1 text-xs text-zinc-500">Hanya status — nilai secret tidak pernah ditampilkan di sini.</p>
+        <p className="mt-1 text-xs text-zinc-500">Hanya status. Nilai secret tidak pernah ditampilkan di sini.</p>
         <ul className="mt-4 space-y-2.5">
           {envs.map((e) => (
             <li key={e.name} className="flex items-center justify-between gap-3 rounded-xl border border-white/5 bg-white/[0.02] px-4 py-2.5">

@@ -43,7 +43,7 @@ export async function apiFetch<T>(
     const { data } = await supabase.auth.getSession();
     accessToken = data.session?.access_token ?? null;
   } catch {
-    /* tanpa session — server akan menjawab 401 */
+    /* tanpa session. Server akan menjawab 401 */
   }
 
   let res: Response;

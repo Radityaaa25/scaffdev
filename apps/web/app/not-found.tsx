@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 /**
- * Halaman 404 global — dipakai setiap `notFound()` (mis. slug template/docs
+ * Halaman 404 global: dipakai setiap `notFound()` (mis. slug template/docs
  * tidak ada) dan URL nyasar. Render di dalam layout utama (navbar + footer
  * tetap tampil). Jangan tambahkan logika fetch di sini.
  */
 export const metadata: Metadata = {
-  title: "404 — Halaman tidak ditemukan",
+  title: "404: Halaman tidak ditemukan",
   description: "Halaman yang kamu cari tidak ada atau sudah dipindah.",
   robots: { index: false, follow: true },
 };
@@ -33,7 +33,7 @@ export default function NotFound() {
         ketik URL, atau template-nya sudah di-unpublish.
       </p>
 
-      {/* Kartu terminal — motif khas Scaffdev, murni dekoratif */}
+          {/* Kartu terminal: motif khas Scaffdev, murni dekoratif */}
       <div
         aria-hidden="true"
         className="mt-8 w-full max-w-md overflow-hidden rounded-2xl border border-[#3F3F4C] bg-[#1B1B21] text-left shadow-2xl shadow-black/50"
@@ -42,7 +42,7 @@ export default function NotFound() {
           <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F57]" />
           <span className="h-2.5 w-2.5 rounded-full bg-[#FEBC2E]" />
           <span className="h-2.5 w-2.5 rounded-full bg-[#28C840]" />
-          <span className="ml-2 font-mono text-[11px] text-zinc-600">scaffdev — zsh</span>
+          <span className="ml-2 font-mono text-[11px] text-zinc-600">scaffdev · zsh</span>
         </div>
         <div className="space-y-1.5 px-4 py-3.5 font-mono text-xs leading-relaxed sm:text-[13px]">
           <p className="text-zinc-500">
