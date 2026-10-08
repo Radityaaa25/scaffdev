@@ -81,7 +81,9 @@ function readCString(buf: Buffer, offset: number, length: number): string {
  * Ekstrak file yang cocok `want()` dari tarball. Batasan pengaman:
  * tiap file maks `maxFileBytes`, total file maks `maxFiles`. Direktori,
  * symlink, dan entri non-reguler dilewati. Prefix root tarball
- * ("owner-repo-sha/") dikupas agar path relatif terhadap root repo.
+ * ("owner-repo-sha/", "./", dsb — bentuknya beda antar hosting)
+ * dihitung dari direktori awalan bersama SEMUA entri, bukan dari
+ * entri pertama (rapuh bila arsip diawali header pax/metadata).
  */
 export function extractTarFiles(
   tar: Buffer,
@@ -89,10 +91,15 @@ export function extractTarFiles(
   maxFileBytes = 512 * 1024,
   maxFiles = 100
 ): TarEntry[] {
-  const out: TarEntry[] = [];
+  interface RawEntry {
+    name: string;
+    size: number;
+    dataStart: number;
+    isFile: boolean;
+  }
+  const raws: RawEntry[] = [];
   let offset = 0;
-  let rootPrefix: string | null = null;
-  while (offset + 512 <= tar.length && out.length < maxFiles) {
+  while (offset + 512 <= tar.length) {
     // Blok nol ganda = akhir arsip.
     if (tar.subarray(offset, offset + 512).every((b) => b === 0)) break;
     const name = readCString(tar, offset, 100);
@@ -101,25 +108,37 @@ export function extractTarFiles(
     const prefix = readCString(tar, offset + 345, 155);
     if (!name || Number.isNaN(size) || size < 0) break;
     const fullName = prefix ? `${prefix}/${name}` : name;
-    // Tentukan prefix root dari entri pertama, kupas untuk semua entri.
-    if (rootPrefix === null) {
-      const slash = fullName.indexOf("/");
-      rootPrefix = slash === -1 ? "" : fullName.slice(0, slash + 1);
-    }
-    const rel = rootPrefix && fullName.startsWith(rootPrefix)
-      ? fullName.slice(rootPrefix.length)
-      : fullName;
     const dataStart = offset + 512;
     const dataEnd = dataStart + size;
     if (dataEnd > tar.length) break;
     const isFile = typeflag === "0" || typeflag === "\0";
-    if (isFile && rel && want(rel)) {
-      if (size <= maxFileBytes) {
-        out.push({ name: rel, data: tar.subarray(dataStart, dataEnd) });
-      }
-    }
+    const knownSkip = typeflag === "5" || typeflag === "x" || typeflag === "g";
+    if (!isFile && !knownSkip) break; // tipe tak dikenal: berhenti, jangan parse buta
+    if (!name) break;
+    raws.push({ name: fullName, size, dataStart, isFile });
     // Maju ke header berikutnya (data dibulatkan ke kelipatan 512).
     offset = dataStart + Math.ceil(size / 512) * 512;
+  }
+  // Normalisasi "./x" -> "x", lalu kupas direktori awalan bersama.
+  // Hanya entri ber-slash yang dihitung (header pax_global_header diabaikan).
+  const norm = raws.map((r) => (r.name.startsWith("./") ? r.name.slice(2) : r.name));
+  const slashed = norm.filter((n) => n.includes("/"));
+  let common = "";
+  if (slashed.length > 0) {
+    const first = slashed[0] ?? "";
+    const candidate = first.slice(0, first.indexOf("/") + 1);
+    if (candidate && slashed.every((n) => n.startsWith(candidate))) common = candidate;
+  }
+  const out: TarEntry[] = [];
+  for (let i = 0; i < raws.length && out.length < maxFiles; i++) {
+    const r = raws[i];
+    if (!r || !r.isFile) continue;
+    const rawName = norm[i] ?? "";
+    const rel = common && rawName.startsWith(common) ? rawName.slice(common.length) : rawName;
+    if (!rel || !want(rel)) continue;
+    if (r.size <= maxFileBytes) {
+      out.push({ name: rel, data: tar.subarray(r.dataStart, r.dataStart + r.size) });
+    }
   }
   return out;
 }
@@ -138,16 +157,20 @@ const TARBALL_MAX_BYTES = 25 * 1024 * 1024;
 const FETCH_TIMEOUT_MS = 30000;
 
 /**
- * Unduh tarball branch default repo. Urutan:
- * 1. Info repo via GitHub API (1 call, dapat default_branch) — pakai token
- *    bila GITHUB_TOKEN ada (kuota lebih besar + siap untuk repo privat).
- * 2. Arsip via codeload (tidak memakan kuota REST API).
+ * Unduh tarball branch/ref repo. Tanpa ref: pakai default branch (1 call API).
+ * Dengan ref: langsung ke codeload (tanpa call API) — dipakai QA fixture
+ * per-branch dan kasus ref eksplisit lainnya.
  */
 export async function downloadRepoTarball(
   owner: string,
-  repo: string
+  repo: string,
+  ref?: string
 ): Promise<{ tar: Buffer; ref: string }> {
   const token = process.env.GITHUB_TOKEN?.trim();
+  // Ref eksplisit (mis. branch fixture): langsung ke codeload tanpa call API.
+  if (ref) {
+    return { tar: await fetchTarball(owner, repo, ref, token), ref };
+  }
   const headers: Record<string, string> = {
     Accept: "application/vnd.github+json",
     "User-Agent": "scaffdev-cli",
@@ -177,7 +200,17 @@ export async function downloadRepoTarball(
     throw new Error(`GitHub API mengembalikan HTTP ${infoRes.status}. Coba lagi nanti.`);
   }
   const info = (await infoRes.json()) as { default_branch?: string };
-  const ref = info.default_branch || "main";
+  const resolvedRef = info.default_branch || "main";
+  return { tar: await fetchTarball(owner, repo, resolvedRef, token), ref: resolvedRef };
+}
+
+/** Unduh + gunzip arsip codeload untuk ref tertentu (tanpa API call). */
+async function fetchTarball(
+  owner: string,
+  repo: string,
+  ref: string,
+  token?: string
+): Promise<Buffer> {
   const archiveUrl = `https://codeload.github.com/${owner}/${repo}/tar.gz/${ref}`;
   let arcRes: Response;
   try {
@@ -206,7 +239,7 @@ export async function downloadRepoTarball(
   } catch {
     throw new Error("Arsip bukan gzip valid. Audit dibatalkan.");
   }
-  return { tar, ref };
+  return tar;
 }
 
 // ---------------------------------------------------------------------------
@@ -489,7 +522,7 @@ export interface RemoteAuditResult {
   remoteInspectable: boolean;
 }
 
-export async function auditRemoteRepo(repoUrl: string): Promise<RemoteAuditResult> {
+export async function auditRemoteRepo(repoUrl: string, opts?: { ref?: string }): Promise<RemoteAuditResult> {
   const parsed = parseGitHubRepo(repoUrl);
   const label = parsed ? `${parsed.owner}/${parsed.repo}` : repoUrl;
   if (!parsed) {
@@ -505,7 +538,7 @@ export async function auditRemoteRepo(repoUrl: string): Promise<RemoteAuditResul
       },
     };
   }
-  const { tar, ref } = await downloadRepoTarball(parsed.owner, parsed.repo);
+  const { tar, ref } = await downloadRepoTarball(parsed.owner, parsed.repo, opts?.ref);
   const entries = extractTarFiles(tar, wantAuditFile);
   const findings = auditExtractedFiles(entries);
   const report: AuditReport = {

@@ -284,7 +284,45 @@ ok("skip-src", !wantAuditFile("src/index.ts"));
   ]), "CRITICAL");
 }
 
-// ---------- 10. inject conflict modes (repo git lokal, tanpa network) ----------
+{
+  // Arsip codeload asli diawali header pax + root "repo-ref/": prefix harus
+  // dikupas dari direktori bersama, bukan dari entri pertama.
+  // Header pax asli SELALU punya size valid — tiru itu (bukan header kosong).
+  const paxBody = Buffer.from("25 path=./repo-x/package.json\n");
+  const head = Buffer.alloc(512, 0);
+  Buffer.from("pax_global_header").copy(head, 0);
+  head.write(paxBody.length.toString(8).padStart(11, "0") + "\0", 124);
+  head.write("x", 156);
+  head.fill(0x20, 148, 156);
+  let paxSum = 0;
+  for (const b of head) paxSum += b;
+  Buffer.from(paxSum.toString(8).padStart(6, "0") + "\0 ").copy(head, 148);
+  const paxPad = (512 - (paxBody.length % 512)) % 512;
+  const parts = [head, paxBody, Buffer.alloc(paxPad)];
+  for (const [n, c] of Object.entries({
+    "repo-x/package.json": "{}",
+    "repo-x/README.md": "# hi",
+  })) {
+    const db = Buffer.from(c);
+    const hb = Buffer.alloc(512, 0);
+    Buffer.from(n).copy(hb, 0);
+    hb.write("0000777\0", 100);
+    hb.write("0000000\0", 108);
+    hb.write("0000000\0", 116);
+    hb.write(db.length.toString(8).padStart(11, "0") + "\0", 124);
+    hb.write("0", 156);
+    hb.fill(0x20, 148, 156);
+    let sum = 0;
+    for (const b of hb) sum += b;
+    Buffer.from(sum.toString(8).padStart(6, "0") + "\0 ").copy(hb, 148);
+    const pad = (512 - (db.length % 512)) % 512;
+    parts.push(hb, db, Buffer.alloc(pad));
+  }
+  parts.push(Buffer.alloc(1024));
+  const tar = Buffer.concat(parts);
+  const got = extractTarFiles(tar, () => true).map((e) => e.name);
+  eq("extract-kupas-root-aneh", got, ["package.json", "README.md"]);
+}
 
 function makeModuleRepo(): string {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "scaff-modrepo-"));

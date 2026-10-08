@@ -54,6 +54,7 @@ Penggunaan:
                                                           Tambah modul integrasi (Builder)
   npx scaffdev add <kode>                                 Suntik 1 modul ke project yang sedang dibuka
   scaffdev validate-module <path-atau-repo>                Validasi manifest modul/template
+  scaffdev validate-module <repo-url> --ref=<branch>     Validasi + audit branch tertentu
 
 Opsi:
   --template=<slug>  Template yang dipakai (wajib pakai tanda =)
@@ -79,10 +80,15 @@ Setiap clone didahului security audit (jawab No bila ingin lewati, butuh CLI 0.3
   if (args[0] === "validate-module") {
     const target = args[1];
     if (!target) {
-      console.error("Penggunaan: scaffdev validate-module <path-folder-atau-repo-url>");
+      console.error("Penggunaan: scaffdev validate-module <path-folder-atau-repo-url> [--ref=<branch>]");
       process.exit(1);
     }
-    const result = await validateModuleTarget(target);
+    const refArg = args.find((a) => a.startsWith("--ref="));
+    const refIdx = args.indexOf("--ref");
+    const ref =
+      refArg?.slice("--ref=".length) ||
+      (refIdx !== -1 && args[refIdx + 1] ? args[refIdx + 1] : undefined);
+    const result = await validateModuleTarget(target, ref ? { ref } : undefined);
     for (const line of result.report) console.log(line);
     process.exit(result.ok ? 0 : 1);
     return;

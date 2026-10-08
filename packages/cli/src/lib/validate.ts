@@ -7,7 +7,10 @@ import { parseIntegrationManifest, parseTemplateManifest, filesForFramework } fr
  * Validasi statis manifest + konsistensi file. Dipakai pembuat modul/template
  * SEBELUM mendaftarkan repo ke admin. Keluar non-nol bila ada masalah.
  */
-export async function validateModuleTarget(target: string): Promise<{ ok: boolean; report: string[] }> {
+export async function validateModuleTarget(
+  target: string,
+  opts?: { ref?: string }
+): Promise<{ ok: boolean; report: string[] }> {
   const report: string[] = [];
   let dir = target;
   let isTemp = false;
@@ -24,7 +27,7 @@ export async function validateModuleTarget(target: string): Promise<{ ok: boolea
     // Laporan audit read-only (non-interaktif): tidak mengubah verdict validasi.
     try {
       const { auditRemoteRepo, renderAuditReport } = await import("./security-audit");
-      const { report: auditReport } = await auditRemoteRepo(target);
+      const { report: auditReport } = await auditRemoteRepo(target, opts?.ref ? { ref: opts.ref } : undefined);
       report.push("— Laporan security audit (read-only, tidak memengaruhi verdict) —");
       report.push(...renderAuditReport(auditReport));
     } catch (err) {
