@@ -1,5 +1,12 @@
 # Changelog CLI Scaffdev
 
+## 0.7.0
+
+- Watermark level kode saat generate (wajib lisensi): baris kredit di akhir
+  `README.md`, section Atribusi di akhir `SETUP.md`, stempel generator di
+  `.scaff/meta.json`. Idempoten (aman generate ulang), visual tidak disentuh.
+- Uji `test:watermark`: 5 asersi (fresh, append, idempoten, merge meta, meta rusak).
+
 ## 0.6.0
 
 - Template asing (tanpa `scaff.template.json`): heuristik jejak modul/musuhnya

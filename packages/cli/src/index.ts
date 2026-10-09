@@ -8,6 +8,7 @@ import { fetchTemplatesFromApi, fetchTemplateDetailFromApi } from "./lib/api-cli
 import { checkPrerequisites } from "./lib/prerequisite-check";
 import { cloneRepository } from "./lib/git";
 import { generateEnvExample, generateSetupDoc } from "./lib/env-generator";
+import { applyWatermark } from "./lib/watermark";
 import { runInteractivePrompt, runModeSelect, pickKategori, pickFramework, pickFolder, runBuilderBaseSelect, runBuilderIntegrationSelect } from "./lib/prompts";
 import { fetchIntegrasiIndex } from "./lib/modules";
 import { injectModule, cleanupModuleDir, mergeNpmDependencies, mergeComposerDependencies } from "./lib/injector";
@@ -592,6 +593,20 @@ Setiap clone didahului security audit (jawab No bila ingin lewati, butuh CLI 0.3
     const error = err as Error;
     genProgress.stop("Gagal men-generate file konfigurasi.");
     p.log.warn(`Peringatan: ${error.message}`);
+  }
+
+  // Watermark level kode (wajib lisensi): README + SETUP + .scaff/meta.json.
+  // Visual tidak disentuh. Idempoten bila generate dijalankan ulang.
+  try {
+    const wm = applyWatermark(targetDir, {
+      cliVersion: cliVersion(),
+      templateSlug: templateDetail.slug,
+      templateName: templateDetail.nama || templateDetail.slug,
+      framework: templateDetail.framework,
+    });
+    p.log.info(`Atribusi Scaffdev ditulis (README: ${wm.readme}, SETUP: ${wm.setup}, meta.json).`);
+  } catch (err: unknown) {
+    p.log.warn(`Peringatan: watermark gagal ditulis (${(err as Error).message}). Lanjutkan manual sesuai docs/lisensi.`);
   }
 
   // Langkah lanjutan adaptif: install yang sudah jalan tidak ditampilkan lagi.
