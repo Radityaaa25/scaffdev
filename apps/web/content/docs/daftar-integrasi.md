@@ -289,6 +289,177 @@ Signature transaksi dihitung server-side memakai API key + merchant code.
 
 ---
 
+## 7. Ongkos Kirim: RajaOngkir
+
+[RajaOngkir](https://rajaongkir.com) adalah API cek ongkos kirim Indonesia yang merangkum tarif banyak ekspedisi (JNE, POS, TIKI, J&T, SiCepat, dan lainnya) dalam satu panggilan. Cocok untuk halaman checkout yang perlu pilihan kurir + estimasi biaya real-time.
+
+### Kapan memilih RajaOngkir
+
+- Checkout butuh pilihan kurir dan ongkir otomatis berdasarkan kota asal-tujuan + berat.
+- Kamu tidak mau integrasi satu per satu API tiap ekspedisi.
+
+### Kapan TIDAK memilih RajaOngkir
+
+- Toko digital tanpa pengiriman fisik (tidak ada barang yang dikirim).
+- Ongkir flat manual sudah cukup untuk model bisnismu (mis. free ongkir semua).
+
+### Environment Variable yang Digunakan
+
+```bash
+RAJAONGKIR_API_KEY=your_api_key
+```
+
+Kunci rahasia, dipakai dari server. **Tanpa prefix `NEXT_PUBLIC_`**.
+
+### Cara mendapatkan key langkah demi langkah
+
+1. Daftar di [rajaongkir.com](https://rajaongkir.com), pilih paket (ada tier starter gratis dengan kuota harian).
+2. Buka dashboard, salin **API Key**.
+3. Tempel ke env, restart dev server.
+4. Verifikasi: hitung ongkir kota-ke-kota dengan berat contoh → pastikan daftar layanan + tarif muncul.
+
+### Cara kerja di template Scaff
+
+- Template memanggil endpoint cost dengan `origin`, `destination`, `weight`, dan `courier`. Daftar kota di-cache agar tidak menghantam API setiap render.
+- Perhatikan batas kuota harian paketmu; cache hasil kalkulasi yang sering diulang.
+
+### Masalah yang sering terjadi
+
+- **Kota tidak ditemukan**: ID kota asal/tujuan salah atau memakai nama bukan ID. Selalu pakai ID dari endpoint pencarian kota.
+- **Error 429 / kuota habis**: paket starter dibatasi harian. Tambah cache atau naik tier.
+- **Berat nol**: berat dalam gram wajib lebih dari 0, kalau tidak API menolak.
+
+---
+
+## 8. Notifikasi WhatsApp: Fonnte
+
+[Fonnte](https://fonnte.com) adalah layanan pengiriman pesan WhatsApp via API: notifikasi order, OTP, dan pengingat pembayaran tanpa perlu nomor WhatsApp Business API resmi yang prosesnya berat.
+
+### Kapan memilih Fonnte
+
+- Butuh notifikasi WA otomatis (order masuk, pembayaran diterima, pengingat).
+- Ingin OTP via WA tanpa integrasi WhatsApp Business API yang kompleks.
+
+### Kapan TIDAK memilih Fonnte
+
+- Notifikasi email saja sudah cukup untuk use case-mu.
+- Volume pesan sangat kecil dan manual masih memungkinkan.
+
+### Environment Variable yang Digunakan
+
+```bash
+FONNTE_TOKEN=your_token
+```
+
+Token rahasia, dipakai dari server. **Tanpa prefix `NEXT_PUBLIC_`**.
+
+### Cara mendapatkan token langkah demi langkah
+
+1. Daftar di [fonnte.com](https://fonnte.com), hubungkan nomor WhatsApp via scan QR di dashboard.
+2. Salin **token** dari dashboard.
+3. Tempel ke env, restart dev server.
+4. Verifikasi: kirim pesan test ke nomor sendiri, pastikan masuk.
+
+### Cara kerja di template Scaff
+
+- Template memanggil API Fonnte server-side setelah event penting (order dibuat, pembayaran sukses). Nomor tujuan diambil dari data order/customer, bukan di-hardcode.
+- Jangan panggil API Fonnte dari browser (token akan bocor ke publik).
+
+### Masalah yang sering terjadi
+
+- **Pesan tidak masuk**: nomor belum terhubung (scan ulang QR) atau token salah/expired.
+- **Nomor tujuan invalid**: gunakan format internasional tanpa `+` (contoh `62812...`).
+- **Kena limit**: paket punya batas pesan harian; antrekan/prioritaskan pesan penting.
+
+---
+
+## 9. Upload Media: Cloudinary
+
+[Cloudinary](https://cloudinary.com) adalah layanan hosting dan transformasi gambar/video: upload file, dapat URL CDN, plus resize/crop otomatis via parameter URL.
+
+### Kapan memilih Cloudinary
+
+- Template butuh upload gambar (foto produk, bukti pembayaran, avatar).
+- Kamu ingin thumbnail otomatis tanpa proses manual (tambah parameter transformasi di URL).
+
+### Kapan TIDAK memilih Cloudinary
+
+- Semua gambar statis dan sedikit: cukup taruh di folder `public/`.
+- Kamu sudah punya object storage lain (S3, dsb.) dan alur upload sendiri.
+
+### Environment Variable yang Digunakan
+
+```bash
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
+
+Ketiganya rahasia, dipakai dari server untuk menandatangani upload. **Tanpa prefix `NEXT_PUBLIC_`**.
+
+### Cara mendapatkan key langkah demi langkah
+
+1. Daftar gratis di [cloudinary.com](https://cloudinary.com), buka dashboard.
+2. Salin **Cloud name**, **API Key**, dan **API Secret** dari halaman utama dashboard.
+3. Tempel ke env, restart dev server.
+4. Verifikasi: upload satu gambar test via template, pastikan URL Cloudinary kembali dan gambar tampil.
+
+### Cara kerja di template Scaff
+
+- Browser meminta signature ke API route template, lalu upload langsung ke Cloudinary (file tidak lewat server-mu sehingga hemat bandwidth).
+- URL hasil upload yang disimpan di database; URL lama tetap valid walau modul dicopot.
+
+### Masalah yang sering terjadi
+
+- **Upload ditolak (401)**: signature salah, biasanya secret keliru atau timestamp kedaluwarsa. Cek ulang ketiga nilai env.
+- **Preset unsigned tidak ketemu**: kalau pakai unsigned upload, nama preset harus sama persis dengan di dashboard (case-sensitive).
+- **Gambar tidak tampil**: URL tersimpan tidak lengkap atau transformasi salah ketik. Buka URL langsung di browser untuk memastikan file-nya ada.
+
+---
+
+## 10. Email Transaksional: Resend
+
+[Resend](https://resend.com) adalah API pengiriman email untuk developer: email order, reset password, dan notifikasi, dengan API sederhana dan dashboard analitik.
+
+### Kapan memilih Resend
+
+- Butuh email transaksional (konfirmasi order, reset password, invoice).
+- Ingin setup cepat tanpa mengelola SMTP server sendiri.
+
+### Kapan TIDAK memilih Resend
+
+- Hanya butuh form kontak sederhana: layanan form pihak ketiga atau provider email biasa cukup.
+- Volume email besar dengan template kompleks yang sudah jalan di provider lain.
+
+### Environment Variable yang Digunakan
+
+```bash
+RESEND_API_KEY=re_your_key
+RESEND_FROM_EMAIL=noreply@tokomu.com
+```
+
+Kunci rahasia, dipakai dari server. **Tanpa prefix `NEXT_PUBLIC_`**. Alamat pengirim harus dari domain yang sudah diverifikasi.
+
+### Cara mendapatkan key langkah demi langkah
+
+1. Daftar di [resend.com](https://resend.com), verifikasi domain pengirim (tambah DNS record sesuai instruksi).
+2. Buat **API Key** di dashboard, salin nilainya (diawali `re_`).
+3. Tempel ke env beserta alamat from yang domainnya sudah terverifikasi, restart dev server.
+4. Verifikasi: kirim email test ke alamat sendiri, pastikan masuk inbox (cek spam bila tidak ada).
+
+### Cara kerja di template Scaff
+
+- Template memanggil API Resend server-side setelah event penting (order dibuat, user register). Template HTML email adalah milik template, bukan modul.
+- Untuk development, Resend hanya mengizinkan kirim ke email akun sendiri sampai domain terverifikasi.
+
+### Masalah yang sering terjadi
+
+- **Email tidak terkirim (403)**: domain pengirim belum terverifikasi, atau kirim ke alamat luar saat masih mode test.
+- **Masuk spam**: wajar untuk domain baru; lengkapi SPF/DKIM sesuai panduan Resend.
+- **API key bocor di client**: key hanya dipakai di server. Kalau tidak sengaja ter-commit, revoke di dashboard dan buat baru.
+
+---
+
 ## Cara Pengisian Environment Variable
 
 Scaff **tidak pernah** membuatkan akun atau menagih biaya langganan layanan di atas. Scaff secara otomatis membuat dua file saat generate:

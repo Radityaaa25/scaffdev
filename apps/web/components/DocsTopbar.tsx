@@ -10,6 +10,8 @@ export interface SpotlightDoc {
   title: string;
   description: string;
   section: string;
+  /** Teks isi (opsional): bila ada, spotlight ikut full-text dengan ranking. */
+  text?: string;
 }
 
 /** Topbar Docs dengan brand, search spotlight (Cmd/Ctrl+K), dan GitHub link */
@@ -110,7 +112,18 @@ function Spotlight({ docs, onClose }: { docs: SpotlightDoc[]; onClose: () => voi
   const results = useMemo(() => {
     const needle = q.trim().toLowerCase();
     const list = needle
-      ? docs.filter((d) => `${d.title} ${d.description} ${d.section}`.toLowerCase().includes(needle))
+      ? docs
+          .map((d) => {
+            let score = 0;
+            if (d.title.toLowerCase().includes(needle)) score += 3;
+            if (d.description.toLowerCase().includes(needle)) score += 2;
+            if (d.section.toLowerCase().includes(needle)) score += 1;
+            if (d.text && d.text.toLowerCase().includes(needle)) score += 1;
+            return { d, score };
+          })
+          .filter((x) => x.score > 0)
+          .sort((a, b) => b.score - a.score)
+          .map((x) => x.d)
       : docs;
     return list.slice(0, 8);
   }, [docs, q]);

@@ -100,3 +100,9 @@ untuk template tersebut.
 **Apakah saya perlu menyiapkan sesuatu?**
 Tidak. Builder memakai akun dan alur yang sama, tidak ada migrasi atau
 langkah khusus. Pastikan CLI-mu versi `0.2.0+` (`npx scaffdev@latest --version`).
+
+**Bisakah meracik lewat terminal saja?**
+Bisa. Pilih mode **Builder** saat menjalankan `npx scaffdev@latest` tanpa
+argumen (butuh CLI `0.3.0+`), atau tambah modul ke project yang sudah ada
+dengan `scaffdev add <kode>` (butuh CLI `0.4.0+`). Detail ada di
+[Cara Install & Penggunaan CLI](/docs/cara-install).

@@ -9,6 +9,8 @@ export interface DocsSearchItem {
   title: string;
   description: string;
   section: string;
+  /** Teks isi (opsional): bila ada, pencarian jadi full-text dengan ranking. */
+  text?: string;
 }
 
 const SECTION_ICONS: Record<string, (props: { className?: string }) => React.ReactElement> = {
@@ -22,11 +24,21 @@ export function DocsSearch({ docs }: { docs: DocsSearchItem[] }) {
 
   const groups = useMemo(() => {
     const needle = q.trim().toLowerCase();
-    const filtered = needle
-      ? docs.filter((d) => `${d.title} ${d.description}`.toLowerCase().includes(needle))
+    const scored = needle
+      ? docs
+          .map((d) => {
+            let score = 0;
+            if (d.title.toLowerCase().includes(needle)) score += 3;
+            if (d.description.toLowerCase().includes(needle)) score += 2;
+            if (d.text && d.text.toLowerCase().includes(needle)) score += 1;
+            return { d, score };
+          })
+          .filter((x) => x.score > 0)
+          .sort((a, b) => b.score - a.score)
+          .map((x) => x.d)
       : docs;
     const out: { section: string; items: DocsSearchItem[] }[] = [];
-    for (const d of filtered) {
+    for (const d of scored) {
       const g = out.find((x) => x.section === d.section);
       if (g) g.items.push(d);
       else out.push({ section: d.section, items: [d] });

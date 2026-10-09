@@ -121,3 +121,39 @@ Pola ini disengaja: project-mu adalah milikmu penuh setelah generate, tidak akan
 ### 12. Apakah saya perlu kartu kredit untuk mencoba payment (Midtrans / Xendit)?
 
 **Tidak, untuk mode sandbox.** Pendaftaran sandbox dan test key gratis tanpa kartu kredit. Kamu bisa mensimulasikan pembayaran penuh (buat transaksi → bayar dengan metode test → verifikasi webhook) murni dengan akun test. Kartu kredit / verifikasi usaha baru dibutuhkan saat aktivasi **production** (go-live), dan itu pun urusanmu langsung dengan Midtrans / Xendit, bukan dengan Scaffdev.
+
+---
+
+### 13. Di bawah lisensi apa Scaffdev dirilis?
+
+Scaffdev itu **source-available** di bawah **PolyForm Shield 1.0.0**, bukan MIT. Kamu boleh melihat, memakai, mengubah, membagikan, dan berkontribusi. Yang tidak boleh tanpa perjanjian komersial: menyediakan produk atau layanan yang **bersaing** dengan Scaffdev. Detail lengkap ada di halaman [Lisensi](/docs/lisensi) dan file `LICENSE.md` di repo.
+
+---
+
+### 14. Apakah template yang saya generate aman?
+
+CLI menjalankan **security audit** sebelum clone (dengan persetujuanmu): memeriksa lifecycle script, pola download-lalu-eksekusi, obfuscation, workflow CI, dan config git. Temuan HIGH/CRITICAL memblokir instalasi secara default. Ini static analysis, bukan jaminan mutlak — baca detailnya di [Audit Keamanan Repository](/docs/audit-keamanan).
+
+---
+
+### 15. Bagaimana cara menambah integrasi ke project yang sudah ada?
+
+Tanpa generate ulang: jalankan `scaffdev add <kode>` di dalam folder project (butuh CLI 0.4.0+). CLI mendeteksi framework project-mu, mengaudit modul, menampilkan rencana instalasi, dan meminta konfirmasi sebelum menulis file apa pun. Kalau ada file yang tabrakan, kamu bisa Batal, Lewati, atau Timpa (file lama dibackup dulu ke `.scaff/trash/`).
+
+---
+
+### 16. Bagaimana cara update CLI ke versi terbaru?
+
+Kalau pakai `npx scaffdev@latest`, kamu selalu dapat versi terbaru otomatis. Kalau install global (`npm install -g scaffdev`), update manual:
+
+```bash
+npm update -g scaffdev
+```
+
+Cek versi yang sedang dipakai:
+
+```bash
+npx scaffdev@latest --version
+```
+
+Riwayat perubahan per versi ada di [CHANGELOG](https://github.com/Radityaaa25/scaffdev/blob/main/packages/cli/CHANGELOG.md) repo.

@@ -17,6 +17,62 @@ export interface DocMeta {
   section: string;
 }
 
+export interface DocSearchEntry {
+  slug: string;
+  title: string;
+  description: string;
+  section: string;
+  /** Teks polos isi dokumen (tanpa sintaks markdown), untuk full-text search. */
+  text: string;
+}
+
+/** Strip sintaks markdown jadi teks polos. Isi code tetap dipertahankan (bisa dicari). */
+function stripMarkdown(src: string): string {
+  return src
+    .replace(/```[\s\S]*?```/g, (m) =>
+      m.replace(/```\w*\n?/g, " ").replace(/```/g, " ")
+    )
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/^[>\s]*[-*+]\s+/gm, "")
+    .replace(/^[>\s]*\d+[.)]\s+/gm, "")
+    .replace(/[*_~`|]/g, "")
+    .replace(/^#{1,6}$/gm, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+/**
+ * Indeks pencarian full-text: judul + deskripsi + isi polos.
+ * Dipakai DocsSearch (dan spotlight topbar). Dibangun sekali saat build/ISR.
+ */
+export function getDocsSearchIndex(): DocSearchEntry[] {
+  if (!fs.existsSync(DOCS_DIR)) {
+    return [];
+  }
+
+  const files = fs.readdirSync(DOCS_DIR).filter((f) => f.endsWith(".md"));
+
+  return files.map((file) => {
+    const slug = file.replace(/\.md$/, "");
+    const fullPath = path.join(DOCS_DIR, file);
+    const content = fs.readFileSync(fullPath, "utf-8");
+    const { meta, body } = parseFrontmatter(content);
+
+    const firstHeadingMatch = body.match(/^#\s+(.+)$/m);
+    const fallbackTitle = firstHeadingMatch ? firstHeadingMatch[1] : slug;
+
+    return {
+      slug,
+      title: meta.title || fallbackTitle || slug,
+      description: meta.description || "Panduan penggunaan dan dokumentasi Scaff.",
+      section: meta.section || "Panduan",
+      text: stripMarkdown(body).slice(0, 6000),
+    };
+  });
+}
+
 export interface TocEntry {
   level: number;
   text: string;

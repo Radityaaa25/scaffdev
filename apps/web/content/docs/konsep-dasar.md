@@ -56,7 +56,7 @@ Paste command di terminal lalu tekan enter. Yang terjadi di balik layar (detail 
 3. CLI meng-clone template ke folder tujuan yang kamu tentukan.
 4. CLI men-generate dua file: `.env.example` (kerangka semua env var yang dibutuhkan) dan `SETUP.md` (panduan langkah-demi-langkah cara mendapatkan tiap API key).
 
-Tanpa flag `--template`, CLI masuk mode interaktif: pilih kategori → framework → varian integrasi → nama folder. Berguna kalau kamu belum memilih di web.
+Tanpa flag `--template`, CLI masuk mode interaktif: pilih mode (Siap pakai / Builder / Ambil integrasi), lalu kategori → framework → varian integrasi → nama folder. Berguna kalau kamu belum memilih di web.
 
 ### 3. Setup dan jalan
 

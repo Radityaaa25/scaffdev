@@ -2,49 +2,109 @@
   {
     "name": "lisensi-dijamin-fakta",
     "question": "Apa lisensi Scaffdev?",
-    "expectSlugInTop3": [],
-    "expectFactInContext": ["PolyForm Shield"]
+    "expectSlugInTop3": [
+      "lisensi"
+    ],
+    "expectFactInContext": [
+      "PolyForm Shield"
+    ]
   },
   {
     "name": "cara-install",
     "question": "Bagaimana cara install scaffdev?",
-    "expectSlugInTop3": ["cara-install"],
-    "expectFactInContext": ["npx scaffdev@latest"]
+    "expectSlugInTop3": [
+      "cara-install"
+    ],
+    "expectFactInContext": [
+      "npx scaffdev@latest"
+    ]
   },
   {
     "name": "env-tidak-terbaca",
     "question": "ENV saya tidak terbaca, apa yang salah?",
-    "expectSlugInTop3": ["env-dan-setup"],
+    "expectSlugInTop3": [
+      "env-dan-setup"
+    ],
     "expectFactInContext": []
   },
   {
     "name": "batas-integrasi-builder",
     "question": "Berapa maksimal integrasi payment di Builder?",
-    "expectSlugInTop3": ["panduan-builder"],
-    "expectFactInContext": ["maks 1 per kategori"]
+    "expectSlugInTop3": [
+      "panduan-builder"
+    ],
+    "expectFactInContext": [
+      "maks 1 per kategori"
+    ]
   },
   {
     "name": "port-dipakai",
     "question": "Port dev server sudah dipakai, bagaimana?",
-    "expectSlugInTop3": ["troubleshooting"],
+    "expectSlugInTop3": [
+      "troubleshooting"
+    ],
     "expectFactInContext": []
   },
   {
     "name": "faq-gratis",
     "question": "Apakah gratis?",
-    "expectSlugInTop3": ["faq-3"],
-    "expectFactInContext": ["PolyForm Shield"]
+    "expectSlugInTop3": [
+      "faq-3"
+    ],
+    "expectFactInContext": [
+      "PolyForm Shield"
+    ]
   },
   {
     "name": "sinonim-bayar",
     "question": "Bagaimana cara bayar pakai template?",
-    "expectSlugInTop3": ["daftar-integrasi"],
+    "expectSlugInTop3": [
+      "daftar-integrasi"
+    ],
     "expectFactInContext": []
   },
   {
     "name": "perintah-generate",
     "question": "Command untuk generate project ecommerce apa?",
-    "expectSlugInTop3": ["cara-install"],
-    "expectFactInContext": ["--template=<slug>"]
+    "expectSlugInTop3": [
+      "cara-install"
+    ],
+    "expectFactInContext": [
+      "--template=<slug>"
+    ]
+  },
+  {
+    "name": "audit-pre-clone",
+    "question": "Bagaimana cara audit repository sebelum clone?",
+    "expectSlugInTop3": [
+      "audit-keamanan"
+    ],
+    "expectFactInContext": []
+  },
+  {
+    "name": "tambah-integrasi-add",
+    "question": "Bagaimana menambah integrasi ke project yang sudah ada?",
+    "expectSlugInTop3": [
+      "cara-install"
+    ],
+    "expectFactInContext": [
+      "scaffdev add"
+    ]
+  },
+  {
+    "name": "versi-audit",
+    "question": "CLI versi berapa yang mendukung security audit?",
+    "expectSlugInTop3": [
+      "cara-install"
+    ],
+    "expectFactInContext": []
+  },
+  {
+    "name": "fulltext-body",
+    "question": "tunnel webhook localhost",
+    "expectSlugInTop3": [
+      "troubleshooting"
+    ],
+    "expectFactInContext": []
   }
 ]
