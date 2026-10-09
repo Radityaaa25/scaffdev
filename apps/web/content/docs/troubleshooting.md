@@ -543,6 +543,76 @@ copy .env.example .env         # Laravel (CMD)
 
 ---
 
+---
+
+## AI menjawab "Terlalu banyak pertanyaan" (429)
+
+**Gejala:** asisten AI menolak dengan pesan rate limit padahal baru bertanya sedikit.
+
+**Penyebab:**
+
+- Batas 10 pertanyaan per 10 menit per IP sudah tercapai (dihitung bersama di semua server, bukan per server).
+- Satu jaringan kantor/kampus = satu IP publik untuk semua orang di dalamnya.
+
+**Solusi:**
+
+1. Tunggu hingga jendela 10 menit berganti, lalu coba lagi.
+2. Kurangi pengulangan: baca jawaban sampai habis sebelum bertanya lanjutan yang mirip.
+3. Kalau memakai VPN/proxy bersama, matikan sementara atau ganti jaringan.
+
+---
+
+## Security audit menemukan HIGH/CRITICAL
+
+**Gejala:** CLI berhenti dengan temuan berisiko tinggi sebelum clone, atau bertanya "Tetap lanjutkan cloning?".
+
+**Penyebab:**
+
+- Bukan error: ini proteksi yang bekerja. Contoh pemicu: `postinstall` yang mengunduh dan mengeksekusi file remote, atau PowerShell encoded command.
+
+**Solusi:**
+
+1. Baca blok temuan baik-baik: nama file, perintah yang terdeteksi, dan alasannya.
+2. Kalau kamu kenal pembuat template dan yakin aman (mis. script install internal perusahaanmu), pilih lanjutkan secara eksplisit.
+3. Kalau ragu sedikit pun, pilih batal (default-nya memang batal untuk temuan HIGH/CRITICAL).
+4. Untuk melewati audit sepenuhnya: jawab No saat ditanya, lalu konfirmasi kedua. Lakukan ini hanya untuk repo milikmu sendiri.
+
+---
+
+## Konflik file saat `scaffdev add`
+
+**Gejala:** CLI melaporkan `TABRAKAN: "lib/..." sudah ada` lalu berhenti.
+
+**Penyebab:**
+
+- File dari modul sudah ada di project-mu (mis. hasil generate sebelumnya atau edit manual dengan nama sama).
+
+**Solusi:**
+
+1. Pilih **Batal** (default, aman): tidak ada file yang diubah. Ganti nama file lamamu dulu bila memang ingin versi modul.
+2. Pilih **Lewati**: hanya file yang belum ada yang dipasang.
+3. Pilih **Timpa**: file lama dibackup dulu ke `.scaff/trash/` (ada timestamp-nya), baru ditimpa. Cek backup itu bila hasil timpa tidak cocok.
+
+---
+
+## `validate-module` gagal
+
+**Gejala:** exit code bukan 0 disertai daftar `[field] pesan`.
+
+**Penyebab umum:**
+
+- `kode` tidak cocok pola huruf kecil/dash, atau `version` bukan semver (`1.0.0`).
+- `files[]` kosong, atau `src` tidak ada di repo (cek ulang path relatif terhadap folder framework).
+- `removal.files` tidak tepat mencakup semua `dest` (tidak boleh kurang, tidak boleh lebih).
+- `stepsFile` menunjuk file yang tidak ada.
+
+**Solusi:**
+
+1. Perbaiki sesuai nama field di pesan error, jalankan ulang sampai keluar `valid`.
+2. Untuk repo remote, tambah `--ref=<branch>` bila yang ingin divalidasi bukan branch default.
+
+---
+
 ## Cara meminta bantuan yang efektif
 
 Kalau semua solusi di atas belum menyelesaikan masalah, siapkan tiga hal ini sebelum bertanya ke AI atau tim:

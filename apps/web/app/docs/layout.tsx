@@ -1,7 +1,7 @@
 import { AskAI } from "@/components/AskAI";
 import { DocsSidebar } from "@/components/DocsSidebar";
 import { DocsTopbar } from "@/components/DocsTopbar";
-import { getAllDocs } from "@/lib/docs";
+import { getAllDocs, getDocsSearchIndex } from "@/lib/docs";
 import fs from "fs";
 import path from "path";
 
@@ -25,6 +25,7 @@ function cliShortVersion(): string {
 
 export default function DocsLayout({ children }: { children: React.ReactNode }) {
   const docs = getAllDocs();
+  const searchIndex = getDocsSearchIndex();
   const version = cliShortVersion();
 
   return (
@@ -33,7 +34,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
       <div className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#1B1B21]/80 backdrop-blur-xl supports-[backdrop-filter]:bg-[#1B1B21]/60">
         <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center">
-            <DocsTopbar docs={docs} version={version} />
+            <DocsTopbar docs={searchIndex} version={version} />
           </div>
         </div>
       </div>

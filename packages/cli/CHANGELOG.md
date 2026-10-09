@@ -6,6 +6,8 @@
   multi-branch dan kasus ref eksplisit).
 - Parser tar tahan header pax/global dan nama root arsip non-standar.
 
+## 0.4.0
+
 - Standalone integration: `scaffdev add <kode>`: suntik 1 modul ke project
   yang sedang dibuka (deteksi framework + fallback prompt, konflik
   Cancel/Overwrite/Skip + backup `.scaff/trash/`, preview rencana, install

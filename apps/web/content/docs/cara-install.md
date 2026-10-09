@@ -58,7 +58,16 @@ Kamu tidak perlu menginstall Scaff secara permanen. Cukup gunakan `npx` karena s
 npx scaffdev@latest
 ```
 
-Command di atas menampilkan terminal interaktif berisi pertanyaan berurutan:
+Command di atas menampilkan terminal interaktif berisi pertanyaan berurutan. Langkah pertama selalu sama: pilih salah satu dari 3 mode.
+
+```
+? Mau cara apa?
+❯ Siap pakai — Langsung generate varian template jadi
+  Builder — Racik base + centang integrasi sendiri
+  Ambil integrasi — Suntik 1 modul ke project yang sedang dibuka
+```
+
+**Mode Siap pakai** (butuh CLI apapun):
 
 1. **Kategori**: E-commerce, Landing Page, atau Portfolio.
 2. **Framework**: Next.js atau Laravel.
@@ -66,6 +75,10 @@ Command di atas menampilkan terminal interaktif berisi pertanyaan berurutan:
 4. **Nama folder**: folder tujuan project (harus kosong atau belum ada).
 
 Mode ini cocok kalau kamu belum memilih template di web atau ingin eksplorasi dulu. Kekurangannya: tiap eksekusi mengunduh ulang CLI terbaru (butuh internet dan sedikit waktu download pertama kali).
+
+**Mode Builder** (butuh CLI `0.3.0+`): setelah pilih mode, pilih kategori → framework → template base (yang disembunyikan dari Builder tidak muncul) → centang integrasi per kategori (maks 1 untuk payment/database/auth/shipping, bebas untuk lainnya) → nama folder. Hasilnya sama persis seperti generate dengan `--template=<slug> --with=<kode>` yang ekuivalen.
+
+**Mode Ambil integrasi** (butuh CLI `0.4.0+`): tidak membuat folder baru. CLI bekerja di folder project yang sedang dibuka: pilih integrasi → audit keamanan → deteksi framework (otomatis dari `package.json`/`composer.json`, atau pilih manual) → preview rencana instalasi → konfirmasi → file disuntik. Detail lengkap di bawah.
 
 ### Menggunakan Slug Langsung
 
@@ -106,6 +119,36 @@ Aturannya:
 - Modul yang tidak cocok framework-nya ditolak dengan pesan jelas, bukan di-skip diam-diam.
 - File yang tabrakan dengan base = generate GAGAL eksplisit (tidak ada timpa diam-diam).
 
+### Menambah Integrasi ke Project yang Sudah Ada (`scaffdev add`)
+
+> Butuh CLI `0.4.0+`.
+
+Tanpa generate project baru. Jalankan di dalam folder project-mu:
+
+```bash
+# Interaktif: pilih dari daftar
+npx scaffdev add
+
+# Langsung sebut kodenya:
+npx scaffdev add supabase
+```
+
+Alurnya selalu sama (prinsip: audit dulu, eksekusi belakangan):
+
+```text
+pilih integrasi → security audit → deteksi framework → cek kompatibilitas
+→ preview rencana instalasi → konfirmasi → suntik file → merge dependency
+→ panduan env → (opsional) install dependency → validasi final
+```
+
+Detail penting:
+
+- Framework terdeteksi otomatis dari `package.json` / `composer.json`. Kalau tidak terdeteksi (atau keduanya ada), kamu diminta pilih manual. Modul yang tidak mendukung framework-mu ditolak dengan pesan jelas.
+- Kalau file tujuan sudah ada, kamu pilih: **Batal** (aman, default), **Lewati** file yang ada, atau **Timpa** (file lama dibackup dulu ke `.scaff/trash/`).
+- `.env` tidak pernah disentuh. Key yang belum ada ditambahkan (kosong) ke `.env.example`.
+- Dependency digabung ke `package.json`/`composer.json`; konflik versi yang tak terdamaikan menggagalkan secara eksplisit.
+- Instalasi dependency (`npm install` / `composer install`) selalu ditanyakan dulu, tidak pernah jalan diam-diam.
+
 ### Install Dependency Otomatis
 
 Setelah generate, CLI menawarkan install dependency (default: Ya):
@@ -121,7 +164,6 @@ di `scaff.template.json`. CLI menjalankannya berurutan dengan output live.
 Gagal install tidak menggagalkan generate (project tetap valid, lanjutkan manual).
 
 ### Validasi Modul/Template untuk Pembuatnya
-
 ```bash
 # Dari folder repo modul/template:
 scaffdev validate-module .
@@ -130,6 +172,20 @@ scaffdev validate-module https://github.com/username/scaff-modul-midtrans.git
 ```
 
 Wajib lulus sebelum repo didaftarkan ke admin. Salah tulis seperti `--template <slug>` (pakai spasi) tidak dikenali. Selalu pakai `=`.
+
+### Security Audit Sebelum Clone
+
+> Butuh CLI `0.3.0+`.
+
+Setiap clone (interaktif, slug langsung, tiap modul `--with`, maupun `add`) didahului satu pertanyaan:
+
+```text
+Run security audit? [Y/n]
+```
+
+Jawab Ya (default): CLI mengunduh arsip repo dan memeriksa pola berbahaya secara statis (lifecycle script, download-lalu-eksekusi, obfuscation, workflow CI, config git) tanpa menjalankan kode apa pun. Hasilnya ditampilkan beserta severity (INFO sampai CRITICAL); temuan HIGH/CRITICAL memblokir default dan hanya lanjut atas konfirmasi eksplisitmu.
+
+Jawab Tidak: CLI memberi warning lalu meminta konfirmasi kedua (`Continue without audit?`, default-nya Tidak). Tidak ada jalur diam-diam yang melewati audit. Setelah clone, audit lokal (`.git/config` + hooks) berjalan sebelum dependency diinstall. Detail lengkap: [Audit Keamanan Repository](/docs/audit-keamanan).
 
 ### Kapan memakai mode interaktif vs slug langsung?
 
@@ -217,6 +273,28 @@ Untuk uninstall global:
 ```bash
 npm uninstall -g scaffdev
 ```
+
+---
+
+## Versi CLI & Riwayat Perubahan
+
+Cek versi yang sedang dipakai:
+
+```bash
+npx scaffdev@latest --version
+```
+
+| Versi | Isi perubahan |
+|---|---|
+| 0.5.0 | `validate-module --ref=<branch>`, parser tar tahan arsip non-standar |
+| 0.4.0 | `scaffdev add`, Builder interaktif, mode konflik skip/overwrite, field `docsUrl` |
+| 0.3.0 | Security audit pre/post-clone, gate semua entry point, Builder interaktif |
+| 0.2.2 | Progress 1-baris, timeout API 20 detik |
+| 0.2.0 | Builder dual-framework (`--with`), AI chat streaming + rotasi key |
+| 0.1.2 | Katalog template, dokumentasi, admin |
+| 0.1.0 | Rilis awal |
+
+Aturan versi mengikuti semver pra-1.0: fitur baru yang kompatibel mundur menaikkan minor (`0.2.2` → `0.3.0`). Changelog lengkap ada di file `CHANGELOG.md` repo (`packages/cli/`).
 
 ---
 

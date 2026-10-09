@@ -126,6 +126,7 @@ export const SCAFFDEV_FACTS: string[] = [
   "- 'Builder' adalah nama fitur rancang-sendiri di /builder (pilih template base + centang integrasi, maks 1 per kategori inti; kategori other boleh multi): SUDAH LIVE, butuh CLI 0.2.0+. Katalog Template juga live.",
   "- Aturan 'maks 1 per kategori' (1 payment, 1 database, dst.) berlaku di Builder (kategori inti). Template katalog tidak terpengaruh (isinya fix). Kalau user bertanya 'apakah bisa custom integrasi?', jawab: bisa, lewat Builder. Contoh: npx scaffdev@latest toko-saya --template=ecommerce-basic-nextjs --with=midtrans,supabase.",
   "- Saat menyebut command, gunakan format npx scaffdev@latest --template=<slug>.",
+  "- `scaffdev add <kode>`: suntik 1 modul integrasi ke project yang sedang dibuka (butuh CLI 0.4.0+). Tanpa buat folder baru; konflik file bisa Batal/lewati/timpa (backup dulu).",
   "- Lisensi: Scaffdev source-available di bawah PolyForm Shield 1.0.0 (bukan MIT). Boleh lihat, pakai, ubah, bagikan, dan berkontribusi; dilarang dipakai untuk produk yang bersaing dengan Scaffdev.",
   "- Template premium memakai lisensi komersial terpisah; membeli = hak pakai, bukan hak edar ulang.",
   "- Hasil generate bebas dipakai; kredit ScaffDev level kode (README, SETUP.md, .scaff/meta.json) wajib dipertahankan, elemen visual bebas diubah.",

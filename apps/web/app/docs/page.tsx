@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import React from "react";
-import { getAllDocs } from "@/lib/docs";
+import { getAllDocs, getDocsSearchIndex } from "@/lib/docs";
 import { DocsSearch } from "@/components/DocsSearch";
 import { CommandBox } from "@/components/CommandBox";
 import { JsonLd } from "@/components/JsonLd";
@@ -29,6 +29,7 @@ export const metadata: Metadata = baseMetadata({
 
 export default function DocsPage() {
   const docs = getAllDocs();
+  const searchIndex = getDocsSearchIndex();
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -111,7 +112,7 @@ export default function DocsPage() {
       </div>
 
       {/* Docs Grid Listing + Search */}
-      <DocsSearch docs={docs} />
+      <DocsSearch docs={searchIndex} />
     </div>
   );
 }
