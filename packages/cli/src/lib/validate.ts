@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { parseIntegrationManifest, parseTemplateManifest, filesForFramework } from "./manifest";
+import { checkResolvableImports } from "./foreign-template";
 
 /**
  * `scaffdev validate-module <path-atau-repo>`
@@ -94,6 +95,15 @@ export async function validateModuleTarget(
         if (!fs.existsSync(stepsAbs)) return { ok: false, report };
       }
       report.push(...checkSharedImports(dir, m.files.map((f) => f.src), bases));
+      // Import relatif yang tidak resolve = modul pasti rusak saat dipasang.
+      const broken = checkResolvableImports(dir, m.files, bases);
+      if (broken.length > 0) {
+        for (const b of broken) {
+          report.push(`✘ import tidak resolve di ${b.src}: "${b.spec}" (→ ${b.resolved} tidak ada).`);
+        }
+        return { ok: false, report };
+      }
+      report.push("✔ Semua import relatif resolve ke file yang ada.");
     }
 
     if (fs.existsSync(tplPath)) {

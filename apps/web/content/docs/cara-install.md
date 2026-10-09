@@ -148,6 +148,7 @@ Detail penting:
 - `.env` tidak pernah disentuh. Key yang belum ada ditambahkan (kosong) ke `.env.example`.
 - Dependency digabung ke `package.json`/`composer.json`; konflik versi yang tak terdamaikan menggagalkan secara eksplisit.
 - Instalasi dependency (`npm install` / `composer install`) selalu ditanyakan dulu, tidak pernah jalan diam-diam.
+- **Project tanpa `scaff.template.json`** (template orang, project lama — butuh CLI `0.6.0+`): CLI memberi peringatan bila terdeteksi jejak modul yang mungkin sudah terpasang manual, menandai folder baru yang akan dibuat di preview, dan menawarkan membuatkan manifest adopsi (default Ya) agar `add` berikutnya memakai jalur eksak.
 
 ### Install Dependency Otomatis
 
@@ -286,6 +287,7 @@ npx scaffdev@latest --version
 
 | Versi | Isi perubahan |
 |---|---|
+| 0.6.0 | `add` di template asing (heuristik jejak, flag folder baru, adopsi manifest), `validate-module` cek import resolve |
 | 0.5.0 | `validate-module --ref=<branch>`, parser tar tahan arsip non-standar |
 | 0.4.0 | `scaffdev add`, Builder interaktif, mode konflik skip/overwrite, field `docsUrl` |
 | 0.3.0 | Security audit pre/post-clone, gate semua entry point, Builder interaktif |

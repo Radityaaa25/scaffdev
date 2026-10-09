@@ -14,6 +14,8 @@ export interface InjectedModule {
   overwrittenFiles: string[];
   /** Isi fragmen setup bila manifest menyediakannya (relatif root repo). */
   setupBody?: string;
+  /** Isi panduan copot bila manifest menyediakannya (untuk adopsi template asing). */
+  removalBody?: string;
   /** Lokasi backup bila mode overwrite (untuk restore manual). */
   backedUpTo?: string;
 }
@@ -148,6 +150,20 @@ export async function injectModule(
       }
     }
 
+    // Panduan copot (relatif root repo) untuk adopsi template asing.
+    let removalBody: string | undefined;
+    if (manifest.removal?.stepsFile) {
+      const stepsAbs = path.join(tmpDir, manifest.removal.stepsFile);
+      try {
+        if (fs.existsSync(stepsAbs) && fs.statSync(stepsAbs).isFile()) {
+          const raw = fs.readFileSync(stepsAbs, "utf8");
+          if (raw.trim()) removalBody = raw;
+        }
+      } catch {
+        // Abaikan: panduan copot opsional di titik ini.
+      }
+    }
+
     return {
       kode: manifest.kode,
       version: manifest.version,
@@ -157,6 +173,7 @@ export async function injectModule(
       skippedFiles,
       overwrittenFiles,
       setupBody,
+      removalBody,
       backedUpTo,
     };
   } catch (err) {
