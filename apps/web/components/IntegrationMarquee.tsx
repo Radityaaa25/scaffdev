@@ -13,7 +13,11 @@ const SUPPORTED = [
 const MARQUEE_HALF = [...SUPPORTED, ...SUPPORTED];
 
 /** Marquee "Terintegrasi dengan": hanya dipakai halaman /templates. */
-export function IntegrationMarquee() {
+export function IntegrationMarquee({ logos }: { logos?: Record<string, string> }) {
+  const items = MARQUEE_HALF.map((s) => ({
+    ...s,
+    logo: logos?.[s.name]?.trim() || s.logo,
+  }));
   return (
     <div className="relative mt-10 sm:mt-12 mb-10 w-full">
       <div className="mb-5 flex justify-center">
@@ -25,7 +29,7 @@ export function IntegrationMarquee() {
         <div className="hero-marquee-track">
           {[0, 1].map((copy) => (
             <div key={copy} className="hero-marquee-group" aria-hidden={copy === 1}>
-              {MARQUEE_HALF.map((s, i) => (
+              {items.map((s, i) => (
                 <span
                   key={`${s.name}-${i}`}
                   className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] px-6 py-3 whitespace-nowrap"

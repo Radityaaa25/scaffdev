@@ -41,7 +41,7 @@ const selectCls =
  * Katalog interaktif (client). Menerima data awal dari server agar konten
  * langsung ter-render untuk crawler & AI, lalu refresh di background.
  */
-export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Template[] }) {
+export function TemplatesCatalog({ initialTemplates, initialLogos }: { initialTemplates: Template[]; initialLogos?: Record<string, string> }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -279,7 +279,7 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
       </div>
 
       {/* Marquee "Terintegrasi dengan": hanya di halaman template. */}
-      <IntegrationMarquee />
+      <IntegrationMarquee logos={initialLogos} />
 
       {/* Search + Sort */}
       <div id="katalog" className="flex flex-col sm:flex-row gap-3 mb-4 scroll-mt-24">

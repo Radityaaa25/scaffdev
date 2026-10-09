@@ -11,6 +11,7 @@ import { JsonLd } from "@/components/JsonLd";
 import type { Template } from "@scaff/database";
 import { absoluteUrl, baseMetadata, itemListJsonLd } from "@/lib/seo";
 import { FAQS, faqPageJsonLd } from "@/lib/faq";
+import { getLogoMap } from "@/lib/logo-assets";
 
 export const revalidate = 3600;
 
@@ -59,6 +60,7 @@ export default async function LandingPage() {
   } catch {
     initialTemplates = [];
   }
+  const logos = await getLogoMap();
 
   return (
     <main className="landing-root relative flex flex-1 flex-col">
@@ -85,7 +87,7 @@ export default async function LandingPage() {
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
         <TemplatesHero />
       </div>
-      <AboutBento templateCount={initialTemplates.length} />
+      <AboutBento templateCount={initialTemplates.length} logos={logos} />
       <HowItWorks />
       <BuilderTeaser />
       <FaqCta />

@@ -4,6 +4,7 @@ import { TemplatesCatalog } from "@/components/TemplatesCatalog";
 import { AskAI } from "@/components/AskAI";
 import { JsonLd } from "@/components/JsonLd";
 import { getAllTemplates } from "@/lib/data";
+import { getLogoMap } from "@/lib/logo-assets";
 import { absoluteUrl, baseMetadata, itemListJsonLd } from "@/lib/seo";
 
 export const revalidate = 3600;
@@ -38,6 +39,7 @@ export default async function TemplatesPage() {
   } catch {
     initialTemplates = [];
   }
+  const logos = await getLogoMap();
 
   return (
     <Suspense
@@ -58,7 +60,7 @@ export default async function TemplatesPage() {
           }))
         )}
       />
-      <TemplatesCatalog initialTemplates={initialTemplates} />
+      <TemplatesCatalog initialTemplates={initialTemplates} initialLogos={logos} />
       <AskAI />
     </Suspense>
   );
