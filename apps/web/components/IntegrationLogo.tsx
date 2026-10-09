@@ -9,11 +9,17 @@ const LOGOS: Record<string, { src: string; label: string; wordmark?: boolean }> 
   resend: { src: "/logo-resend.svg", label: "Resend" },
   nextjs: { src: "/logo-nextjs.svg", label: "Next.js" },
   laravel: { src: "/logo-laravel.svg", label: "Laravel" },
+  rajaongkir: { src: "/logo-rajaongkir.webp", label: "RajaOngkir", wordmark: true },
+  fonnte: { src: "/logo-fonnte.png", label: "Fonnte", wordmark: true },
 };
 
 /**
- * Logo integrasi asli. Kode tanpa file logo (fonnte, rajaongkir, ...)
- * fallback ke ikon generik — jangan karang path file.
+ * Logo integrasi asli. Kode tanpa file logo fallback ke ikon generik.
+ */
+
+/**
+ * Logo integrasi asli. Kode tanpa file logo fallback ke ikon generik —
+ * jangan karang path file.
  */
 export function IntegrationLogo({
   kode,
