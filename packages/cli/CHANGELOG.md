@@ -1,6 +1,10 @@
 # Changelog CLI Scaffdev
 
-## 0.4.0
+## 0.5.0
+
+- `validate-module --ref=<branch>`: audit branch tertentu (untuk repo fixture
+  multi-branch dan kasus ref eksplisit).
+- Parser tar tahan header pax/global dan nama root arsip non-standar.
 
 - Standalone integration: `scaffdev add <kode>`: suntik 1 modul ke project
   yang sedang dibuka (deteksi framework + fallback prompt, konflik

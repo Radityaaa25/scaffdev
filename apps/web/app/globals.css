@@ -1120,3 +1120,24 @@ article.docs-article .terminal-card pre code {
 .chat-md strong {
   color: #fafafa;
 }
+/* Bar progres navigasi: gradient violet meluncur, dipakai RouteLoader. */
+.route-loader-bar {
+  background: linear-gradient(90deg, transparent, #8B5CF6 30%, #EC4899 50%, #8B5CF6 70%, transparent);
+  background-size: 200% 100%;
+  animation: route-loader-slide 1.1s linear infinite;
+}
+
+@keyframes route-loader-slide {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-loader-bar {
+    animation: none;
+  }
+}
