@@ -14,31 +14,32 @@ const LOGOS: Record<string, { src: string; label: string; wordmark?: boolean }> 
 };
 
 /**
- * Logo integrasi asli. Kode tanpa file logo fallback ke ikon generik.
- */
-
-/**
- * Logo integrasi asli. Kode tanpa file logo fallback ke ikon generik —
- * jangan karang path file.
+ * Logo integrasi asli. `src` override dari DB (logo_assets); kosong = pakai
+ * file bundled; kode tanpa file = ikon generik. Jangan karang path file.
  */
 export function IntegrationLogo({
   kode,
   iconClassName = "h-6 w-6",
   wordmarkClassName = "h-5 w-auto",
+  src,
 }: {
   kode: string;
   iconClassName?: string;
   wordmarkClassName?: string;
+  src?: string;
 }) {
   const entry = LOGOS[kode.toLowerCase()];
-  if (!entry) return <PuzzleIcon className={iconClassName} />;
+  const resolved = src?.trim() || entry?.src;
+  if (!resolved) return <PuzzleIcon className={iconClassName} />;
+  const label = entry?.label ?? kode;
+  const wordmark = entry?.wordmark ?? false;
   return (
     <img
-      src={entry.src}
-      alt={`Logo ${entry.label}`}
+      src={resolved}
+      alt={`Logo ${label}`}
       loading="lazy"
       draggable={false}
-      className={entry.wordmark ? wordmarkClassName : `${iconClassName} shrink-0`}
+      className={wordmark ? wordmarkClassName : `${iconClassName} shrink-0`}
     />
   );
 }

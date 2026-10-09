@@ -2,9 +2,30 @@ import { AskAI } from "@/components/AskAI";
 import { DocsSidebar } from "@/components/DocsSidebar";
 import { DocsTopbar } from "@/components/DocsTopbar";
 import { getAllDocs } from "@/lib/docs";
+import fs from "fs";
+import path from "path";
+
+/** Versi CLI (sumber tunggal: packages/cli/package.json) untuk badge Docs. */
+function cliShortVersion(): string {
+  try {
+    const raw = fs.readFileSync(
+      path.join(process.cwd(), "..", "packages", "cli", "package.json"),
+      "utf8"
+    );
+    const v = (JSON.parse(raw) as { version?: unknown }).version;
+    if (typeof v === "string") {
+      const m = v.trim().match(/^(\d+)\.(\d+)/);
+      if (m) return `v${m[1]}.${m[2]}`;
+    }
+  } catch {
+    /* fallback di bawah: badge tidak boleh merusak layout */
+  }
+  return "v0.5";
+}
 
 export default function DocsLayout({ children }: { children: React.ReactNode }) {
   const docs = getAllDocs();
+  const version = cliShortVersion();
 
   return (
     <>
@@ -12,7 +33,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
       <div className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#1B1B21]/80 backdrop-blur-xl supports-[backdrop-filter]:bg-[#1B1B21]/60">
         <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center">
-            <DocsTopbar docs={docs} />
+            <DocsTopbar docs={docs} version={version} />
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { getAllIntegrasi } from "@/lib/data";
+import { getLogoMap } from "@/lib/logo-assets";
 import { AskAI } from "@/components/AskAI";
 import { CatalogTabs } from "@/components/CatalogTabs";
 import { GooeyFilter } from "@/components/GooeyFilter";
@@ -46,6 +47,7 @@ export default async function IntegrasiPage() {
   } catch {
     items = [];
   }
+  const logos = await getLogoMap();
 
   return (
     <main className="flex flex-1 flex-col">
@@ -98,7 +100,7 @@ export default async function IntegrasiPage() {
                   >
                     <div className="flex items-center gap-3">
                       <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#8B5CF6]/30 bg-[#8B5CF6]/10 text-[#A78BFA] overflow-hidden">
-                        <IntegrationLogo kode={it.kode} />
+                        <IntegrationLogo kode={it.kode} src={logos[it.kode.toLowerCase()]} />
                       </span>
                       <div className="min-w-0">
                         <h2 className="truncate text-base font-bold text-[#FAFAFA]">

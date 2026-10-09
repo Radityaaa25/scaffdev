@@ -11,9 +11,21 @@ const LOCAL_LOGOS = [
 ];
 
 /** Semua tools yang terekspos di marquee: 2 framework + 8 integrasi.
- *  Logo lokal (SVG) diutamakan; 2 tanpa SVG memakai hotlink resmi (lazy).
+ *  Semua logo lokal (varian putih untuk tema gelap).
  *  Sumber: simpleicons.org (cloudinary, resend), rajaongkir.com,
- *  fonnte.com (varian putih untuk tema gelap). */
+ *  fonnte.com (kini di-vendor ke /public agar tidak hotlink). */
+const LABEL_TO_KEY: Record<string, string> = {
+  "Next.js": "nextjs",
+  Laravel: "laravel",
+  Supabase: "supabase",
+  Midtrans: "midtrans",
+  Xendit: "xendit",
+  Duitku: "duitku",
+  Cloudinary: "cloudinary",
+  Resend: "resend",
+  RajaOngkir: "rajaongkir",
+  Fonnte: "fonnte",
+};
 const MARQUEE_ITEMS = [
   { label: "Next.js", src: "/logo-nextjs.svg", wordmark: false },
   { label: "Laravel", src: "/logo-laravel.svg", wordmark: false },
@@ -22,12 +34,12 @@ const MARQUEE_ITEMS = [
   { label: "Resend", src: "/logo-resend.svg", wordmark: false },
   {
     label: "RajaOngkir",
-    src: "https://storage.googleapis.com/komerce/assets/LP-Rajaongkir/new/rajaongkir_bykomerce.webp",
+    src: "/logo-rajaongkir.webp",
     wordmark: true,
   },
   {
     label: "Fonnte",
-    src: "https://fonnte.com/wp-content/uploads/2023/03/Logo-Fonnte-putih-300x72.png",
+    src: "/logo-fonnte.png",
     wordmark: true,
   },
 ];
@@ -36,7 +48,12 @@ const MARQUEE_ITEMS = [
 const MARQUEE_LOOP = [...MARQUEE_ITEMS, ...MARQUEE_ITEMS];
 
 /** Tentang Kami gaya bento: profil, stats live, source-available, kurasi lokal, kontak. */
-export function AboutBento({ templateCount }: { templateCount: number }) {
+export function AboutBento({ templateCount, logos }: { templateCount: number; logos?: Record<string, string> }) {
+  const marqueeItems = MARQUEE_LOOP.map((l) => {
+    const key = LABEL_TO_KEY[l.label] ?? "";
+    const override = key ? logos?.[key]?.trim() : "";
+    return override ? { ...l, src: override } : l;
+  });
   return (
     <section className="relative">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:py-20">
@@ -164,7 +181,7 @@ export function AboutBento({ templateCount }: { templateCount: number }) {
                 <div className="hero-marquee-track">
                   {[0, 1].map((copy) => (
                     <div key={copy} className="hero-marquee-group" aria-hidden={copy === 1}>
-                      {MARQUEE_LOOP.map((l, i) => (
+                      {marqueeItems.map((l, i) => (
                         <span
                           key={`${l.label}-${i}`}
                           className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1.5"

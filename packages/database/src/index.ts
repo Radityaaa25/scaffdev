@@ -21,6 +21,13 @@ export interface Integrasi {
   created_at: string;
 }
 
+export interface LogoAsset {
+  key: string;
+  label: string;
+  url: string;
+  kind: string;
+}
+
 export interface Framework {
   id: string;
   kode: string;

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getIntegrasiByKode } from "@/lib/data";
+import { getLogoMap } from "@/lib/logo-assets";
 import { AskAI } from "@/components/AskAI";
 import { CommandBox } from "@/components/CommandBox";
 import { IntegrationLogo } from "@/components/IntegrationLogo";
@@ -59,6 +60,7 @@ export default async function IntegrasiDetailPage({ params }: IntegrasiDetailPag
   if (!item) {
     notFound();
   }
+  const logos = await getLogoMap();
 
   const fw = item.framework_compat ?? [];
   const viaBuilder = Boolean(item.repo_url && item.repo_url.trim() !== "");
@@ -77,7 +79,7 @@ export default async function IntegrasiDetailPage({ params }: IntegrasiDetailPag
 
         <div className="mt-4 flex items-center gap-4">
           <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#8B5CF6]/30 bg-[#8B5CF6]/10 text-[#A78BFA] overflow-hidden">
-            <IntegrationLogo kode={item.kode} iconClassName="h-7 w-7" wordmarkClassName="h-6 w-auto" />
+            <IntegrationLogo kode={item.kode} iconClassName="h-7 w-7" wordmarkClassName="h-6 w-auto" src={logos[item.kode.toLowerCase()]} />
           </span>
           <div className="min-w-0">
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[#FAFAFA] tracking-tight">

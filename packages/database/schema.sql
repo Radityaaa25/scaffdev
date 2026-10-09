@@ -675,3 +675,67 @@ alter table public.templates
 -- ============================================================
 alter table public.integrasi
   add column if not exists docs_url text not null default '';
+
+-- ============================================================
+-- Migrasi 014 — Aset logo (dikelola admin) + bucket site-assets
+-- logo_assets: peta key logo -> URL publik. Web memakai fallback
+-- berlapis (DB -> file bundled -> ikon generik) sehingga aman bila
+-- baris dihapus. CARA PAKAI: jalankan blok ini sekali di Supabase
+-- SQL Editor, lalu kelola dari halaman admin Logo.
+-- ============================================================
+create table if not exists public.logo_assets (
+  key                 text        primary key,      -- contoh: 'supabase', 'laravel'
+  label               text        not null,         -- contoh: 'Supabase'
+  url                 text        not null,         -- URL publik (storage atau file lokal /logo-*.svg)
+  kind                text        not null default 'integration',
+  updated_at          timestamptz not null default now()
+);
+
+insert into storage.buckets (id, name, public)
+values ('site-assets', 'site-assets', true)
+on conflict (id) do nothing;
+
+drop policy if exists site_assets_public_read on storage.objects;
+create policy site_assets_public_read
+  on storage.objects
+  for select
+  using (bucket_id = 'site-assets');
+
+drop policy if exists site_assets_admin_write on storage.objects;
+create policy site_assets_admin_write
+  on storage.objects
+  for insert
+  to authenticated
+  with check (
+    bucket_id = 'site-assets'
+    and public.is_admin()
+  );
+
+drop policy if exists site_assets_admin_update on storage.objects;
+create policy site_assets_admin_update
+  on storage.objects
+  for update
+  to authenticated
+  using (bucket_id = 'site-assets' and public.is_admin())
+  with check (bucket_id = 'site-assets');
+
+drop policy if exists site_assets_admin_delete on storage.objects;
+create policy site_assets_admin_delete
+  on storage.objects
+  for delete
+  to authenticated
+  using (bucket_id = 'site-assets' and public.is_admin());
+
+-- Seed awal: URL yang dipakai web hari ini (file lokal + remote).
+insert into public.logo_assets (key, label, url, kind) values
+  ('supabase', 'Supabase', '/logo-supabase.svg', 'integration'),
+  ('midtrans', 'Midtrans', '/logo-midtrans.svg', 'integration'),
+  ('xendit', 'Xendit', '/logo-xendit.svg', 'integration'),
+  ('duitku', 'Duitku', '/logo-duitku.svg', 'integration'),
+  ('cloudinary', 'Cloudinary', '/logo-cloudinary.svg', 'integration'),
+  ('resend', 'Resend', '/logo-resend.svg', 'integration'),
+  ('rajaongkir', 'RajaOngkir', '/logo-rajaongkir.webp', 'integration'),
+  ('fonnte', 'Fonnte', '/logo-fonnte.png', 'integration'),
+  ('nextjs', 'Next.js', '/logo-nextjs.svg', 'framework'),
+  ('laravel', 'Laravel', '/logo-laravel.svg', 'framework')
+on conflict (key) do nothing;
