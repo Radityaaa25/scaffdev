@@ -18,7 +18,16 @@ import {
   mergeNpmDependencies,
   mergeComposerDependencies,
 } from "./injector";
-import { parseIntegrationManifest, parseTemplateManifest, filesForFramework } from "./manifest";
+import { parseIntegrationManifest, parseTemplateManifest, filesForFramework, type IntegrationManifest } from "./manifest";
+import {
+  hasTemplateManifest,
+  detectExistingTraces,
+  heuristicFromManifest,
+  newDirsForPreview,
+  sanitizeKode,
+  buildAdoptManifest,
+  writeAdoptedTemplate,
+} from "./foreign-template";
 import { runSecurityGate } from "./security-audit";
 import { cloneRepository } from "./git";
 
@@ -127,6 +136,9 @@ export async function runAddFlow(opts: {
   kodeArg?: string;
 }): Promise<AddResult> {
   const projectDir = path.resolve(opts.projectDir);
+  // Template asing (tanpa manifest) → jalur heuristik + tawaran adopsi.
+  // Template bermanifest → perilaku lama, tanpa cabang baru.
+  const hadManifest = hasTemplateManifest(projectDir);
 
   // 1. DISCOVER: cari integrasi di indeks.
   let index: IntegrasiRow[];
@@ -190,6 +202,7 @@ export async function runAddFlow(opts: {
   // instalasi final lewat injectModule agar tetap atomis).
   const planRoot = fs.mkdtempSync(path.join(os.tmpdir(), "scaff-add-"));
   let planManifest: { version: string; files: Array<{ dest: string }>; dependencies?: { npm?: Record<string, string>; composer?: Record<string, string> }; env?: string[] } | null = null;
+  let planFull: IntegrationManifest | null = null;
   let planColliding: string[] = [];
   try {
     await cloneRepository(row.repo_url.trim(), planRoot);
@@ -208,6 +221,7 @@ export async function runAddFlow(opts: {
       dependencies: parsed.manifest.dependencies,
       env: parsed.manifest.env,
     };
+    planFull = parsed.manifest;
     planColliding = planManifest.files
       .map((f) => f.dest)
       .filter((d) => fs.existsSync(path.join(projectDir, d)));
@@ -220,6 +234,22 @@ export async function runAddFlow(opts: {
   if (!planManifest || planManifest.files.length === 0) {
     p.cancel(`Modul "${row.nama_tampilan}" tidak memuat file untuk framework "${fw}".`);
     return { completed: false };
+  }
+
+  // Heuristik template asing: modul/musuhnya MUNGKIN sudah ada manual.
+  // Hanya jalan bila tanpa scaff.template.json (bermanifest = bakedKodes eksak).
+  if (!hadManifest && planFull) {
+    const traces = detectExistingTraces(projectDir, heuristicFromManifest(planFull, fw), fw);
+    if (traces.length > 0) {
+      p.log.warn(
+        `Template ini tanpa scaff.template.json, terdeteksi jejak yang MUNGKIN bentrok:\n${traces.map((t) => `  • ${t}`).join("\n")}\n(CLI tidak bisa memastikan 100% - periksa manual bila ragu.)`
+      );
+      const lanjut = await p.confirm({ message: "Tetap lanjutkan instalasi?", initialValue: true });
+      if (p.isCancel(lanjut) || !lanjut) {
+        p.cancel("Operasi dibatalkan. Tidak ada file yang diubah.");
+        return { completed: false };
+      }
+    }
   }
 
   // Konflik: default aman = Batal.
@@ -249,11 +279,14 @@ export async function runAddFlow(opts: {
       ? Object.keys(planManifest.dependencies?.composer ?? {})
       : Object.keys(planManifest.dependencies?.npm ?? {});
   const envList = planManifest.env ?? [];
+  // Tandai folder yang BELUM ada (layout non-standar langsung kelihatan di sini).
+  const newDirs = newDirsForPreview(projectDir, planManifest.files.map((f) => f.dest));
   p.note(
     `Integrasi : ${row.nama_tampilan} v${planManifest.version}\n` +
       `Framework : ${fwLabel(fw)}\n` +
       `File      : ${planManifest.files.length} baru` +
       (planColliding.length > 0 ? ` (${onConflict === "skip" ? "lewati" : "timpa"} ${planColliding.length} yang ada)` : "") +
+      (newDirs.length > 0 ? `\nFolder baru: ${newDirs.join(", ")} (akan dibuatkan)` : "") +
       `\nDependencies: ${depList.length > 0 ? depList.join(", ") : "-"}\n` +
       `Environment : ${envList.length > 0 ? `${envList.length} variable wajib diisi` : "-"}\n` +
       `Security  : ✓ Audit lolos`,
@@ -272,6 +305,8 @@ export async function runAddFlow(opts: {
   let overwritten: string[] = [];
   let backedUpTo: string | undefined;
   let setupBody: string | undefined;
+  let removalBody: string | undefined;
+  let installedKode = "";
   try {
     const injected = await injectModule(projectDir, row.repo_url.trim(), fw, workRoot, {
       onConflict,
@@ -281,6 +316,8 @@ export async function runAddFlow(opts: {
     overwritten = injected.overwrittenFiles;
     backedUpTo = injected.backedUpTo;
     setupBody = injected.setupBody;
+    removalBody = injected.removalBody;
+    installedKode = injected.kode;
     cleanupModuleDir(injected.dir);
     // Merge dependency.
     if (fw === "laravel" && injected.manifest.dependencies?.composer) {
@@ -354,6 +391,36 @@ export async function runAddFlow(opts: {
   );
   if (setupBody) {
     console.log(setupBody.slice(0, 2000));
+  }
+
+  // Adopsi template asing: catat yang BARU dipasang agar add berikutnya eksak.
+  // Hanya bila manifest tetap tidak ada (user tidak membuatnya di tengah jalan).
+  if (!hadManifest && !hasTemplateManifest(projectDir) && installed.length > 0) {
+    const adopt = await p.confirm({
+      message: "Template ini tanpa scaff.template.json. Buatkan manifest adopsi (add berikutnya jadi eksak)?",
+      initialValue: true,
+    });
+    if (!p.isCancel(adopt) && adopt) {
+      const kode = sanitizeKode(installedKode || row.kode);
+      const guideRel = `.scaff/REMOVE-${kode}.md`;
+      const built = buildAdoptManifest({
+        name: path.basename(projectDir),
+        framework: fw,
+        kode,
+        files: installed,
+        guideRel,
+      });
+      if (!built.ok) {
+        p.log.warn(`Manifest adopsi dilewati (tidak valid):\n${built.errors.join("\n")}`);
+      } else {
+        const guideBody =
+          removalBody ?? `# Copot ${kode}\n\nHapus file:\n${installed.map((f) => `- ${f}`).join("\n")}\n`;
+        const written = writeAdoptedTemplate(projectDir, built.manifest, { [kode]: guideBody });
+        p.log.success(
+          `Manifest adopsi ditulis: scaff.template.json (slug: ${built.manifest.slug}) + ${written.guidePaths.join(", ")}`
+        );
+      }
+    }
   }
   return { completed: true };
 }

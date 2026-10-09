@@ -1,5 +1,16 @@
 # Changelog CLI Scaffdev
 
+## 0.6.0
+
+- Template asing (tanpa `scaff.template.json`): heuristik jejak modul/musuhnya
+  (env, dependency, keyword konflik) sebagai peringatan best-effort + konfirmasi
+  lanjut; preview menandai folder baru yang akan dibuat; tawaran adopsi manifest
+  (default Ya) agar `add` berikutnya eksak.
+- `validate-module`: cek resolvabilitas import relatif (TS/JS) - gagal eksplisit
+  bila ada import yang tidak mengarah ke file yang ada.
+- Uji `test:foreign`: 8 asersi heuristik/adopsi/import + E2E inject ke template
+  asing (hermetik, tanpa network).
+
 ## 0.5.0
 
 - `validate-module --ref=<branch>`: audit branch tertentu (untuk repo fixture
