@@ -6,6 +6,8 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Template } from "@scaff/database";
 import { TemplateCard } from "@/components/TemplateCard";
 import { IntegrationMarquee } from "@/components/IntegrationMarquee";
+import { CatalogTabs } from "@/components/CatalogTabs";
+import { GooeyFilter } from "@/components/GooeyFilter";
 import { fetchTemplates } from "@/lib/api";
 import { XIcon } from "@/components/DocsIcons";
 
@@ -254,6 +256,12 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
           </p>
         </div>
       </section>
+
+      {/* Tab pindah katalog: langsung terlihat tanpa scroll. */}
+      <div className="mb-8">
+        <GooeyFilter />
+        <CatalogTabs />
+      </div>
 
       {/* Builder live banner */}
       <div className="flex items-start sm:items-center gap-3 bg-emerald-500/[0.07] border border-emerald-500/25 rounded-xl px-4 py-3 mb-6">
@@ -522,8 +530,13 @@ export function TemplatesCatalog({ initialTemplates }: { initialTemplates: Templ
             Jelajahi modul Supabase, Midtrans, Xendit, dan lainnya — satu modul untuk Builder dan CLI.
           </span>
         </span>
-        <span className="shrink-0 rounded-xl border border-[#8B5CF6]/30 bg-[#8B5CF6]/10 px-4 py-2 text-xs font-medium text-[#C4B5FD] transition-all group-hover:bg-[#8B5CF6]/20">
-          Lihat Integrasi →
+        <span className="btn-gooey-reverse shrink-0">
+          Lihat Integrasi
+          <span className="btn-gooey__blobs" aria-hidden="true">
+            <div />
+            <div />
+            <div />
+          </span>
         </span>
       </Link>
       </div>

@@ -3,20 +3,22 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { getAllIntegrasi } from "@/lib/data";
 import { AskAI } from "@/components/AskAI";
-import { PuzzleIcon, BookIcon } from "@/components/DocsIcons";
+import { CatalogTabs } from "@/components/CatalogTabs";
+import { GooeyFilter } from "@/components/GooeyFilter";
+import { IntegrationLogo } from "@/components/IntegrationLogo";
 import { absoluteUrl, baseMetadata } from "@/lib/seo";
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = baseMetadata({
-  title: "Integrasi — Modul Siap Suntik",
+  title: "Integrasi: Modul Siap Suntik",
   description:
     "Jelajahi modul integrasi Scaffdev: Supabase, Midtrans, Xendit, dan lainnya untuk Next.js & Laravel. Satu modul dipakai Builder dan CLI standalone.",
   alternates: { canonical: absoluteUrl("/integrasi") },
   openGraph: {
     type: "website",
     url: absoluteUrl("/integrasi"),
-    title: "Integrasi — Modul Siap Suntik",
+    title: "Integrasi: Modul Siap Suntik",
     description:
       "Modul integrasi lokal Indonesia untuk Next.js & Laravel. Satu modul untuk Builder dan CLI.",
   },
@@ -59,9 +61,19 @@ export default async function IntegrasiPage() {
           <Link href="/builder" className="text-[#8B5CF6] hover:underline font-medium">
             Builder
           </Link>{" "}
-          dan CLI standalone — tidak ada implementasi ganda. Pilih integrasi
+          dan CLI standalone. Tidak ada implementasi ganda. Pilih integrasi
           untuk melihat cara pasang dan dokumentasi resminya.
         </p>
+
+        <div className="mt-6">
+          <GooeyFilter />
+          <CatalogTabs />
+        </div>
+        {items.length > 0 && (
+          <p className="mt-6 font-mono text-[11px] uppercase tracking-widest text-zinc-500">
+            {items.length} modul tersedia
+          </p>
+        )}
 
         <Suspense
           fallback={
@@ -85,8 +97,8 @@ export default async function IntegrasiPage() {
                     className="flex flex-col rounded-2xl border border-[#3F3F4C] bg-[#24242C] p-5 transition-colors hover:border-[#8B5CF6]/40"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#8B5CF6]/30 bg-[#8B5CF6]/10 text-[#A78BFA]">
-                        <PuzzleIcon className="h-5 w-5" />
+                      <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#8B5CF6]/30 bg-[#8B5CF6]/10 text-[#A78BFA] overflow-hidden">
+                        <IntegrationLogo kode={it.kode} />
                       </span>
                       <div className="min-w-0">
                         <h2 className="truncate text-base font-bold text-[#FAFAFA]">
@@ -124,10 +136,14 @@ export default async function IntegrasiPage() {
                     </div>
                     <Link
                       href={`/integrasi/${it.kode}`}
-                      className="mt-4 inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm font-medium text-zinc-200 transition-all hover:border-[#8B5CF6]/40 hover:text-white active:scale-[0.98]"
+                      className="btn-gooey-reverse mt-4 text-center"
                     >
-                      <BookIcon className="mr-2 h-4 w-4" />
                       Lihat Integrasi
+                      <span className="btn-gooey__blobs" aria-hidden="true">
+                        <div />
+                        <div />
+                        <div />
+                      </span>
                     </Link>
                   </article>
                 );

@@ -2,7 +2,7 @@
 
 ## 0.4.0
 
-- Standalone integration: `scaffdev add <kode>` — suntik 1 modul ke project
+- Standalone integration: `scaffdev add <kode>`: suntik 1 modul ke project
   yang sedang dibuka (deteksi framework + fallback prompt, konflik
   Cancel/Overwrite/Skip + backup `.scaff/trash/`, preview rencana, install
   opsional, validasi final).

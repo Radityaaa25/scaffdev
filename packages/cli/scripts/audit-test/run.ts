@@ -3,7 +3,7 @@
  * Cara jalan: `pnpm --filter scaffdev test:audit`.
  * Exit 0 = semua lolos; exit 1 = ada yang gagal.
  *
- * Uji integrasi network (tarball asli) TIDAK di sini — dilakukan manual
+ * Uji integrasi network (tarball asli) TIDAK di sini. Dilakukan manual
  * melawan repo fixture (lihat D:/PROJECT RADIT/testing/README.md).
  */
 import * as fs from "fs";
@@ -287,7 +287,7 @@ ok("skip-src", !wantAuditFile("src/index.ts"));
 {
   // Arsip codeload asli diawali header pax + root "repo-ref/": prefix harus
   // dikupas dari direktori bersama, bukan dari entri pertama.
-  // Header pax asli SELALU punya size valid — tiru itu (bukan header kosong).
+  // Header pax asli SELALU punya size valid: tiru itu (bukan header kosong).
   const paxBody = Buffer.from("25 path=./repo-x/package.json\n");
   const head = Buffer.alloc(512, 0);
   Buffer.from("pax_global_header").copy(head, 0);
@@ -355,7 +355,7 @@ function makeProject(withCollision: boolean): string {
 }
 
 async function sectionInjectModes(): Promise<void> {
-  // Catatan: git checkout di Windows dapat memberi CRLF — bandingkan
+  // Catatan: git checkout di Windows dapat memberi CRLF, jadi bandingkan
   // setelah normalisasi agar uji stabil lintas OS.
   const norm = (s: string): string => s.replace(/\r\n/g, "\n");
   const repo = makeModuleRepo();

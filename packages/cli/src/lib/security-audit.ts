@@ -2,7 +2,7 @@
  * Security audit statis untuk repository template/modul SEBELUM clone & install.
  *
  * Prinsip: AUDIT DULU, EKSEKUSI BELAKANGAN. Modul ini TIDAK PERNAH menjalankan
- * kode repository — hanya membaca bytes (tarball remote atau folder lokal).
+ * kode repository: hanya membaca bytes (tarball remote atau folder lokal).
  *
  * Dipakai oleh SEMUA entry point via runSecurityGate() agar tidak ada jalur
  * yang bisa bypass (interaktif, --template direct, tiap modul --with).
@@ -22,7 +22,7 @@ export interface AuditFinding {
   file: string;
   title: string;
   detail: string;
-  /** Cuplikan bukti (dipotong, tanpa secret values — values tidak pernah ada di repo). */
+  /** Cuplikan bukti (dipotong; values tidak pernah ada di repo). */
   evidence: string;
 }
 
@@ -81,7 +81,7 @@ function readCString(buf: Buffer, offset: number, length: number): string {
  * Ekstrak file yang cocok `want()` dari tarball. Batasan pengaman:
  * tiap file maks `maxFileBytes`, total file maks `maxFiles`. Direktori,
  * symlink, dan entri non-reguler dilewati. Prefix root tarball
- * ("owner-repo-sha/", "./", dsb — bentuknya beda antar hosting)
+ * ("owner-repo-sha/", "./", dsb: bentuknya beda antar hosting)
  * dihitung dari direktori awalan bersama SEMUA entri, bukan dari
  * entri pertama (rapuh bila arsip diawali header pax/metadata).
  */
@@ -158,7 +158,7 @@ const FETCH_TIMEOUT_MS = 30000;
 
 /**
  * Unduh tarball branch/ref repo. Tanpa ref: pakai default branch (1 call API).
- * Dengan ref: langsung ke codeload (tanpa call API) — dipakai QA fixture
+ * Dengan ref: langsung ke codeload (tanpa call API). Dipakai QA fixture
  * per-branch dan kasus ref eksplisit lainnya.
  */
 export async function downloadRepoTarball(
@@ -230,7 +230,7 @@ async function fetchTarball(
   if (gz.length > TARBALL_MAX_BYTES) {
     throw new Error(
       `Arsip repository ${(gz.length / 1048576).toFixed(1)} MB melebihi batas audit ` +
-        `(${(TARBALL_MAX_BYTES / 1048576).toFixed(0)} MB). Audit dibatalkan — periksa manual.`
+        `(${(TARBALL_MAX_BYTES / 1048576).toFixed(0)} MB). Audit dibatalkan. Periksa manual.`
     );
   }
   let tar: Buffer;
@@ -295,7 +295,7 @@ export function auditPackageJson(relPath: string, text: string): AuditFinding[] 
         severity: "LOW",
         file: relPath,
         title: "package.json bukan JSON valid",
-        detail: "File tidak bisa dibaca — audit script dilewati untuk file ini.",
+        detail: "File tidak bisa dibaca: audit script dilewati untuk file ini.",
         evidence: text.slice(0, 200),
       },
     ];
@@ -322,7 +322,7 @@ export function auditPackageJson(relPath: string, text: string): AuditFinding[] 
         title: `Lifecycle script "${name}" terdeteksi`,
         detail:
           "Script ini berjalan otomatis saat npm install dan BISA menjalankan " +
-          "perintah apa pun. Bukan otomatis jahat — tapi wajib dibaca isinya.",
+          "perintah apa pun. Bukan otomatis jahat , tapi wajib dibaca isinya.",
         evidence: `${name}: ${body}`.slice(0, 300),
       });
     }
@@ -336,7 +336,7 @@ export function auditPackageJson(relPath: string, text: string): AuditFinding[] 
           severity: "LOW",
           file: relPath,
           title: `Dependensi "${depName}" menunjuk keluar registry npm`,
-          detail: `Spesifikasi "${spec}" mengambil kode dari luar npm — periksa sumbernya.`,
+          detail: `Spesifikasi "${spec}" mengambil kode dari luar npm: periksa sumbernya.`,
           evidence: `${depName}: ${spec}`.slice(0, 300),
         });
       }
@@ -356,7 +356,7 @@ export function auditComposerJson(relPath: string, text: string): AuditFinding[]
         severity: "LOW",
         file: relPath,
         title: "composer.json bukan JSON valid",
-        detail: "File tidak bisa dibaca — audit script dilewati untuk file ini.",
+        detail: "File tidak bisa dibaca: audit script dilewati untuk file ini.",
         evidence: text.slice(0, 200),
       },
     ];
@@ -383,7 +383,7 @@ export function auditComposerJson(relPath: string, text: string): AuditFinding[]
         title: `Composer script "${name}" terdeteksi`,
         detail:
           "Script ini berjalan otomatis saat composer install/update dan BISA " +
-          "menjalankan perintah apa pun. Bukan otomatis jahat — tapi wajib dibaca.",
+          "menjalankan perintah apa pun. Bukan otomatis jahat , tapi wajib dibaca.",
         evidence: `${name}: ${body}`.slice(0, 300),
       });
     }
@@ -410,7 +410,7 @@ export function auditWorkflow(relPath: string, text: string): AuditFinding[] {
         file: relPath,
         title: "Workflow mengirim secret ke perintah download",
         detail:
-          "Secret GitHub Actions diteruskan ke curl/wget — pola eksfiltrasi kredensial. " +
+          "Secret GitHub Actions diteruskan ke curl/wget: pola eksfiltrasi kredensial. " +
           "Periksa URL tujuannya sebelum lanjut.",
         evidence: evidenceOf(text, at),
       });
@@ -434,7 +434,7 @@ export function auditWorkflow(relPath: string, text: string): AuditFinding[] {
       severity: "INFO",
       file: relPath,
       title: `Blok run diperiksa (${checked}), tidak ada pola berbahaya`,
-      detail: "Workflow CI normal — hanya berjalan di CI, bukan saat install.",
+      detail: "Workflow CI normal: hanya berjalan di CI, bukan saat install.",
       evidence: "",
     });
   }
@@ -474,7 +474,7 @@ export function auditDockerfile(relPath: string, text: string): AuditFinding[] {
       severity: "LOW",
       file: relPath,
       title: "Entrypoint/container menjalankan shell",
-      detail: "Normal untuk image aplikasi — catat bila dikombinasikan dengan temuan lain.",
+      detail: "Normal untuk image aplikasi: catat bila dikombinasikan dengan temuan lain.",
       evidence: evidenceOf(text, text.search(/ENTRYPOINT|CMD/i)),
     });
   }
@@ -532,7 +532,7 @@ export async function auditRemoteRepo(repoUrl: string, opts?: { ref?: string }):
         repo: label,
         inspected: [],
         notInspectable: [
-          "Bukan repository GitHub https — audit remote hanya mendukung GitHub. Lanjutkan dengan pemeriksaan manual.",
+          "Bukan repository GitHub https: audit remote hanya mendukung GitHub. Lanjutkan dengan pemeriksaan manual.",
         ],
         findings: [],
       },
@@ -545,7 +545,7 @@ export async function auditRemoteRepo(repoUrl: string, opts?: { ref?: string }):
     repo: `${label} (ref: ${ref})`,
     inspected: entries.map((e) => e.name),
     notInspectable: [
-      "Metadata .git (config/hooks) tidak tersedia sebelum clone — diperiksa di audit lokal tahap 2.",
+      "Metadata .git (config/hooks) tidak tersedia sebelum clone. Diperiksa di audit lokal tahap 2.",
     ],
     findings,
   };
@@ -734,7 +734,7 @@ export function auditGitConfig(configText: string): AuditFinding[] {
         severity: "MEDIUM",
         file: ".git/config",
         title: `Git alias mengeksekusi shell: ${kv[1]}`,
-        detail: "Alias diawali '!' menjalankan shell — tidak otomatis berjalan, tapi catat.",
+        detail: "Alias diawali '!' menjalankan shell, tidak otomatis berjalan, tapi catat.",
         evidence: `${kv[1]} = ${value}`.slice(0, 300),
       });
     }
@@ -775,7 +775,7 @@ export function auditGitHooksDir(gitDir: string): AuditFinding[] {
       file: `.git/hooks/${name}`,
       title: `Git hook aktif: ${name}`,
       detail:
-        "Hook BERJALAN saat operasi git tertentu (commit, checkout, dll) — bukan " +
+        "Hook BERJALAN saat operasi git tertentu (commit, checkout, dll), bukan " +
         "saat install. Jangan jalankan manual untuk memeriksanya; baca isinya.",
       evidence: `ukuran ${(stat.size / 1024).toFixed(1)} KB`,
     });

@@ -83,7 +83,7 @@ export function TemplateActionBox({ slug, framework }: TemplateActionBoxProps) {
             </div>
           )}
 
-          <CommandBox command={command} />
+          <CommandBox command={command} tooltipCopy />
 
           {/* Prerequisite Notice */}
           <div className="flex items-start gap-2 text-xs text-zinc-400 bg-[#1B1B21] border border-[#3F3F4C] rounded-xl p-3">

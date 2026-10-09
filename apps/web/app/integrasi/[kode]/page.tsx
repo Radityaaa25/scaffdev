@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import { getIntegrasiByKode } from "@/lib/data";
 import { AskAI } from "@/components/AskAI";
 import { CommandBox } from "@/components/CommandBox";
-import { PuzzleIcon } from "@/components/DocsIcons";
+import { IntegrationLogo } from "@/components/IntegrationLogo";
+import { SetupSteps } from "@/components/SetupSteps";
 import { absoluteUrl, baseMetadata } from "@/lib/seo";
 
 export const revalidate = 3600;
@@ -37,7 +38,7 @@ export async function generateMetadata({ params }: IntegrasiDetailPageProps): Pr
   const title = `${item.nama_tampilan}: Integrasi Scaffdev`;
   const description =
     `Modul ${item.nama_tampilan} (${KATEGORI_LABEL[item.kategori_integrasi ?? "other"] ?? item.kategori_integrasi}) ` +
-    `untuk Next.js & Laravel. Implementasi siap pakai berbasis dokumentasi resmi — satu modul untuk Builder dan CLI.`;
+    `untuk Next.js & Laravel. Implementasi siap pakai berbasis dokumentasi resmi: satu modul untuk Builder dan CLI.`;
   return baseMetadata({
     title,
     description,
@@ -75,8 +76,8 @@ export default async function IntegrasiDetailPage({ params }: IntegrasiDetailPag
         </Link>
 
         <div className="mt-4 flex items-center gap-4">
-          <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#8B5CF6]/30 bg-[#8B5CF6]/10 text-[#A78BFA]">
-            <PuzzleIcon className="h-6 w-6" />
+          <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#8B5CF6]/30 bg-[#8B5CF6]/10 text-[#A78BFA] overflow-hidden">
+            <IntegrationLogo kode={item.kode} iconClassName="h-7 w-7" wordmarkClassName="h-6 w-auto" />
           </span>
           <div className="min-w-0">
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[#FAFAFA] tracking-tight">
@@ -120,9 +121,9 @@ export default async function IntegrasiDetailPage({ params }: IntegrasiDetailPag
               Instalasi
             </h2>
             <p className="text-xs text-zinc-500 mb-1.5">Segera (CLI 0.4.0+):</p>
-            <CommandBox command={`npx scaffdev add ${item.kode}`} />
+            <CommandBox command={`npx scaffdev add ${item.kode}`} tooltipCopy />
             <p className="mt-4 text-xs text-zinc-500 mb-1.5">Hari ini via Builder:</p>
-            <CommandBox command={`npx scaffdev@latest --template=<slug> --with=${item.kode}`} />
+            <CommandBox command={`npx scaffdev@latest --template=<slug> --with=${item.kode}`} tooltipCopy />
             <p className="mt-3 text-[11px] leading-relaxed text-zinc-500">
               Ganti <span className="font-mono text-zinc-400">&lt;slug&gt;</span> dengan
               slug template base pilihanmu di{" "}
@@ -184,12 +185,10 @@ export default async function IntegrasiDetailPage({ params }: IntegrasiDetailPag
 
         {item.instruksi_setup && (
           <section className="mt-4 rounded-2xl border border-[#3F3F4C] bg-[#24242C] p-6">
-            <h2 className="text-base font-semibold text-[#FAFAFA] mb-3">
+            <h2 className="text-base font-semibold text-[#FAFAFA] mb-4">
               Cara Setup
             </h2>
-            <p className="text-sm text-zinc-400 leading-relaxed whitespace-pre-wrap">
-              {item.instruksi_setup}
-            </p>
+            <SetupSteps text={item.instruksi_setup} />
           </section>
         )}
       </div>

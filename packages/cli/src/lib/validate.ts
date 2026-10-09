@@ -28,7 +28,7 @@ export async function validateModuleTarget(
     try {
       const { auditRemoteRepo, renderAuditReport } = await import("./security-audit");
       const { report: auditReport } = await auditRemoteRepo(target, opts?.ref ? { ref: opts.ref } : undefined);
-      report.push("— Laporan security audit (read-only, tidak memengaruhi verdict) —");
+      report.push("Laporan security audit (read-only, tidak memengaruhi verdict):");
       report.push(...renderAuditReport(auditReport));
     } catch (err) {
       report.push(`Audit dilewati: ${(err as Error).message}`);

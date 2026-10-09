@@ -2,13 +2,16 @@
 
 import React, { useState } from "react";
 import { CheckIcon } from "./DocsIcons";
+import { CopyIconButton } from "./CopyIconButton";
 
 interface CommandBoxProps {
   command: string;
   className?: string;
+  /** true = tombol salin gaya docs (ikon + tooltip), bukan teks "Salin". */
+  tooltipCopy?: boolean;
 }
 
-export function CommandBox({ command, className = "" }: CommandBoxProps) {
+export function CommandBox({ command, className = "", tooltipCopy = false }: CommandBoxProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -31,6 +34,9 @@ export function CommandBox({ command, className = "" }: CommandBoxProps) {
         <span className="text-[#FAFAFA] whitespace-nowrap">{command}</span>
       </div>
 
+      {tooltipCopy ? (
+        <CopyIconButton text={command} />
+      ) : (
       <button
         onClick={handleCopy}
         type="button"
@@ -45,6 +51,7 @@ export function CommandBox({ command, className = "" }: CommandBoxProps) {
           "Salin"
         )}
       </button>
+      )}
     </div>
   );
 }

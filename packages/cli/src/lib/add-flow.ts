@@ -1,5 +1,5 @@
 /**
- * Standalone integration: `scaffdev add <kode>` — suntik SATU modul integrasi
+ * Standalone integration: `scaffdev add <kode>`: suntik SATU modul integrasi
  * ke project yang sedang dibuka (tanpa membuat folder baru).
  *
  * Memakai engine yang SAMA dengan Builder (injectModule + manifest +
@@ -128,7 +128,7 @@ export async function runAddFlow(opts: {
 }): Promise<AddResult> {
   const projectDir = path.resolve(opts.projectDir);
 
-  // 1. DISCOVER — cari integrasi di indeks.
+  // 1. DISCOVER: cari integrasi di indeks.
   let index: IntegrasiRow[];
   try {
     index = await fetchIntegrasiIndex();
@@ -147,7 +147,7 @@ export async function runAddFlow(opts: {
   if (!row) {
     p.cancel(
       `Integrasi "${opts.kodeArg}" tidak ditemukan.\n\nIntegrasi tersedia:\n` +
-        index.map((r) => `  • ${r.kode} — ${r.nama_tampilan}`).join("\n")
+        index.map((r) => `  • ${r.kode}: ${r.nama_tampilan}`).join("\n")
     );
     return { completed: false };
   }
@@ -166,14 +166,14 @@ export async function runAddFlow(opts: {
     return { completed: false };
   }
 
-  // 2. AUDIT — gate sebelum clone apa pun.
+  // 2. AUDIT: gate sebelum clone apa pun.
   const gate = await runSecurityGate({
     repoUrl: row.repo_url.trim(),
     kindLabel: `modul integrasi "${row.nama_tampilan}"`,
   });
   if (!gate.proceed) return { completed: false };
 
-  // 3. VALIDATE — framework project + compat modul.
+  // 3. VALIDATE: framework project + compat modul.
   const detected = detectProjectFramework(projectDir);
   p.log.info(`Framework project terdeteksi: ${fwLabel(detected === "both" || detected === "none" ? "" : detected)}${detected === "both" || detected === "none" ? " (perlu pilih manual)" : ""}.`);
   const fw = await pickFramework(detected);
@@ -231,7 +231,7 @@ export async function runAddFlow(opts: {
     const how = await p.select({
       message: "Bagaimana ScaffDev harus bersikap?",
       options: [
-        { value: "cancel", label: "Batal", hint: "Aman — tidak ada yang diubah" },
+        { value: "cancel", label: "Batal", hint: "Aman, tidak ada yang diubah" },
         { value: "overwrite", label: "Timpa", hint: "Backup dulu ke .scaff/trash/" },
         { value: "skip", label: "Lewati file yang ada", hint: "Hanya pasang yang baru" },
       ],
@@ -325,7 +325,7 @@ export async function runAddFlow(opts: {
         });
         depsInstalled = "terpasang";
       } catch {
-        depsInstalled = "GAGAL — jalankan manual";
+        depsInstalled = "GAGAL, jalankan manual";
       }
     } else {
       depsInstalled = "dilewati user";
