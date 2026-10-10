@@ -15,7 +15,7 @@ export interface SpotlightDoc {
 }
 
 /** Topbar Docs dengan brand, search spotlight (Cmd/Ctrl+K), dan GitHub link */
-export function DocsTopbar({ docs, version = "v0.5" }: { docs: SpotlightDoc[]; version?: string }) {
+export function DocsTopbar({ docs, version = null }: { docs: SpotlightDoc[]; version?: string | null }) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -52,10 +52,12 @@ export function DocsTopbar({ docs, version = "v0.5" }: { docs: SpotlightDoc[]; v
           </div>
         </Link>
 
-        {/* Version Badge (dari versi CLI, bukan hardcoded) */}
-        <span className="hidden rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-xs font-medium text-zinc-400 lg:inline-block">
-          {version}
-        </span>
+        {/* Version Badge (dari versi CLI; disembunyikan bila tak terbaca) */}
+        {version ? (
+          <span className="hidden rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-xs font-medium text-zinc-400 lg:inline-block">
+            {version}
+          </span>
+        ) : null}
 
         {/* Spacer */}
         <div className="flex-1" />
