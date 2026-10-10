@@ -6,10 +6,11 @@ import fs from "fs";
 import path from "path";
 
 /** Versi CLI (sumber tunggal: packages/cli/package.json) untuk badge Docs. */
-function cliShortVersion(): string {
+/** Mengembalikan null bila terbaca gagal — badge disembunyikan (tanpa fallback basi). */
+function cliShortVersion(): string | null {
   try {
     const raw = fs.readFileSync(
-      path.join(process.cwd(), "..", "packages", "cli", "package.json"),
+      path.join(process.cwd(), "..", "..", "packages", "cli", "package.json"),
       "utf8"
     );
     const v = (JSON.parse(raw) as { version?: unknown }).version;
@@ -18,9 +19,9 @@ function cliShortVersion(): string {
       if (m) return `v${m[1]}.${m[2]}`;
     }
   } catch {
-    /* fallback di bawah: badge tidak boleh merusak layout */
+    /* badge disembunyikan, bukan versi basi */
   }
-  return "v0.5";
+  return null;
 }
 
 export default function DocsLayout({ children }: { children: React.ReactNode }) {

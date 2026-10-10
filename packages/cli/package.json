@@ -1,6 +1,6 @@
 {
   "name": "scaffdev",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "CLI untuk generate project boilerplate Scaffdev dengan tampilan visual jadi dan kurasi integrasi konteks Indonesia.",
   "keywords": [
     "scaffolding",
@@ -30,7 +30,8 @@
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
     "test:audit": "tsc -p scripts/audit-test/tsconfig.json && node scripts/audit-test/dist/scripts/audit-test/run.js",
-    "test:foreign": "tsc -p scripts/foreign-add-test/tsconfig.json && node scripts/foreign-add-test/dist/scripts/foreign-add-test/run.js"
+    "test:foreign": "tsc -p scripts/foreign-add-test/tsconfig.json && node scripts/foreign-add-test/dist/scripts/foreign-add-test/run.js",
+    "test:watermark": "tsc -p scripts/watermark-test/tsconfig.json && node scripts/watermark-test/dist/scripts/watermark-test/run.js"
   },
   "dependencies": {
     "@clack/prompts": "^0.9.1",

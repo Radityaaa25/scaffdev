@@ -287,6 +287,7 @@ npx scaffdev@latest --version
 
 | Versi | Isi perubahan |
 |---|---|
+| 0.7.0 | Watermark kode saat generate (README + SETUP + `.scaff/meta.json`, idempoten) |
 | 0.6.0 | `add` di template asing (heuristik jejak, flag folder baru, adopsi manifest), `validate-module` cek import resolve |
 | 0.5.0 | `validate-module --ref=<branch>`, parser tar tahan arsip non-standar |
 | 0.4.0 | `scaffdev add`, Builder interaktif, mode konflik skip/overwrite, field `docsUrl` |
@@ -310,7 +311,8 @@ Ketika kamu menjalankan Scaff CLI, urutan prosesnya selalu sama:
 4. **Generate Dokumen Otomatis**: CLI membuat dua file dari metadata integrasi:
    - `.env.example`: berisi seluruh environment variable yang dibutuhkan (nama + komentar deskripsi, nilainya kosong).
    - `SETUP.md`: panduan langkah-demi-langkah cara setup dan konfigurasi API key setiap layanan pihak ketiga.
-5. **Instruksi Pasca-Generate**: CLI mencetak langkah lanjutan sesuai framework (seperti blok Next.js / Laravel di atas).
+5. **Watermark Kode** (butuh CLI `0.7.0+`, wajib lisensi): kredit Scaffdev ditulis di akhir `README.md`, section Atribusi di akhir `SETUP.md`, dan stempel generator di `.scaff/meta.json`. Idempoten (aman generate ulang), visual tidak disentuh. Detail: [Lisensi](/docs/lisensi).
+6. **Instruksi Pasca-Generate**: CLI mencetak langkah lanjutan sesuai framework (seperti blok Next.js / Laravel di atas).
 
 Setelah proses selesai, cukup buka folder project-mu:
 
