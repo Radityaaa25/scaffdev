@@ -21,6 +21,7 @@ export interface Template {
   screenshot_url?: string | null;
   opsi_integrasi: string[];
   is_published: boolean;
+  is_premium?: boolean;
   /** true = disembunyikan dari Builder (tetap bisa generate langsung). */
   builder_hidden?: boolean;
   created_at?: string;
@@ -29,8 +30,10 @@ export interface Template {
 
 export interface TemplateDetailResponse {
   slug: string;
-  repo_url: string;
+  /** null untuk template premium (repo privat, unduh via tarball berlisensi). */
+  repo_url: string | null;
   framework: string;
+  is_premium?: boolean;
   nama?: string;
   deskripsi?: string;
   kategori?: string;

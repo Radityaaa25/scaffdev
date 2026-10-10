@@ -23,6 +23,7 @@ export interface TemplateFormInitial {
   builder_hidden_kategoris: string[];
   builder_hidden: boolean;
   is_published: boolean;
+  is_premium: boolean;
 }
 
 const REPO_URL_RE =
@@ -86,6 +87,7 @@ export function TemplateForm({
   const [screenshotUrl, setScreenshotUrl] = useState(initial?.screenshot_url ?? "");
   const [opsiIntegrasi, setOpsiIntegrasi] = useState<string[]>(initial?.opsi_integrasi ?? []);
   const [isPublished, setIsPublished] = useState(initial?.is_published ?? false);
+  const [isPremium, setIsPremium] = useState(initial?.is_premium ?? false);
   const [builderHidden, setBuilderHidden] = useState(initial?.builder_hidden ?? false);
   // Daftar HITAM kategori Builder: yang TIDAK dicentang = disembunyikan.
   const [hiddenKats, setHiddenKats] = useState<string[]>(initial?.builder_hidden_kategoris ?? []);
@@ -198,6 +200,7 @@ export function TemplateForm({
       builder_hidden_kategoris: hiddenKats,
       builder_hidden: builderHidden,
       is_published: isPublished,
+      is_premium: isPremium,
     };
 
     const res = await apiFetch<{ template: { slug: string } }>(
@@ -413,6 +416,15 @@ export function TemplateForm({
             <span>
               <span className="block text-sm font-medium text-zinc-200">Publish sekarang</span>
               <span className="block text-xs text-zinc-500">Template langsung muncul di katalog web & bisa di-clone via CLI.</span>
+            </span>
+          </label>
+        </div>
+        <div className="sm:col-span-2">
+          <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-white/20">
+            <input type="checkbox" checked={isPremium} onChange={(e) => setIsPremium(e.target.checked)} className="mt-0.5 h-4 w-4 accent-amber-400" />
+            <span>
+              <span className="block text-sm font-medium text-zinc-200">Template premium (berbayar)</span>
+              <span className="block text-xs text-zinc-500">Repo harus privat. Publik tidak melihat repo_url; CLI mengunduh via kunci lisensi (menu Lisensi).</span>
             </span>
           </label>
         </div>

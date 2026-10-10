@@ -867,6 +867,12 @@ export function BuilderFlow() {
             <div className="rounded-2xl bg-[#1B1B21]/95 p-5 backdrop-blur-xl">
               <p className="text-sm font-semibold text-[#FAFAFA] mb-3">Jalankan di terminal:</p>
               <CommandBox command={command} />
+              {base?.is_premium === true && (
+                <p className="mt-3 rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-[11px] text-amber-200">
+                  Template premium: tambahkan <span className="font-mono">--license-key=KUNCIMU</span> di
+                  akhir command (atau jawab saat prompt). Butuh CLI 0.8.0+.
+                </p>
+              )}
               <p className="mt-3 text-[11px] text-zinc-500">
                 Membutuhkan CLI <span className="font-mono text-zinc-300">0.2.0+</span>.
                 Prasyarat runtime mengikuti framework base

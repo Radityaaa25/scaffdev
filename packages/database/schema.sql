@@ -739,3 +739,54 @@ insert into public.logo_assets (key, label, url, kind) values
   ('nextjs', 'Next.js', '/logo-nextjs.svg', 'framework'),
   ('laravel', 'Laravel', '/logo-laravel.svg', 'framework')
 on conflict (key) do nothing;
+
+-- ============================================================
+-- Migrasi 015 — Template premium + lisensi kunci
+-- is_premium: template berbayar (repo privat, unduh hanya via kunci).
+-- licenses: kunci lisensi per template (diterbitkan admin manual).
+-- RLS: TIDAK ada policy baca publik — akses hanya service_role
+-- (API verify/download + halaman admin). CARA PAKAI: jalankan blok
+-- ini sekali di Supabase SQL Editor.
+-- ============================================================
+alter table public.templates
+  add column if not exists is_premium boolean not null default false;
+
+create table if not exists public.licenses (
+  id            uuid        primary key default gen_random_uuid(),
+  key           text        not null unique,          -- format SCAFF-XXXX-XXXX-XXXX
+  template_slug text        not null references public.templates(slug) on delete cascade,
+  email         text        not null,                 -- pembeli (stempel meta.json)
+  status        text        not null default 'active' check (status in ('active', 'revoked')),
+  note          text        not null default '',
+  created_at    timestamptz not null default now()
+);
+
+create index if not exists licenses_key_idx on public.licenses (key);
+create index if not exists licenses_slug_idx on public.licenses (template_slug);
+
+alter table public.licenses enable row level security;
+-- Sengaja tanpa policy: hanya service_role (melewati RLS) yang boleh baca/tulis.
+-- Satu-satunya jalan publik = fungsi verify_license di bawah (tanpa bocor isi tabel).
+
+-- Fungsi verifikasi kunci (SECURITY DEFINER, dipanggil anon via RPC).
+-- Mengembalikan tepat 1 baris {valid, email}; email kosong bila tidak valid.
+-- Tanpa ini, endpoint download tidak bisa cek lisensi (anon tidak boleh baca tabel).
+create or replace function public.verify_license(p_slug text, p_key text)
+returns table (valid boolean, email text)
+language sql
+security definer
+set search_path = public
+as $$
+  select
+    case when l.id is null then false else true end as valid,
+    coalesce(l.email, '') as email
+  from (select 1) as one
+  left join public.licenses as l
+    on l.key = upper(trim(p_key))
+    and lower(l.template_slug) = lower(trim(p_slug))
+    and l.status = 'active'
+  limit 1;
+$$;
+
+revoke all on function public.verify_license(text, text) from public;
+grant execute on function public.verify_license(text, text) to anon, authenticated;

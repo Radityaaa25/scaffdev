@@ -1,5 +1,13 @@
 # Changelog CLI Scaffdev
 
+## 0.8.0
+
+- Template premium: gate kunci lisensi saat generate (`--license-key`, cache
+  `~/.scaffdev/licenses.json`, atau prompt). Kunci valid = unduh tarball
+  terverifikasi server (repo privat, tanpa clone) + stempel `.scaff/license.json`.
+- Ekstraksi tarball menolak traversal + arsip kosong.
+- Uji `test:premium`: 4 asersi (format kunci, ekstraksi, traversal, arsip kosong).
+
 ## 0.7.0
 
 - Watermark level kode saat generate (wajib lisensi): baris kredit di akhir

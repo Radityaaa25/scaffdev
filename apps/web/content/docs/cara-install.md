@@ -287,6 +287,7 @@ npx scaffdev@latest --version
 
 | Versi | Isi perubahan |
 |---|---|
+| 0.8.0 | Template premium: gate kunci lisensi + unduh tarball repo privat (`--license-key`) |
 | 0.7.0 | Watermark kode saat generate (README + SETUP + `.scaff/meta.json`, idempoten) |
 | 0.6.0 | `add` di template asing (heuristik jejak, flag folder baru, adopsi manifest), `validate-module` cek import resolve |
 | 0.5.0 | `validate-module --ref=<branch>`, parser tar tahan arsip non-standar |
