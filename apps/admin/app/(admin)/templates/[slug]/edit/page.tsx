@@ -70,6 +70,7 @@ export default async function EditTemplatePage({
     builder_hidden_kategoris: (template.builder_hidden_kategoris ?? []) as string[],
     builder_hidden: (template.builder_hidden ?? false) as boolean,
     is_published: template.is_published,
+    is_premium: (template.is_premium ?? false) as boolean,
   };
 
   return (

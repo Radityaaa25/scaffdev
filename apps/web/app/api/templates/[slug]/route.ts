@@ -38,6 +38,14 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
   }
 
+  // Template premium: repo privat — JANGAN bocorkan repo_url ke publik.
+  // CLI mengunduh via /api/premium/download memakai kunci lisensi.
+  if (template.is_premium === true) {
+    const { repo_url: _hidden, ...rest } = template;
+    void _hidden;
+    return NextResponse.json({ ...rest, repo_url: null });
+  }
+
   return NextResponse.json(template);
 }
 

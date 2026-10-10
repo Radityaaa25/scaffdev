@@ -27,6 +27,18 @@ const NAV_ITEMS = [
       </svg>
     ),
   },
+  // Menu Lisensi: terbitkan/cabut kunci template premium (tanpa login web).
+  {
+    href: "/lisensi",
+    label: "Lisensi",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-5 w-5">
+        <rect x="4" y="10" width="16" height="10" rx="2" />
+        <path strokeLinecap="round" d="M8 10V7a4 4 0 018 0v3" />
+        <circle cx="12" cy="15" r="1.5" />
+      </svg>
+    ),
+  },
   // Menu Integrasi: CRUD daftar integrasi (dipakai form template + filter katalog web).
   {
     href: "/integrasi",

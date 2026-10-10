@@ -64,6 +64,7 @@ export interface Template {
   screenshot_url?: string | null;
   opsi_integrasi: string[];
   is_published: boolean;
+  is_premium: boolean;
   downloads_count: number;
   builder_hidden_kategoris: string[];
   builder_hidden: boolean;
@@ -76,8 +77,10 @@ export interface Template {
  */
 export interface TemplateDetailResponse {
   slug: string;
-  repo_url: string;
+  /** null untuk template premium (repo privat, unduh via tarball berlisensi). */
+  repo_url: string | null;
   framework: string;
+  is_premium: boolean;
   nama?: string;
   deskripsi?: string;
   kategori?: string;
@@ -98,4 +101,14 @@ export interface AdminUser {
   id: string;
   email: string;
   role: 'admin' | string;
+}
+
+export interface License {
+  id: string;
+  key: string;
+  template_slug: string;
+  email: string;
+  status: 'active' | 'revoked' | string;
+  note: string;
+  created_at: string;
 }

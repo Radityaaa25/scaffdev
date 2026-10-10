@@ -26,6 +26,14 @@ Menyediakan produk atau layanan yang **bersaing** dengan Scaffdev atau produk Sc
 
 Template bertanda premium memakai lisensi komersial terpisah (di luar lisensi platform). Membeli template premium = hak pakai sesuai syaratnya, bukan hak mengedarkan ulang template tersebut.
 
+Cara kerja (tanpa login web - kunci = kredensial):
+
+- Repo template premium privat. Publik tidak melihat URL repo maupun isinya.
+- Pembeli menerima 1 kunci lisensi (format `SCAFF-XXXX-XXXX-XXXX`) dari admin.
+- Generate memakai kunci: `npx scaffdev@latest toko-saya --template=slug-premium --license-key=SCAFF-XXXX-XXXX-XXXX` (butuh CLI 0.8.0+). Tanpa flag, CLI memakai kunci tersimpan (`~/.scaffdev/licenses.json`) atau meminta saat prompt.
+- CLI memverifikasi kunci ke server lalu mengunduh arsip dari repo privat. Kunci salah/cabut = generate ditolak. Email pembeli dicatat di `.scaff/license.json` hasil generate.
+- Satu kunci berlaku untuk 1 template (tidak lintas template). Kunci yang disalahgunakan dapat dicabut admin kapan saja.
+
 ## Atribusi / watermark
 
 Project hasil generate wajib mempertahankan kredit ScaffDev level kode:

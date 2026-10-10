@@ -68,6 +68,7 @@ export async function getTemplateBySlug(slug: string): Promise<TemplateDetailRes
     screenshot_url: tpl.screenshot_url ?? undefined,
     builder_hidden_kategoris: (tpl.builder_hidden_kategoris ?? []) as string[],
     builder_hidden: tpl.builder_hidden === true,
+    is_premium: tpl.is_premium === true,
     integrasi: integrasiDetails,
   };
 }

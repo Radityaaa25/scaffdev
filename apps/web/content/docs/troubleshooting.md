@@ -613,6 +613,25 @@ copy .env.example .env         # Laravel (CMD)
 
 ---
 
+## Template premium: kunci ditolak / unduhan gagal
+
+**Gejala:** `Kunci lisensi tidak valid untuk template ini` atau `Terlalu banyak percobaan`.
+
+**Penyebab umum:**
+
+- Salah ketik kunci (format `SCAFF-XXXX-XXXX-XXXX`, tanpa angka 0/1 dan huruf O/I).
+- Kunci untuk template lain (1 kunci = 1 template).
+- Kunci dicabut admin atau email belum diterbitkan.
+- `Terlalu banyak percobaan` = rate limit 10x/10 menit, tunggu lalu coba lagi.
+
+**Solusi:**
+
+1. Salin-ulang kunci persis dari admin (jangan ketik manual).
+2. Paksa kunci eksplisit: `--license-key=SCAFF-XXXX-XXXX-XXXX` (melewati cache lokal).
+3. Masih gagal: hubungi admin dengan email pembelian + slug template.
+
+---
+
 ## Cara meminta bantuan yang efektif
 
 Kalau semua solusi di atas belum menyelesaikan masalah, siapkan tiga hal ini sebelum bertanya ke AI atau tim:
