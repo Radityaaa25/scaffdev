@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import { useUI } from "@/components/UIProvider";
+import { LogoInput } from "@/components/LogoInput";
+import { saveLogoAsset, deleteLogoAsset, resolveLogoUrl } from "@/lib/logo";
 
 export interface ReferensiRow {
   kode: string;
@@ -34,9 +36,11 @@ const KODE_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export function ReferensiManager({
   initialFrameworks,
   initialKategoris,
+  initialFrameworkLogos,
 }: {
   initialFrameworks: ReferensiRow[];
   initialKategoris: ReferensiRow[];
+  initialFrameworkLogos: Record<string, string>;
 }) {
   const [tab, setTab] = useState<Kind>("framework");
   return (
@@ -63,20 +67,33 @@ export function ReferensiManager({
         key={tab}
         kind={tab}
         initial={tab === "framework" ? initialFrameworks : initialKategoris}
+        initialLogos={tab === "framework" ? initialFrameworkLogos : undefined}
       />
     </div>
   );
 }
 
-function ReferensiSection({ kind, initial }: { kind: Kind; initial: ReferensiRow[] }) {
+function ReferensiSection({
+  kind,
+  initial,
+  initialLogos,
+}: {
+  kind: Kind;
+  initial: ReferensiRow[];
+  initialLogos?: Record<string, string>;
+}) {
   const router = useRouter();
   const { toast, confirm } = useUI();
   const meta = KIND_META[kind];
+  const isFramework = kind === "framework";
   const [rows, setRows] = useState<ReferensiRow[]>(initial);
+  const [logos, setLogos] = useState<Record<string, string>>(initialLogos ?? {});
   const [kode, setKode] = useState("");
   const [nama, setNama] = useState("");
   const [editing, setEditing] = useState<string | null>(null);
   const [editNama, setEditNama] = useState("");
+  const [logoEditing, setLogoEditing] = useState<string | null>(null);
+  const [logoDraft, setLogoDraft] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -109,6 +126,7 @@ function ReferensiSection({ kind, initial }: { kind: Kind; initial: ReferensiRow
   }
 
   function startEdit(row: ReferensiRow) {
+    setLogoEditing(null);
     setEditing(row.kode);
     setEditNama(row.nama_tampilan);
     setError(null);
@@ -131,6 +149,46 @@ function ReferensiSection({ kind, initial }: { kind: Kind; initial: ReferensiRow
     );
     setEditing(null);
     toast.success("Perubahan tersimpan.");
+    router.refresh();
+  }
+
+  function startLogoEdit(row: ReferensiRow) {
+    setEditing(null);
+    setLogoEditing(row.kode);
+    setLogoDraft(logos[row.kode] ?? "");
+    setError(null);
+  }
+
+  async function saveLogo(row: ReferensiRow) {
+    setError(null);
+    const draft = logoDraft.trim();
+    const prev = (logos[row.kode] ?? "").trim();
+    if (draft === prev) {
+      setLogoEditing(null);
+      return;
+    }
+    if (draft && !(draft.startsWith("/") || /^https:\/\//i.test(draft))) {
+      return fail("URL logo harus path lokal (/...) atau URL https.");
+    }
+    setPending(true);
+    const res =
+      draft === ""
+        ? await deleteLogoAsset(row.kode)
+        : await saveLogoAsset({ key: row.kode, label: row.nama_tampilan, url: draft, kind: "framework" });
+    setPending(false);
+    if (!res.ok) return fail(res.error || "Gagal menyimpan logo.");
+    setLogos((prevMap) => {
+      const next = { ...prevMap };
+      if (draft) next[row.kode] = draft;
+      else delete next[row.kode];
+      return next;
+    });
+    setLogoEditing(null);
+    toast.success(
+      draft
+        ? `Logo "${row.nama_tampilan}" tersimpan.`
+        : `Logo "${row.nama_tampilan}" dihapus (web fallback ke bawaan).`
+    );
     router.refresh();
   }
 
@@ -198,6 +256,7 @@ function ReferensiSection({ kind, initial }: { kind: Kind; initial: ReferensiRow
           <table className="w-full min-w-[560px] text-left text-sm">
             <thead>
               <tr className="border-b border-white/10 text-xs uppercase tracking-wider text-zinc-500">
+                {isFramework && <th className="px-5 py-3 font-semibold">Logo</th>}
                 <th className="px-5 py-3 font-semibold">Kode</th>
                 <th className="px-5 py-3 font-semibold">Nama Tampilan</th>
                 <th className="px-5 py-3 font-semibold">Dipakai</th>
@@ -206,74 +265,129 @@ function ReferensiSection({ kind, initial }: { kind: Kind; initial: ReferensiRow
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={row.kode} className="border-b border-white/5 transition-colors last:border-0 hover:bg-white/[0.02]">
-                  <td className="px-5 py-3 font-mono text-xs text-[#A78BFA]">{row.kode}</td>
-                  <td className="px-5 py-3 text-zinc-200">
-                    {editing === row.kode ? (
-                      <input
-                        value={editNama}
-                        onChange={(e) => setEditNama(e.target.value)}
-                        className={`${inputCls} !py-1.5`}
-                        maxLength={100}
-                        autoFocus
-                      />
-                    ) : (
-                      row.nama_tampilan
+                <Fragment key={row.kode}>
+                  <tr className="border-b border-white/5 transition-colors last:border-0 hover:bg-white/[0.02]">
+                    {isFramework && (
+                      <td className="px-5 py-3">
+                        <button
+                          type="button"
+                          onClick={() => (logoEditing === row.kode ? setLogoEditing(null) : startLogoEdit(row))}
+                          title={logos[row.kode] ? "Ubah logo" : "Atur logo"}
+                          aria-label={`${logos[row.kode] ? "Ubah" : "Atur"} logo ${row.nama_tampilan}`}
+                          className={`inline-flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border bg-white/[0.03] transition-all hover:border-white/25 active:scale-95 ${
+                            logoEditing === row.kode ? "border-[#8B5CF6]/60" : "border-white/10"
+                          }`}
+                        >
+                          {logos[row.kode] ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={resolveLogoUrl(logos[row.kode])}
+                              alt={`Logo ${row.nama_tampilan}`}
+                              className="h-6 w-6 object-contain"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <span className="text-sm text-zinc-600">+</span>
+                          )}
+                        </button>
+                      </td>
                     )}
-                  </td>
-                  <td className="px-5 py-3 font-mono text-xs text-zinc-400">
-                    {row.dipakai > 0 ? `${row.dipakai} template` : <span className="text-zinc-600">—</span>}
-                  </td>
-                  <td className="px-5 py-3">
-                    <div className="flex justify-end gap-2">
+                    <td className="px-5 py-3 font-mono text-xs text-[#A78BFA]">{row.kode}</td>
+                    <td className="px-5 py-3 text-zinc-200">
                       {editing === row.kode ? (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => void saveEdit(row)}
-                            disabled={pending}
-                            className="rounded-lg bg-[#8B5CF6] px-3 py-1.5 text-xs font-semibold text-white transition-all hover:bg-[#7C3AED] active:scale-95 disabled:opacity-60"
-                          >
-                            Simpan
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setEditing(null)}
-                            className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-zinc-300 transition-all hover:bg-white/10"
-                          >
-                            Batal
-                          </button>
-                        </>
+                        <input
+                          value={editNama}
+                          onChange={(e) => setEditNama(e.target.value)}
+                          className={`${inputCls} !py-1.5`}
+                          maxLength={100}
+                          autoFocus
+                        />
                       ) : (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => startEdit(row)}
-                            className="Btn"
-                          >
-                            Edit
-                            <svg className="svg" viewBox="0 0 512 512" aria-hidden="true">
-                              <path d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1v32c0 8.8 7.2 16 16 16h32zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z" />
-                            </svg>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => void handleDelete(row)}
-                            title={`Hapus ${row.nama_tampilan}`}
-                            aria-label={`Hapus ${row.nama_tampilan}`}
-                            className="btn-delete"
-                          >
-                            <svg viewBox="0 0 448 512" aria-hidden="true"><path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z" /></svg>
-                          </button>
-                        </>
+                        row.nama_tampilan
                       )}
-                    </div>
-                  </td>
-                </tr>
+                    </td>
+                    <td className="px-5 py-3 font-mono text-xs text-zinc-400">
+                      {row.dipakai > 0 ? `${row.dipakai} template` : <span className="text-zinc-600">—</span>}
+                    </td>
+                    <td className="px-5 py-3">
+                      <div className="flex justify-end gap-2">
+                        {editing === row.kode ? (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => void saveEdit(row)}
+                              disabled={pending}
+                              className="rounded-lg bg-[#8B5CF6] px-3 py-1.5 text-xs font-semibold text-white transition-all hover:bg-[#7C3AED] active:scale-95 disabled:opacity-60"
+                            >
+                              Simpan
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setEditing(null)}
+                              className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-zinc-300 transition-all hover:bg-white/10"
+                            >
+                              Batal
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => startEdit(row)}
+                              className="Btn"
+                            >
+                              Edit
+                              <svg className="svg" viewBox="0 0 512 512" aria-hidden="true">
+                                <path d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1v32c0 8.8 7.2 16 16 16h32zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z" />
+                              </svg>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => void handleDelete(row)}
+                              title={`Hapus ${row.nama_tampilan}`}
+                              aria-label={`Hapus ${row.nama_tampilan}`}
+                              className="btn-delete"
+                            >
+                              <svg viewBox="0 0 448 512" aria-hidden="true"><path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z" /></svg>
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                  {isFramework && logoEditing === row.kode && (
+                    <tr className="border-b border-white/5 bg-white/[0.02]">
+                      <td colSpan={5} className="px-5 py-4">
+                        <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
+                          <div className="min-w-0 flex-1">
+                            <LogoInput url={logoDraft} onChange={setLogoDraft} onError={fail} />
+                          </div>
+                          <div className="flex shrink-0 gap-2">
+                            <button
+                              type="button"
+                              onClick={() => void saveLogo(row)}
+                              disabled={pending}
+                              className="rounded-lg bg-[#8B5CF6] px-3 py-1.5 text-xs font-semibold text-white transition-all hover:bg-[#7C3AED] active:scale-95 disabled:opacity-60"
+                            >
+                              Simpan Logo
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setLogoEditing(null)}
+                              className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-zinc-300 transition-all hover:bg-white/10"
+                            >
+                              Batal
+                            </button>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
               ))}
               {rows.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-5 py-10 text-center text-sm text-zinc-500">
+                  <td colSpan={isFramework ? 5 : 4} className="px-5 py-10 text-center text-sm text-zinc-500">
                     Belum ada {meta.singular}. Tambahkan lewat form di atas.
                   </td>
                 </tr>
