@@ -613,6 +613,7 @@ copy .env.example .env         # Laravel (CMD)
 
 ---
 
+<!--
 ## Template premium: kunci ditolak / unduhan gagal
 
 **Gejala:** `Kunci lisensi tidak valid untuk template ini` atau `Terlalu banyak percobaan`.
@@ -631,6 +632,7 @@ copy .env.example .env         # Laravel (CMD)
 3. Masih gagal: hubungi admin dengan email pembelian + slug template.
 
 ---
+-->
 
 ## Cara meminta bantuan yang efektif
 

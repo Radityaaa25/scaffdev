@@ -28,11 +28,13 @@ dipakai supaya tidak menyesatkan — lisensinya punya syarat non-kompetisi.
   visual yang dipasarkan sebagai pengganti Scaffdev.
 - Menghapus atau mengaburkan atribusi Scaffdev (lihat bawah).
 
+<!--
 ## Template premium
 
 Template bertanda premium memakai lisensi komersial terpisah (di luar file
 ini). Membeli template premium = hak pakai sesuai syaratnya, bukan hak
 mengedarkan ulang template tersebut.
+-->
 
 ## Atribusi (code-level, tanpa visual paksa)
 

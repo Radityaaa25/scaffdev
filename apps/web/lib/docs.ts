@@ -108,6 +108,10 @@ function parseFrontmatter(raw: string): { meta: Record<string, string>; body: st
     }
   }
 
+  // Buang HTML comment (<!-- ... -->) dari body: konten yang dinonaktifkan
+  // tidak ikut ter-render, terindeks pencarian, maupun masuk konteks AI.
+  body = body.replace(/<!--[\s\S]*?-->/g, "");
+
   return { meta, body };
 }
 

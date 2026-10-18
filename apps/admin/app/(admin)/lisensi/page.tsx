@@ -1,3 +1,4 @@
+/*
 import { createSupabaseAdminServerClient } from "@/lib/supabase-server";
 import { LicenseManager, type LicenseRow } from "@/components/LicenseManager";
 
@@ -41,4 +42,11 @@ export default async function LisensiPage() {
       />
     </main>
   );
+}
+*/
+
+import { notFound } from "next/navigation";
+
+export default function LisensiPage() {
+  notFound();
 }

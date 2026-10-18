@@ -39,8 +39,8 @@ export function queryTerms(message: string): string[] {
 
 /** Sinonim Indonesia/Inggris agar istilah user tetap kena dokumen yang tepat. */
 const SYNONYMS: Record<string, string[]> = {
-  bayar: ["harga", "biaya", "premium", "berbayar", "pricing"],
-  harga: ["bayar", "biaya", "premium", "berbayar"],
+  bayar: ["harga", "biaya", /* "premium", "berbayar", "pricing", */],
+  harga: ["bayar", "biaya", /* "premium", "berbayar", */],
   lisensi: ["license", "legal", "lisence"],
   license: ["lisensi", "legal"],
   hapus: ["copot", "remove", "uninstall", "buang", "uninstallasi"],
@@ -128,7 +128,7 @@ export const SCAFFDEV_FACTS: string[] = [
   "- Saat menyebut command, gunakan format npx scaffdev@latest --template=<slug>.",
   "- `scaffdev add <kode>`: suntik 1 modul integrasi ke project yang sedang dibuka (butuh CLI 0.4.0+). Tanpa buat folder baru; konflik file bisa Batal/lewati/timpa (backup dulu).",
   "- Lisensi: Scaffdev source-available di bawah PolyForm Shield 1.0.0 (bukan MIT). Boleh lihat, pakai, ubah, bagikan, dan berkontribusi; dilarang dipakai untuk produk yang bersaing dengan Scaffdev.",
-  "- Template premium memakai lisensi komersial terpisah; membeli = hak pakai, bukan hak edar ulang.",
+  // "- Template premium memakai lisensi komersial terpisah; membeli = hak pakai, bukan hak edar ulang.",
   "- Hasil generate bebas dipakai; kredit ScaffDev level kode (README, SETUP.md, .scaff/meta.json) wajib dipertahankan, elemen visual bebas diubah.",
   "- Kontribusi diatur CLA; nama dan logo Scaffdev tidak dilisensikan.",
 ];

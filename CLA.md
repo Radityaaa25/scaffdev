@@ -12,7 +12,7 @@ ScaffDev (**ScaffDev**, https://scaffdev.vercel.app):
 - **Lisensi hak cipta** atas kontribusimu: worldwide, non-eksklusif,
   bebas royalti, tidak dapat dibatalkan — termasuk hak memakai,
   mengubah, menggabungkan, mendistribusikan, **melisensikan ulang**,
-  dan **mengkomersialkan** (termasuk dalam template/layanan premium).
+  dan **mengkomersialkan** <!-- (termasuk dalam template/layanan premium) -->.
 - **Lisensi paten** untuk klaim paten milikmu yang dilanggar oleh
   kontribusimu (ruang lingkup sama dengan lisensi paten di `LICENSE.md`).
 

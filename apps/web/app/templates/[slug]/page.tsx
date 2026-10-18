@@ -224,11 +224,12 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
               </li>
               <li className="flex items-center justify-between gap-3 border-b border-[#3F3F4C] pb-2">
                 <span>Visibilitas:</span>
-                {template.is_premium === true ? (
+                {/* {template.is_premium === true ? (
                 <span className="text-amber-300">Privat (kunci lisensi)</span>
               ) : (
                 <span className="text-emerald-400">Public (No Token Required)</span>
-              )}
+              )} */}
+                <span className="text-emerald-400">Public (No Token Required)</span>
               </li>
               <li className="flex items-center justify-between gap-3">
                 <span>Target Repo:</span>
@@ -237,7 +238,7 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
                   {template.repo_url}
                 </span>
               ) : (
-                <span className="text-zinc-400 text-xs">via kunci lisensi</span>
+                <span className="text-zinc-400 text-xs">{/* via kunci lisensi */}—</span>
               )}
               </li>
             </ul>
