@@ -681,7 +681,9 @@ alter table public.integrasi
 -- logo_assets: peta key logo -> URL publik. Web memakai fallback
 -- berlapis (DB -> file bundled -> ikon generik) sehingga aman bila
 -- baris dihapus. CARA PAKAI: jalankan blok ini sekali di Supabase
--- SQL Editor, lalu kelola dari halaman admin Logo.
+-- SQL Editor, lalu kelola dari form Integrasi / tabel Framework di
+-- admin. Bila blok ini belum lengkap jalan (mis. bucket/seed tidak
+-- terbentuk), pakai Migrasi 016 yang mengulang semuanya sekaligus.
 -- ============================================================
 create table if not exists public.logo_assets (
   key                 text        primary key,      -- contoh: 'supabase', 'laravel'
@@ -790,3 +792,82 @@ $$;
 
 revoke all on function public.verify_license(text, text) from public;
 grant execute on function public.verify_license(text, text) to anon, authenticated;
+
+-- ============================================================
+-- Migrasi 016 — Setup lengkap logo_assets (konsolidasi 014 + RLS)
+-- Blok 014 terbukti bisa berhenti di tengah di produksi (tabel ada,
+-- tapi bucket site-assets dan baris seed tidak terbentuk). Blok ini
+-- idempotent dan menuntaskan semuanya sekaligus: tabel, bucket,
+-- policy storage, seed, lalu RLS tabel + policy baca/tulis.
+-- CARA PAKAI: jalankan seluruh blok ini sekali di Supabase SQL Editor.
+-- ============================================================
+create table if not exists public.logo_assets (
+  key                 text        primary key,      -- contoh: 'supabase', 'laravel'
+  label               text        not null,         -- contoh: 'Supabase'
+  url                 text        not null,         -- URL publik (storage atau file lokal /logo-*.svg)
+  kind                text        not null default 'integration',
+  updated_at          timestamptz not null default now()
+);
+
+insert into storage.buckets (id, name, public)
+values ('site-assets', 'site-assets', true)
+on conflict (id) do update set public = true;
+
+drop policy if exists site_assets_public_read on storage.objects;
+create policy site_assets_public_read
+  on storage.objects
+  for select
+  using (bucket_id = 'site-assets');
+
+drop policy if exists site_assets_admin_write on storage.objects;
+create policy site_assets_admin_write
+  on storage.objects
+  for insert
+  to authenticated
+  with check (
+    bucket_id = 'site-assets'
+    and public.is_admin()
+  );
+
+drop policy if exists site_assets_admin_update on storage.objects;
+create policy site_assets_admin_update
+  on storage.objects
+  for update
+  to authenticated
+  using (bucket_id = 'site-assets' and public.is_admin())
+  with check (bucket_id = 'site-assets');
+
+drop policy if exists site_assets_admin_delete on storage.objects;
+create policy site_assets_admin_delete
+  on storage.objects
+  for delete
+  to authenticated
+  using (bucket_id = 'site-assets' and public.is_admin());
+
+insert into public.logo_assets (key, label, url, kind) values
+  ('supabase', 'Supabase', '/logo-supabase.svg', 'integration'),
+  ('midtrans', 'Midtrans', '/logo-midtrans.svg', 'integration'),
+  ('xendit', 'Xendit', '/logo-xendit.svg', 'integration'),
+  ('duitku', 'Duitku', '/logo-duitku.svg', 'integration'),
+  ('cloudinary', 'Cloudinary', '/logo-cloudinary.svg', 'integration'),
+  ('resend', 'Resend', '/logo-resend.svg', 'integration'),
+  ('rajaongkir', 'RajaOngkir', '/logo-rajaongkir.webp', 'integration'),
+  ('fonnte', 'Fonnte', '/logo-fonnte.png', 'integration'),
+  ('nextjs', 'Next.js', '/logo-nextjs.svg', 'framework'),
+  ('laravel', 'Laravel', '/logo-laravel.svg', 'framework')
+on conflict (key) do nothing;
+
+alter table public.logo_assets enable row level security;
+
+drop policy if exists logo_assets_publik_read on public.logo_assets;
+create policy logo_assets_publik_read
+  on public.logo_assets
+  for select
+  using (true);
+
+drop policy if exists logo_assets_admin_all on public.logo_assets;
+create policy logo_assets_admin_all
+  on public.logo_assets
+  for all
+  using (public.is_admin())
+  with check (public.is_admin());

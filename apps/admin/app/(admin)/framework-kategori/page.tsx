@@ -14,10 +14,16 @@ export default async function FrameworkKategoriPage() {
     );
   }
 
-  const [{ data: fw, error: fwErr }, { data: kat, error: katErr }, { data: tpl }] = await Promise.all([
+  const [
+    { data: fw, error: fwErr },
+    { data: kat, error: katErr },
+    { data: tpl },
+    { data: logoRows },
+  ] = await Promise.all([
     supabase.from("frameworks").select("kode,nama_tampilan").order("nama_tampilan"),
     supabase.from("kategoris").select("kode,nama_tampilan").order("nama_tampilan"),
     supabase.from("templates").select("framework,kategori"),
+    supabase.from("logo_assets").select("key,url").eq("kind", "framework"),
   ]);
 
   const tablesMissing = Boolean(fwErr || katErr);
@@ -40,6 +46,11 @@ export default async function FrameworkKategoriPage() {
     dipakai: katCount.get(r.kode as string) ?? 0,
   }));
 
+  const frameworkLogos: Record<string, string> = {};
+  for (const l of logoRows ?? []) {
+    if (l.key && l.url) frameworkLogos[l.key as string] = l.url as string;
+  }
+
   return (
     <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
       <div className="animate-admin-enter">
@@ -59,7 +70,11 @@ export default async function FrameworkKategoriPage() {
         </div>
       )}
 
-      <ReferensiManager initialFrameworks={frameworks} initialKategoris={kategoris} />
+      <ReferensiManager
+        initialFrameworks={frameworks}
+        initialKategoris={kategoris}
+        initialFrameworkLogos={frameworkLogos}
+      />
     </main>
   );
 }

@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import { useUI } from "@/components/UIProvider";
+import { LogoInput } from "@/components/LogoInput";
+import { saveLogoAsset, deleteLogoAsset } from "@/lib/logo";
 
 export interface EnvVarRow {
   key: string;
@@ -37,11 +39,13 @@ export function IntegrasiForm({
   mode,
   kode,
   initial,
+  logoInitial,
   frameworkOptions,
 }: {
   mode: "new" | "edit";
   kode?: string;
   initial?: IntegrasiFormInitial;
+  logoInitial?: string;
   frameworkOptions: FrameworkOption[];
 }) {
   const router = useRouter();
@@ -56,6 +60,7 @@ export function IntegrasiForm({
   const [repoUrl, setRepoUrl] = useState(initial?.repo_url ?? "");
   const [docsUrl, setDocsUrl] = useState(initial?.docs_url ?? "");
   const [fwCompat, setFwCompat] = useState<string[]>(initial?.framework_compat ?? []);
+  const [logoUrl, setLogoUrl] = useState(logoInitial ?? "");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -82,6 +87,11 @@ export function IntegrasiForm({
       return fail("Kode hanya boleh huruf kecil, angka, dan dash (contoh: tripay).");
     }
     if (!nama.trim()) return fail("Nama tampilan wajib diisi.");
+
+    const nextLogo = logoUrl.trim();
+    if (nextLogo && !(nextLogo.startsWith("/") || /^https:\/\//i.test(nextLogo))) {
+      return fail("URL logo harus path lokal (/...) atau URL https.");
+    }
 
     const cleaned = envVars
       .map((r) => ({ key: r.key.trim(), deskripsi: r.deskripsi.trim() }))
@@ -110,12 +120,28 @@ export function IntegrasiForm({
       mode === "new" ? "/api/integrasi" : `/api/integrasi/${encodeURIComponent(kode ?? "")}`,
       { method: mode === "new" ? "POST" : "PUT", body: JSON.stringify(payload) }
     );
-    setPending(false);
     if (!res.ok) {
+      setPending(false);
       setError(res.error || "Gagal menyimpan integrasi.");
       toast.error(res.error || "Gagal menyimpan integrasi.");
       return;
     }
+
+    // Logo disimpan setelah integrasi sukses; gagal = tetap di form agar bisa diulang.
+    if (nextLogo !== (logoInitial ?? "").trim()) {
+      const kodeFinal = mode === "new" ? kodeInput.trim().toLowerCase() : (kode ?? "").toLowerCase();
+      const logoRes =
+        nextLogo === ""
+          ? await deleteLogoAsset(kodeFinal)
+          : await saveLogoAsset({ key: kodeFinal, label: nama.trim(), url: nextLogo, kind: "integration" });
+      if (!logoRes.ok) {
+        setPending(false);
+        fail(`Integrasi tersimpan, tetapi logo gagal: ${logoRes.error}`);
+        return;
+      }
+    }
+
+    setPending(false);
     toast.success(mode === "new" ? `Integrasi "${nama.trim()}" tersimpan.` : "Perubahan tersimpan.");
     router.push("/integrasi");
     router.refresh();
@@ -149,6 +175,16 @@ export function IntegrasiForm({
               ))}
             </select>
           </div>
+        </div>
+      </section>
+
+      <section className="glass-panel rounded-2xl p-5 sm:p-6">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-400">Logo</h2>
+        <p className="mt-1 text-xs text-zinc-500">
+          Tampil di marquee beranda dan kartu katalog. Tanpa logo, web memakai file bawaan.
+        </p>
+        <div className="mt-4">
+          <LogoInput url={logoUrl} onChange={setLogoUrl} onError={fail} />
         </div>
       </section>
 

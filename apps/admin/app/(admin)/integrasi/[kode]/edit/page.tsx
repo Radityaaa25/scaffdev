@@ -29,6 +29,13 @@ export default async function EditIntegrasiPage({
   if (!row) notFound();
   const item = row as Integrasi;
 
+  const { data: logoData } = await supabase
+    .from("logo_assets")
+    .select("url")
+    .eq("key", item.kode)
+    .maybeSingle();
+  const logoUrl = (logoData as { url?: string } | null)?.url ?? "";
+
   const initial: IntegrasiFormInitial = {
     kode: item.kode,
     nama_tampilan: item.nama_tampilan,
@@ -55,6 +62,7 @@ export default async function EditIntegrasiPage({
         mode="edit"
         kode={item.kode}
         initial={initial}
+        logoInitial={logoUrl}
         frameworkOptions={(frameworkRows ?? []) as { kode: string; nama_tampilan: string }[]}
       />
     </main>
