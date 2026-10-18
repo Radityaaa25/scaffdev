@@ -9,12 +9,12 @@ import { checkPrerequisites } from "./lib/prerequisite-check";
 import { cloneRepository } from "./lib/git";
 import { generateEnvExample, generateSetupDoc } from "./lib/env-generator";
 import { applyWatermark } from "./lib/watermark";
-import {
-  resolveLicenseKey,
-  verifyAndDownload,
-  cacheLicenseKey,
-  extractPremiumTarball,
-} from "./lib/license";
+// import {
+//   resolveLicenseKey,
+//   verifyAndDownload,
+//   cacheLicenseKey,
+//   extractPremiumTarball,
+// } from "./lib/license";
 import { runInteractivePrompt, runModeSelect, pickKategori, pickFramework, pickFolder, runBuilderBaseSelect, runBuilderIntegrationSelect } from "./lib/prompts";
 import { fetchIntegrasiIndex } from "./lib/modules";
 import { injectModule, cleanupModuleDir, mergeNpmDependencies, mergeComposerDependencies } from "./lib/injector";
@@ -68,7 +68,6 @@ Opsi:
   --with=<k1,k2>     Modul integrasi tambahan (maks 1 per kategori inti)
   --install          Langsung install dependency tanpa bertanya
   --no-install       Lewati install dependency
-  --license-key=<k>  Kunci lisensi template premium (tanpa ini: prompt/cached)
   -h, --help         Tampilkan bantuan ini
   -v, --version      Tampilkan versi CLI
 
@@ -141,21 +140,21 @@ Setiap clone didahului security audit (jawab No bila ingin lewati, butuh CLI 0.3
   const skipInstall = args.includes("--no-install");
 
   // Flag --license-key=<kunci> untuk template premium (boleh spasi: --license-key <kunci>)
-  const licenseArg = args.find((a: string) => a.startsWith("--license-key="));
-  const licenseIdx = args.indexOf("--license-key");
-  const flagLicenseKey =
-    licenseArg ? licenseArg.slice("--license-key=".length) :
-    licenseIdx !== -1 && args[licenseIdx + 1] ? (args[licenseIdx + 1] as string) : "";
+  // const licenseArg = args.find((a: string) => a.startsWith("--license-key="));
+  // const licenseIdx = args.indexOf("--license-key");
+  // const flagLicenseKey =
+  //   licenseArg ? licenseArg.slice("--license-key=".length) :
+  //   licenseIdx !== -1 && args[licenseIdx + 1] ? (args[licenseIdx + 1] as string) : "";
 
   // Check if target folder passed as positional argument
   // (abaikan nilai milik flag: slug, isi --with, isi --license-key, dan flag itu sendiri)
-  const consumed = new Set<string>([slug ?? "", withRaw, flagLicenseKey, "--template", "--with", "--license-key"]);
+  const consumed = new Set<string>([slug ?? "", withRaw, "--template", "--with"]);
   const templateValue = templateIdx !== -1 ? args[templateIdx + 1] : undefined;
   if (templateValue) consumed.add(templateValue);
   const withValue = withIdx !== -1 ? args[withIdx + 1] : undefined;
   if (withValue) consumed.add(withValue);
-  const licenseValue = licenseIdx !== -1 ? args[licenseIdx + 1] : undefined;
-  if (licenseValue) consumed.add(licenseValue);
+  // const licenseValue = licenseIdx !== -1 ? args[licenseIdx + 1] : undefined;
+  // if (licenseValue) consumed.add(licenseValue);
   const positionalArg = args.find((a: string) => !a.startsWith("-") && !consumed.has(a));
   if (positionalArg) {
     targetFolder = positionalArg;
@@ -312,7 +311,7 @@ Setiap clone didahului security audit (jawab No bila ingin lewati, butuh CLI 0.3
     `Template   : ${templateDetail.nama || templateDetail.slug}\n` +
     `Framework  : ${templateDetail.framework}\n` +
     `Integrasi  : ${integrationsList}\n` +
-    (templateDetail.is_premium ? `Akses      : PREMIUM (butuh kunci lisensi)\n` : "") +
+    // (templateDetail.is_premium ? `Akses      : PREMIUM (butuh kunci lisensi)\n` : "") +
     (withCodes.length > 0 ? `Modul (+)  : ${withCodes.join(", ")}\n` : "") +
     `Direktori  : ${targetFolder}`,
     "Ringkasan Pilihan Project"
@@ -322,49 +321,49 @@ Setiap clone didahului security audit (jawab No bila ingin lewati, butuh CLI 0.3
   // Repo privat: tanpa clone, tanpa audit remote (sumber server-side terpercaya),
   // repo_url TIDAK PERNAH diterima CLI (disamarkan server).
   // Template gratis: perilaku lama di bawah (audit remote + clone + audit lokal).
-  let licensedEmail = "";
-  if (templateDetail.is_premium) {
-    const key = await resolveLicenseKey({
-      slug,
-      templateName: templateDetail.nama || templateDetail.slug,
-      flagKey: flagLicenseKey || undefined,
-    });
-    if (!key) {
-      p.cancel("Operasi dibatalkan. Template premium butuh kunci lisensi.");
-      process.exit(0);
-      return;
-    }
-    const dlProgress = startProgress("Memverifikasi lisensi & mengunduh template premium...");
-    const dl = await verifyAndDownload(slug, key);
-    if (!dl.ok) {
-      dlProgress.stop("Verifikasi lisensi gagal.");
-      p.cancel(dl.error);
-      process.exit(1);
-      return;
-    }
-    dlProgress.stop("Lisensi valid. Template premium terunduh.");
-    try {
-      fs.mkdirSync(targetDir, { recursive: true });
-      const files = extractPremiumTarball(dl.download.tar, targetDir);
-      p.log.success(`Template premium terekstrak (${files.length} file).`);
-    } catch (err: unknown) {
-      p.cancel(`Gagal mengekstrak template premium:\n${(err as Error).message}`);
-      process.exit(1);
-      return;
-    }
-    cacheLicenseKey(slug, key);
-    licensedEmail = dl.download.licensedEmail;
-    try {
-      fs.mkdirSync(path.join(targetDir, ".scaff"), { recursive: true });
-      fs.writeFileSync(
-        path.join(targetDir, ".scaff", "license.json"),
-        JSON.stringify({ slug, email: licensedEmail, validatedAt: new Date().toISOString() }, null, 2) + "\n",
-        "utf8"
-      );
-    } catch {
-      // Abaikan: bukan fatal, kunci tetap tercache lokal.
-    }
-  } else {
+  // let licensedEmail = "";
+  // if (templateDetail.is_premium) {
+  //   const key = await resolveLicenseKey({
+  //     slug,
+  //     templateName: templateDetail.nama || templateDetail.slug,
+  //     flagKey: flagLicenseKey || undefined,
+  //   });
+  //   if (!key) {
+  //     p.cancel("Operasi dibatalkan. Template premium butuh kunci lisensi.");
+  //     process.exit(0);
+  //     return;
+  //   }
+  //   const dlProgress = startProgress("Memverifikasi lisensi & mengunduh template premium...");
+  //   const dl = await verifyAndDownload(slug, key);
+  //   if (!dl.ok) {
+  //     dlProgress.stop("Verifikasi lisensi gagal.");
+  //     p.cancel(dl.error);
+  //     process.exit(1);
+  //     return;
+  //   }
+  //   dlProgress.stop("Lisensi valid. Template premium terunduh.");
+  //   try {
+  //     fs.mkdirSync(targetDir, { recursive: true });
+  //     const files = extractPremiumTarball(dl.download.tar, targetDir);
+  //     p.log.success(`Template premium terekstrak (${files.length} file).`);
+  //   } catch (err: unknown) {
+  //     p.cancel(`Gagal mengekstrak template premium:\n${(err as Error).message}`);
+  //     process.exit(1);
+  //     return;
+  //   }
+  //   cacheLicenseKey(slug, key);
+  //   licensedEmail = dl.download.licensedEmail;
+  //   try {
+  //     fs.mkdirSync(path.join(targetDir, ".scaff"), { recursive: true });
+  //     fs.writeFileSync(
+  //       path.join(targetDir, ".scaff", "license.json"),
+  //       JSON.stringify({ slug, email: licensedEmail, validatedAt: new Date().toISOString() }, null, 2) + "\n",
+  //       "utf8"
+  //     );
+  //   } catch {
+  //     // Abaikan: bukan fatal, kunci tetap tercache lokal.
+  //   }
+  // } else {
   // Security gate: audit remote SEBELUM clone (satu-satunya jalan ke clone).
   const baseGate = await runSecurityGate({
     repoUrl: templateDetail.repo_url ?? "",
@@ -431,7 +430,7 @@ Setiap clone didahului security audit (jawab No bila ingin lewati, butuh CLI 0.3
       // Abaikan bila terkunci Windows.
     }
   }
-  } // tutup cabang template gratis
+  // } // tutup cabang template gratis
 
   // ---- Fase Builder: suntik modul --with (dilewati bila kosong) ----
   const extraIntegrasi: IntegrasiDetail[] = [];

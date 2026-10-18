@@ -205,14 +205,14 @@ export function validateTemplateInput(
   }
 
   // is_premium (template berbayar: repo privat, unduh via kunci lisensi)
-  if ("is_premium" in b) {
-    if (typeof b.is_premium !== "boolean") {
-      return { ok: false, error: "Field 'is_premium' harus boolean." };
-    }
-    out.is_premium = b.is_premium;
-  } else if (!opts.partial) {
-    out.is_premium = false;
-  }
+  // if ("is_premium" in b) {
+  //   if (typeof b.is_premium !== "boolean") {
+  //     return { ok: false, error: "Field 'is_premium' harus boolean." };
+  //   }
+  //   out.is_premium = b.is_premium;
+  // } else if (!opts.partial) {
+  //   out.is_premium = false;
+  // }
 
   return { ok: true, data: out };
 }

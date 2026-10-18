@@ -1,6 +1,6 @@
 ---
 title: Lisensi Scaffdev
-description: Aturan lisensi source-available Scaffdev, template premium, watermark, merek, dan kontribusi.
+description: Aturan lisensi source-available Scaffdev, watermark, merek, dan kontribusi.
 order: 10
 section: Panduan
 ---
@@ -22,6 +22,7 @@ Scaffdev itu **source-available**, bukan open-source (OSI). Kode sumber terbuka 
 
 Menyediakan produk atau layanan yang **bersaing** dengan Scaffdev atau produk Scaffdev. Berlaku untuk yang gratis maupun berbayar, interface apa pun, bahasa apa pun. Contoh yang bersaing: generator scaffolding, katalog template, atau builder visual yang dipasarkan sebagai pengganti Scaffdev.
 
+<!--
 ## Template premium
 
 Template bertanda premium memakai lisensi komersial terpisah (di luar lisensi platform). Membeli template premium = hak pakai sesuai syaratnya, bukan hak mengedarkan ulang template tersebut.
@@ -33,6 +34,7 @@ Cara kerja (tanpa login web - kunci = kredensial):
 - Generate memakai kunci: `npx scaffdev@latest toko-saya --template=slug-premium --license-key=SCAFF-XXXX-XXXX-XXXX` (butuh CLI 0.8.0+). Tanpa flag, CLI memakai kunci tersimpan (`~/.scaffdev/licenses.json`) atau meminta saat prompt.
 - CLI memverifikasi kunci ke server lalu mengunduh arsip dari repo privat. Kunci salah/cabut = generate ditolak. Email pembeli dicatat di `.scaff/license.json` hasil generate.
 - Satu kunci berlaku untuk 1 template (tidak lintas template). Kunci yang disalahgunakan dapat dicabut admin kapan saja.
+-->
 
 ## Atribusi / watermark
 

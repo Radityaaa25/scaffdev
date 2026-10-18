@@ -31,12 +31,12 @@ export async function GET(request: NextRequest) {
 
   // Samarkan repo_url template premium (repo privat) di daftar publik.
   // Cakupan admin (scope=all) di atas tetap menerima URL asli.
-  const safe = templates.map((t) =>
-    t.is_premium === true ? { ...t, repo_url: null } : t
-  );
+  // const safe = templates.map((t) =>
+  //   t.is_premium === true ? { ...t, repo_url: null } : t
+  // );
 
   return NextResponse.json({
-    templates: safe,
+    templates,
   });
 }
 

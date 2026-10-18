@@ -742,6 +742,7 @@ insert into public.logo_assets (key, label, url, kind) values
   ('laravel', 'Laravel', '/logo-laravel.svg', 'framework')
 on conflict (key) do nothing;
 
+/*
 -- ============================================================
 -- Migrasi 015 — Template premium + lisensi kunci
 -- is_premium: template berbayar (repo privat, unduh hanya via kunci).
@@ -792,6 +793,7 @@ $$;
 
 revoke all on function public.verify_license(text, text) from public;
 grant execute on function public.verify_license(text, text) to anon, authenticated;
+*/
 
 -- ============================================================
 -- Migrasi 016 — Setup lengkap logo_assets (konsolidasi 014 + RLS)

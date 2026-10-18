@@ -1,3 +1,4 @@
+/*
 import fs from "fs";
 import os from "os";
 import path from "path";
@@ -10,7 +11,7 @@ import { extractTarFiles } from "./security-audit";
  * Lisensi template premium (tanpa login web - kunci = kredensial).
  * Alur: flag --license-key -> cache ~/.scaffdev/licenses.json -> prompt.
  * Cache ditulis HANYA setelah server memvalidasi kunci (tidak dipercaya buta).
- */
+ * /
 
 const KEY_RE = /^SCAFF-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/;
 
@@ -43,7 +44,7 @@ function readCache(): Record<string, string> {
   return {};
 }
 
-/** Simpan kunci tervalidasi ke cache lokal (0600 bila didukung platform). */
+/** Simpan kunci tervalidasi ke cache lokal (0600 bila didukung platform). * /
 export function cacheLicenseKey(slug: string, key: string): void {
   const all = readCache();
   all[slug.toLowerCase()] = normalizeLicenseKey(key);
@@ -64,7 +65,7 @@ export interface PremiumDownload {
  * Verifikasi kunci + unduh tarball template premium dari server.
  * Server mengambil dari repo privat (token server-side) - repo_url
  * TIDAK PERNAH dikirim ke CLI untuk template premium.
- */
+ * /
 export async function verifyAndDownload(
   slug: string,
   key: string
@@ -108,7 +109,7 @@ export async function verifyAndDownload(
 /**
  * Resolve kunci lisensi: flag -> cache -> prompt interaktif.
  * Mengembalikan null bila user membatalkan.
- */export async function resolveLicenseKey(opts: {
+ * /export async function resolveLicenseKey(opts: {
   slug: string;
   templateName: string;
   flagKey?: string;
@@ -135,7 +136,7 @@ export async function verifyAndDownload(
 /**
  * Ekstrak tarball premium ke targetDir. Menolak entri traversal (..)
  * dan arsip kosong. Mengembalikan daftar path relatif terpasang.
- */
+ * /
 export function extractPremiumTarball(tar: Buffer, targetDir: string): string[] {
   const entries = extractTarFiles(tar, () => true, 5 * 1024 * 1024, 2000);
   const installed: string[] = [];
@@ -154,3 +155,4 @@ export function extractPremiumTarball(tar: Buffer, targetDir: string): string[] 
   }
   return installed;
 }
+*/
