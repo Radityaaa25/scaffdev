@@ -22,10 +22,10 @@ export function IntegrationMarquee({ logos }: { logos?: Record<string, string> }
     <div className="relative mt-10 sm:mt-12 mb-10 w-full">
       <div className="mb-5 flex justify-center">
         <p className="inline-flex items-center rounded-full border border-[#8B5CF6]/50 bg-[#8B5CF6]/10 px-5 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-[#C4B5FD] shadow-[0_0_24px_rgba(139,92,246,0.35)]">
-          Terintegrasi dengan
+          Tersedia Integrasi
         </p>
       </div>
-      <div className="hero-marquee" aria-label="Terintegrasi dengan Next.js, Laravel, Supabase, Midtrans, Xendit, Duitku">
+      <div className="hero-marquee" aria-label="Integrasi tersedia Next.js, Laravel, Supabase, Midtrans, Xendit, Duitku">
         <div className="hero-marquee-track">
           {[0, 1].map((copy) => (
             <div key={copy} className="hero-marquee-group" aria-hidden={copy === 1}>
