@@ -112,9 +112,10 @@ export function extractTarFiles(
     const dataEnd = dataStart + size;
     if (dataEnd > tar.length) break;
     const isFile = typeflag === "0" || typeflag === "\0";
-    const knownSkip = typeflag === "5" || typeflag === "x" || typeflag === "g";
-    if (!isFile && !knownSkip) break; // tipe tak dikenal: berhenti, jangan parse buta
     if (!name) break;
+    // Entri non-reguler (direktori, symlink/hardlink, pax/metadata) DILEWATI,
+    // BUKAN menghentikan scan: satu symlink biasa tak boleh mematikan audit dan
+    // membuat file setelahnya (mis. package.json) lolos tanpa diperiksa.
     raws.push({ name: fullName, size, dataStart, isFile });
     // Maju ke header berikutnya (data dibulatkan ke kelipatan 512).
     offset = dataStart + Math.ceil(size / 512) * 512;
@@ -260,6 +261,16 @@ const COMPOSER_LIFECYCLE = [
   "post-install-cmd",
   "pre-update-cmd",
   "post-update-cmd",
+  // Event composer yang JUGA berjalan saat `composer install`:
+  // `post-autoload-dump` ada di composer.json Laravel default, sisanya wajar dipakai.
+  "pre-autoload-dump",
+  "post-autoload-dump",
+  "post-root-package-install",
+  "post-create-project-cmd",
+  "pre-package-install",
+  "post-package-install",
+  "pre-package-update",
+  "post-package-update",
 ];
 const DOWNLOAD_RE =
   /\b(curl|wget|Invoke-WebRequest|\biwr\b|Start-BitsTransfer|certutil|bitsadmin)\b/i;
@@ -267,6 +278,11 @@ const PIPE_EXEC_RE = /(curl|wget)[^\n]{0,200}\|\s*(bash|sh)\b/i;
 const PS_ENCODED_RE = /powershell[^\n]{0,200}-(EncodedCommand|enc)\b/i;
 const OBFUSC_RE = /\b(base64|atob|Buffer\.from|fromCharCode|EncodedCommand|eval\s*\(|Function\s*\()/;
 const EVAL_EXEC_RE = /\b(eval\s*\(|exec\s*\(|Function\s*\()/;
+// Lifecycle script yang menyembunyikan payload di file repo terpisah:
+// `node scripts/setup.js`, `php artisan ...` (tak ber-ekstensi diabaikan),
+// `sh ./x.sh`, dst. Bukan otomatis jahat, tapi file itu WAJIB dibaca.
+const LOCAL_SCRIPT_REF_RE =
+  /\b(node|php|python3?|sh|bash|zsh|tsx|ts-node|deno)\b[^\n]*?([\w./-]*\/)?[\w.-]+\.(js|mjs|cjs|ts|tsx|php|sh|bash|py|rb)\b/i;
 
 function evidenceOf(text: string, at: number, radius = 150): string {
   const start = Math.max(0, at - radius);
@@ -313,6 +329,16 @@ export function auditPackageJson(relPath: string, text: string): AuditFinding[] 
         detail:
           "Script ini berjalan OTOMATIS saat npm install. Kombinasi download + eksekusi " +
           "adalah pola instalasi malware klasik. Periksa URL dan perintahnya sebelum lanjut.",
+        evidence: `${name}: ${body}`.slice(0, 300),
+      });
+    } else if (LOCAL_SCRIPT_REF_RE.test(body)) {
+      out.push({
+        severity: "MEDIUM",
+        file: relPath,
+        title: `Lifecycle script "${name}" menjalankan file di dalam repo`,
+        detail:
+          "Script ini berjalan OTOMATIS saat npm install lalu memanggil file terpisah " +
+          "di repo (bukan isinya langsung terlihat di sini). Baca file tersebut sebelum lanjut.",
         evidence: `${name}: ${body}`.slice(0, 300),
       });
     } else {
@@ -376,6 +402,16 @@ export function auditComposerJson(relPath: string, text: string): AuditFinding[]
           "Script ini berjalan OTOMATIS saat composer install/update. Periksa perintahnya.",
         evidence: `${name}: ${body}`.slice(0, 300),
       });
+    } else if (LOCAL_SCRIPT_REF_RE.test(body)) {
+      out.push({
+        severity: "MEDIUM",
+        file: relPath,
+        title: `Composer script "${name}" menjalankan file di dalam repo`,
+        detail:
+          "Script ini berjalan OTOMATIS saat composer install/update lalu memanggil file " +
+          "terpisah di repo. Baca file tersebut sebelum lanjut.",
+        evidence: `${name}: ${body}`.slice(0, 300),
+      });
     } else {
       out.push({
         severity: "MEDIUM",
@@ -393,9 +429,9 @@ export function auditComposerJson(relPath: string, text: string): AuditFinding[]
 
 export function auditWorkflow(relPath: string, text: string): AuditFinding[] {
   const out: AuditFinding[] = [];
-  // Bentuk blok (run: |) maupun sebaris (run: <command>).
+  // Bentuk blok (run: | atau folded run: >) maupun sebaris (run: <command>).
   const bodies: Array<{ body: string; at: number }> = [];
-  const runBlocks = [...text.matchAll(/run:\s*\|?-?\s*\n((?:[ \t]+[^\n]*\n?)+)/g)];
+  const runBlocks = [...text.matchAll(/run:\s*[|>]-?\s*\n((?:[ \t]+[^\n]*\n?)+)/g)];
   for (const m of runBlocks) bodies.push({ body: m[1] ?? "", at: m.index ?? 0 });
   const inlineRuns = [...text.matchAll(/^[ \t]*-\s*run:\s*(?!\||>)([^\n]+)/gm)];
   for (const m of inlineRuns) bodies.push({ body: m[1] ?? "", at: m.index ?? 0 });
