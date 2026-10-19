@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useTransition, useMemo } from "react";
+import React, { useState, useEffect, useTransition, useMemo, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Template } from "@scaff/database";
@@ -18,6 +18,44 @@ const SORT_OPTIONS = [
   { value: "popular", label: "Populer" },
   { value: "name", label: "Nama A–Z" },
 ];
+
+type CatalogFilters = {
+  kategori: string;
+  framework: string;
+  integrasi: string;
+  q: string;
+  sort: string;
+};
+
+const DEFAULT_FILTERS: CatalogFilters = {
+  kategori: "all",
+  framework: "all",
+  integrasi: "all",
+  q: "",
+  sort: "newest",
+};
+
+function filtersFromParams(sp: URLSearchParams): CatalogFilters {
+  return {
+    kategori: sp.get("kategori") || "all",
+    framework: sp.get("framework") || "all",
+    integrasi: sp.get("integrasi") || "all",
+    q: sp.get("q") || "",
+    sort: sp.get("sort") || "newest",
+  };
+}
+
+/** Bangun query string kanonik (tanpa "?") dari state filter. */
+function buildFilterQuery(f: CatalogFilters, page: number): string {
+  const params = new URLSearchParams();
+  if (f.kategori !== "all") params.set("kategori", f.kategori);
+  if (f.framework !== "all") params.set("framework", f.framework);
+  if (f.integrasi !== "all") params.set("integrasi", f.integrasi);
+  if (f.q.trim()) params.set("q", f.q);
+  if (f.sort !== "newest") params.set("sort", f.sort);
+  if (page > 1) params.set("page", String(page));
+  return params.toString();
+}
 
 const KATEGORI_LABELS: Record<string, string> = {
   ecommerce: "E-commerce",
@@ -56,12 +94,40 @@ export function TemplatesCatalog({ initialTemplates, initialLogos }: { initialTe
   const [refFrameworks, setRefFrameworks] = useState<{ kode: string; nama_tampilan: string }[]>([]);
   const [refIntegrasi, setRefIntegrasi] = useState<{ kode: string; nama_tampilan: string }[]>([]);
 
-  const selectedKategori = searchParams.get("kategori") || "all";
-  const selectedFramework = searchParams.get("framework") || "all";
-  const selectedIntegrasi = searchParams.get("integrasi") || "all";
-  const searchQuery = searchParams.get("q") || "";
-  const selectedSort = searchParams.get("sort") || "newest";
+  // Filter disimpan di state lokal agar input langsung responsif; URL disinkronkan
+  // di belakang (debounce untuk pencarian) supaya share/refresh tetap bekerja.
+  const [filters, setFilters] = useState<CatalogFilters>(() => filtersFromParams(searchParams));
+  const filtersRef = useRef(filters);
+  const lastUrlRef = useRef(searchParams.toString());
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    filtersRef.current = filters;
+  }, [filters]);
+
+  const {
+    kategori: selectedKategori,
+    framework: selectedFramework,
+    integrasi: selectedIntegrasi,
+    q: searchQuery,
+    sort: selectedSort,
+  } = filters;
   const currentPage = Math.max(1, parseInt(searchParams.get("page") || "1", 10) || 1);
+
+  // Sinkron dari URL hanya saat berubah dari luar (back/forward, link share).
+  useEffect(() => {
+    const qs = searchParams.toString();
+    if (qs === lastUrlRef.current) return;
+    lastUrlRef.current = qs;
+    setFilters(filtersFromParams(searchParams));
+  }, [searchParams]);
+
+  useEffect(
+    () => () => {
+      if (searchTimer.current) clearTimeout(searchTimer.current);
+    },
+    []
+  );
 
   useEffect(() => {
     async function loadData() {
@@ -121,34 +187,39 @@ export function TemplatesCatalog({ initialTemplates, initialLogos }: { initialTe
 
   const integrasiOptions = useMemo(() => {
     const found = new Set<string>();
-    allTemplates.forEach((t) => t.opsi_integrasi.forEach((i) => found.add(i.toLowerCase())));
+    allTemplates.forEach((t) => (t.opsi_integrasi ?? []).forEach((i) => found.add(i.toLowerCase())));
     refIntegrasi.forEach((r) => found.add(r.kode.toLowerCase()));
     return ["all", "basic", ...Array.from(found).sort()];
   }, [allTemplates, refIntegrasi]);
 
-  const updateParams = (patch: Record<string, string>, keepPage = false) => {
-    const params = new URLSearchParams(searchParams.toString());
-    Object.entries(patch).forEach(([key, value]) => {
-      const defaults: Record<string, string> = {
-        kategori: "all",
-        framework: "all",
-        integrasi: "all",
-        q: "",
-        sort: "newest",
-        page: "1",
-      };
-      if (!value || value === defaults[key]) {
-        params.delete(key);
-      } else {
-        params.set(key, value);
-      }
-    });
-    // Ganti filter/search → kembali ke halaman 1.
-    if (!keepPage) params.delete("page");
+  // Tulis state ke URL. `lastUrlRef` mencegah efek sinkron menimpa input yang
+  // sedang diketik saat navigasi (debounce) akhirnya selesai.
+  const navigate = (next: CatalogFilters, page: number, mode: "push" | "replace") => {
+    const qs = buildFilterQuery(next, page);
+    lastUrlRef.current = qs;
+    const target = qs ? `${pathname}?${qs}` : pathname;
     startTransition(() => {
-      const qs = params.toString();
-      router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+      if (mode === "replace") router.replace(target, { scroll: false });
+      else router.push(target, { scroll: false });
     });
+  };
+
+  const updateFilter = (patch: Partial<CatalogFilters>) => {
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    const next = { ...filters, ...patch };
+    setFilters(next);
+    navigate(next, 1, "push");
+  };
+
+  // Ketik → hasil langsung berubah (state lokal), URL diperbarui setelah jeda
+  // singkat agar tidak membanjiri router/history di tiap ketukan.
+  const changeSearch = (value: string) => {
+    const next = { ...filters, q: value };
+    setFilters(next);
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    searchTimer.current = setTimeout(() => {
+      navigate(filtersRef.current, 1, "replace");
+    }, 300);
   };
 
   const filteredTemplates = useMemo(() => {
@@ -159,8 +230,8 @@ export function TemplatesCatalog({ initialTemplates, initialLogos }: { initialTe
       const matchIntegrasi =
         selectedIntegrasi === "all" ||
         (selectedIntegrasi === "basic"
-          ? item.opsi_integrasi.length === 0
-          : item.opsi_integrasi.some((i) => i.toLowerCase() === selectedIntegrasi));
+          ? (item.opsi_integrasi ?? []).length === 0
+          : (item.opsi_integrasi ?? []).some((i) => i.toLowerCase() === selectedIntegrasi));
       const matchQuery =
         !q ||
         item.nama.toLowerCase().includes(q) ||
@@ -168,7 +239,7 @@ export function TemplatesCatalog({ initialTemplates, initialLogos }: { initialTe
         item.slug.toLowerCase().includes(q) ||
         item.kategori.toLowerCase().includes(q) ||
         item.framework.toLowerCase().includes(q) ||
-        item.opsi_integrasi.some((i) => i.toLowerCase().includes(q));
+        (item.opsi_integrasi ?? []).some((i) => i.toLowerCase().includes(q));
       return matchKategori && matchFramework && matchIntegrasi && matchQuery;
     });
 
@@ -194,19 +265,13 @@ export function TemplatesCatalog({ initialTemplates, initialLogos }: { initialTe
     searchQuery.trim() !== "";
 
   const resetAll = () => {
-    startTransition(() => {
-      router.push(pathname, { scroll: false });
-    });
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    setFilters(DEFAULT_FILTERS);
+    navigate(DEFAULT_FILTERS, 1, "push");
   };
 
   const goToPage = (page: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (page <= 1) params.delete("page");
-    else params.set("page", String(page));
-    startTransition(() => {
-      const qs = params.toString();
-      router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-    });
+    navigate(filtersRef.current, page, "push");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -290,14 +355,14 @@ export function TemplatesCatalog({ initialTemplates, initialLogos }: { initialTe
           </svg>
           <input
             value={searchQuery}
-            onChange={(e) => updateParams({ q: e.target.value })}
+            onChange={(e) => changeSearch(e.target.value)}
             placeholder="Cari nama, kategori, framework… (mis. toko, laravel, midtrans)"
             className="w-full bg-[#24242C] border border-[#3F3F4C] rounded-xl pl-10 pr-9 py-2.5 text-sm text-[#FAFAFA] placeholder:text-zinc-500 focus:outline-none focus:border-[#8B5CF6]/60 focus:ring-1 focus:ring-[#8B5CF6]/40 transition-all"
             aria-label="Cari template"
           />
           {searchQuery && (
             <button
-              onClick={() => updateParams({ q: "" })}
+              onClick={() => updateFilter({ q: "" })}
               type="button"
               className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white text-sm"
               aria-label="Hapus pencarian"
@@ -313,7 +378,7 @@ export function TemplatesCatalog({ initialTemplates, initialLogos }: { initialTe
           <select
             id="sort"
             value={selectedSort}
-            onChange={(e) => updateParams({ sort: e.target.value })}
+            onChange={(e) => updateFilter({ sort: e.target.value })}
             className={selectCls}
           >
             {SORT_OPTIONS.map((opt) => (
@@ -335,7 +400,7 @@ export function TemplatesCatalog({ initialTemplates, initialLogos }: { initialTe
             <select
               id="filter-kategori"
               value={kategoriOptions.includes(selectedKategori) ? selectedKategori : "all"}
-              onChange={(e) => updateParams({ kategori: e.target.value })}
+              onChange={(e) => updateFilter({ kategori: e.target.value })}
               className={`${selectCls} w-full`}
             >
               {kategoriOptions.map((k) => (
@@ -352,7 +417,7 @@ export function TemplatesCatalog({ initialTemplates, initialLogos }: { initialTe
             <select
               id="filter-framework"
               value={frameworkOptions.includes(selectedFramework) ? selectedFramework : "all"}
-              onChange={(e) => updateParams({ framework: e.target.value })}
+              onChange={(e) => updateFilter({ framework: e.target.value })}
               className={`${selectCls} w-full`}
             >
               {frameworkOptions.map((f) => (
@@ -369,7 +434,7 @@ export function TemplatesCatalog({ initialTemplates, initialLogos }: { initialTe
             <select
               id="filter-integrasi"
               value={integrasiOptions.includes(selectedIntegrasi) ? selectedIntegrasi : "all"}
-              onChange={(e) => updateParams({ integrasi: e.target.value })}
+              onChange={(e) => updateFilter({ integrasi: e.target.value })}
               className={`${selectCls} w-full font-mono`}
             >
               {integrasiOptions.map((integ) => (
