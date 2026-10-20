@@ -6,6 +6,7 @@ import { validateImageBytes } from "@/lib/upload-validation";
 // Bukti visual laporan user (kecil dan ketat, maks 1MB, hanya png/jpg/webp
 // asli (magic bytes). SVG/GIF ditolak (risiko XSS via SVG).
 const MAX_BYTES = 1 * 1024 * 1024;
+const MAX_MULTIPART_BYTES = MAX_BYTES + 512 * 1024; // beri ruang header multipart
 const BUCKET = "template-screenshots";
 const UPLOAD_LIMIT = 5;
 const UPLOAD_WINDOW_MS = 60 * 60 * 1000; // 5 upload / jam / IP.
@@ -30,6 +31,25 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const contentType = request.headers.get("content-type")?.toLowerCase() ?? "";
+  if (!contentType.startsWith("multipart/form-data")) {
+    return NextResponse.json(
+      { error: "Content-Type harus multipart/form-data." },
+      { status: 415 }
+    );
+  }
+
+  const declaredLength = request.headers.get("content-length");
+  if (declaredLength) {
+    const bytes = Number(declaredLength);
+    if (!Number.isFinite(bytes) || bytes < 0) {
+      return NextResponse.json({ error: "Content-Length tidak valid." }, { status: 400 });
+    }
+    if (bytes > MAX_MULTIPART_BYTES) {
+      return NextResponse.json({ error: "Ukuran upload terlalu besar." }, { status: 413 });
+    }
+  }
+
   let file: File | null = null;
   try {
     const form = await request.formData();
@@ -40,6 +60,12 @@ export async function POST(request: NextRequest) {
   }
   if (!file) {
     return NextResponse.json({ error: "Field 'file' wajib diisi." }, { status: 400 });
+  }
+  if (file.size <= 0) {
+    return NextResponse.json({ error: "File kosong." }, { status: 400 });
+  }
+  if (file.size > MAX_BYTES) {
+    return NextResponse.json({ error: "Ukuran file maksimal 1MB." }, { status: 413 });
   }
 
   const bytes = new Uint8Array(await file.arrayBuffer());

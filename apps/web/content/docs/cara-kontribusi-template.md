@@ -230,9 +230,13 @@ Kalau ada langkah yang hanya jalan di komputermu tapi gagal di folder fresh, per
 - Daftar integrasi yang digunakan beserta env var-nya.
 - Nama/username author (wajib) dan link profil (opsional).
 
+**Kategori:** pilih salah satu kategori yang tersedia, atau pilih **Lainnya** lalu tulis nama kategorimu sendiri (contoh: `kesehatan`, `keuangan`). Nama itu akan dinormalisasi menjadi slug huruf kecil, mis. `Kesehatan & Kecantikan` → `kesehatan-kecantikan`. Tim akan mendaftarkan kategori baru saat review.
+
 ### 4. Kirim lewat form kontribusi
 
-Buka [halaman Kontribusi Template](/kontribusi), isi data, unggah screenshot, dan centang pernyataan CLA. Setelah terkirim, submission masuk antrean review dengan status `pending`.
+Buka [halaman Kontribusi Template](/kontribusi), isi data, unggah screenshot, lalu baca dan setujui **Syarat & Ketentuan** (bisa diklik, muncul popup) beserta pernyataan kontribusi/CLA. Setelah terkirim, submission masuk antrean review dengan status `pending`.
+
+Syarat & Ketentuan mencakup kepemilikan template, izin mirror/distribusi, aturan konten terlarang, penggunaan data kontak, dan cara penarikan template. Baca dulu sebelum mencentang, karena persetujuan berlaku sebagai bukti proses review.
 
 ### 5. Audit oleh tim
 
@@ -302,7 +306,8 @@ Salin dan centang sebelum menekan tombol kirim:
 - [ ] Demo publik bisa dibuka tanpa login (bila ada).
 - [ ] Screenshot 16:9, minimal 1280×720, tanpa data pribadi.
 - [ ] Aset dan dependency berlisensi jelas.
-- [ ] Sudah membaca dan menyetujui pernyataan CLA di form.
+- [ ] Sudah membaca dan menyetujui **Syarat & Ketentuan** serta pernyataan CLA di form.
+- [ ] Kategori sudah dipilih (atau diisi sendiri lewat opsi **Lainnya**).
 
 ---
 

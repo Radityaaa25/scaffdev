@@ -2,10 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/supabase-server";
 import { isRateLimited, ADMIN_WRITE_LIMIT, ADMIN_WRITE_WINDOW_MS } from "@/lib/rate-limit";
 import { slugify } from "@/lib/template-validation";
+import { normalizeGithubRepoUrl } from "@/lib/submission-validation";
 import { logActivity } from "@/lib/activity";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
+}
+
+const KODE_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+function labelFromKode(kode: string): string {
+  return kode
+    .split("-")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
 /**
@@ -45,6 +56,49 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: "Temuan HIGH/CRITICAL tidak boleh diterima tanpa perbaikan." }, { status: 400 });
   }
 
+  const repoUrl = normalizeGithubRepoUrl(sub.repo_url);
+  if (!repoUrl) {
+    return NextResponse.json({ error: "Repo submission tidak valid. Minta kontributor memperbaiki repo_url." }, { status: 400 });
+  }
+  if (!sub.kategori || !KODE_RE.test(sub.kategori)) {
+    return NextResponse.json({ error: "Kategori submission tidak valid. Minta kontributor memperbaiki data." }, { status: 400 });
+  }
+
+  const { data: frameworkRow, error: frameworkError } = await supabase
+    .from("frameworks")
+    .select("kode")
+    .eq("kode", sub.framework)
+    .maybeSingle();
+  if (frameworkError) {
+    return NextResponse.json({ error: "Gagal memeriksa framework." }, { status: 500 });
+  }
+  if (!frameworkRow) {
+    return NextResponse.json(
+      { error: `Framework "${sub.framework}" belum terdaftar. Tambahkan dulu via menu Framework & Kategori.` },
+      { status: 400 }
+    );
+  }
+
+  const { data: kategoriRow, error: kategoriError } = await supabase
+    .from("kategoris")
+    .select("kode")
+    .eq("kode", sub.kategori)
+    .maybeSingle();
+  if (kategoriError) {
+    return NextResponse.json({ error: "Gagal memeriksa kategori." }, { status: 500 });
+  }
+  if (!kategoriRow) {
+    const { error: insertKategoriError } = await supabase
+      .from("kategoris")
+      .insert([{ kode: sub.kategori, nama_tampilan: labelFromKode(sub.kategori) }]);
+    if (insertKategoriError && insertKategoriError.code !== "23505") {
+      return NextResponse.json(
+        { error: "Gagal menambahkan kategori custom. Tambahkan manual via menu Framework & Kategori." },
+        { status: 500 }
+      );
+    }
+  }
+
   const baseSlug = slugify(sub.nama, sub.framework);
   let slug = baseSlug;
   for (let i = 2; i <= 20; i++) {
@@ -61,7 +115,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       slug,
       framework: sub.framework,
       kategori: sub.kategori,
-      repo_url: sub.repo_url,
+      repo_url: repoUrl,
       deskripsi: sub.deskripsi,
       screenshot_url: sub.screenshot_url,
       preview_url: sub.preview_url,
