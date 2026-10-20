@@ -19,6 +19,13 @@ export interface TemplateFormInitial {
   repo_url: string;
   deskripsi: string;
   screenshot_url: string;
+  preview_url: string;
+  is_community: boolean;
+  author_name: string;
+  author_url: string;
+  source_url: string;
+  audited_commit: string;
+  audited_at: string;
   opsi_integrasi: string[];
   builder_hidden_kategoris: string[];
   builder_hidden: boolean;
@@ -85,6 +92,11 @@ export function TemplateForm({
   const [repoUrl, setRepoUrl] = useState(initial?.repo_url ?? "");
   const [deskripsi, setDeskripsi] = useState(initial?.deskripsi ?? "");
   const [screenshotUrl, setScreenshotUrl] = useState(initial?.screenshot_url ?? "");
+  const [previewUrl, setPreviewUrl] = useState(initial?.preview_url ?? "");
+  const [isCommunity, setIsCommunity] = useState(initial?.is_community ?? false);
+  const [authorName, setAuthorName] = useState(initial?.author_name ?? "");
+  const [authorUrl, setAuthorUrl] = useState(initial?.author_url ?? "");
+  const [sourceUrl, setSourceUrl] = useState(initial?.source_url ?? "");
   const [opsiIntegrasi, setOpsiIntegrasi] = useState<string[]>(initial?.opsi_integrasi ?? []);
   const [isPublished, setIsPublished] = useState(initial?.is_published ?? false);
   // const [isPremium, setIsPremium] = useState(initial?.is_premium ?? false);
@@ -186,6 +198,18 @@ export function TemplateForm({
       const msg = "Screenshot URL harus diawali https://.";
       setError(msg); toast.error(msg); return;
     }
+    if (previewUrl.trim() && !previewUrl.trim().startsWith("https://")) {
+      const msg = "Preview URL harus diawali https://.";
+      setError(msg); toast.error(msg); return;
+    }
+    if (authorUrl.trim() && !authorUrl.trim().startsWith("https://")) {
+      const msg = "Author URL harus diawali https://.";
+      setError(msg); toast.error(msg); return;
+    }
+    if (sourceUrl.trim() && !sourceUrl.trim().startsWith("https://")) {
+      const msg = "Source URL harus diawali https://.";
+      setError(msg); toast.error(msg); return;
+    }
 
     setPending(true);
     const payload = {
@@ -196,6 +220,11 @@ export function TemplateForm({
       repo_url: repoUrl.trim(),
       deskripsi: deskripsi.trim(),
       screenshot_url: screenshotUrl.trim(),
+      preview_url: previewUrl.trim(),
+      is_community: isCommunity,
+      author_name: isCommunity ? authorName.trim() : "",
+      author_url: isCommunity ? authorUrl.trim() : "",
+      source_url: isCommunity ? sourceUrl.trim() : "",
       opsi_integrasi: opsiIntegrasi,
       builder_hidden_kategoris: hiddenKats,
       builder_hidden: builderHidden,
@@ -339,9 +368,56 @@ export function TemplateForm({
           <input id="screenshot_url" type="url" value={screenshotUrl} onChange={(e) => setScreenshotUrl(e.target.value)} placeholder="https://…/preview.png" className={`${inputCls} font-mono`} />
         </div>
         <div className="sm:col-span-2">
+          <label htmlFor="preview_url" className={labelCls}>Link Preview / Demo (opsional)</label>
+          <input
+            id="preview_url"
+            type="url"
+            value={previewUrl}
+            onChange={(e) => setPreviewUrl(e.target.value)}
+            placeholder={`https://scaffdev.github.io/previews/${initial?.slug || autoSlug || "slug"}/`}
+            className={`${inputCls} font-mono`}
+          />
+          <p className="mt-1.5 text-xs text-zinc-500">
+            Demo yang di-embed di halaman detail. Kosongkan bila belum ada; web memakai screenshot.
+          </p>
+        </div>
+        <div className="sm:col-span-2">
           <label htmlFor="deskripsi" className={labelCls}>Deskripsi</label>
           <textarea id="deskripsi" value={deskripsi} onChange={(e) => setDeskripsi(e.target.value)} rows={3} placeholder="Ceritakan isi & keunggulan template…" className={`${inputCls} resize-y`} maxLength={2000} />
         </div>
+      </Section>
+
+      <Section title="Kredit Komunitas" hint="Isi bila template berasal dari kontributor eksternal. Badge Community dan nama author tampil di web.">
+        <div className="sm:col-span-2">
+          <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-white/20">
+            <input type="checkbox" checked={isCommunity} onChange={(e) => setIsCommunity(e.target.checked)} className="mt-0.5 h-4 w-4 accent-[#8B5CF6]" />
+            <span>
+              <span className="block text-sm font-medium text-zinc-200">Template komunitas</span>
+              <span className="block text-xs text-zinc-500">Tampilkan badge Community + kredit author di katalog dan halaman detail.</span>
+            </span>
+          </label>
+        </div>
+        <div>
+          <label htmlFor="author_name" className={labelCls}>Nama Author</label>
+          <input id="author_name" value={authorName} onChange={(e) => setAuthorName(e.target.value)} placeholder="Nama / username GitHub" className={inputCls} maxLength={120} />
+        </div>
+        <div>
+          <label htmlFor="author_url" className={labelCls}>URL Author</label>
+          <input id="author_url" type="url" value={authorUrl} onChange={(e) => setAuthorUrl(e.target.value)} placeholder="https://github.com/username" className={`${inputCls} font-mono`} />
+        </div>
+        <div className="sm:col-span-2">
+          <label htmlFor="source_url" className={labelCls}>URL Sumber Asli</label>
+          <input id="source_url" type="url" value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} placeholder="https://github.com/contributor/repo-asli" className={`${inputCls} font-mono`} />
+          <p className="mt-1.5 text-xs text-zinc-500">
+            Repo asli kontributor. Repo yang dipakai CLI tetap di field Repository (mirror scaffdev).
+          </p>
+        </div>
+        {initial?.audited_commit ? (
+          <div className="sm:col-span-2 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] p-3 font-mono text-[11px] text-emerald-300">
+            Audit: {initial.audited_commit.slice(0, 12)}
+            {initial.audited_at ? ` · ${new Date(initial.audited_at).toLocaleDateString("id-ID")}` : ""}
+          </div>
+        ) : null}
       </Section>
 
       <Section title="Integrasi & Publikasi" hint="Integrasi menentukan .env.example & SETUP.md yang di-generate CLI. Publish = langsung live di web + CLI.">

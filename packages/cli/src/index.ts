@@ -24,6 +24,7 @@ import { startProgress, shortRepo } from "./lib/ui-progress";
 import {
   runSecurityGate,
   auditLocalGitDir,
+  auditRemoteRepo,
   renderAuditReport,
   highestSeverity,
 } from "./lib/security-audit";
@@ -62,6 +63,8 @@ Penggunaan:
   npx scaffdev add <kode>                                 Suntik 1 modul ke project yang sedang dibuka
   scaffdev validate-module <path-atau-repo>                Validasi manifest modul/template
   scaffdev validate-module <repo-url> --ref=<branch>     Validasi + audit branch tertentu
+  scaffdev audit-repo <repo-url> --ref=<sha>             Audit statis read-only pada commit tertentu
+  scaffdev audit-repo <repo-url> --ref=<sha> --json      Output JSON (dipakai CI/admin)
 
 Opsi:
   --template=<slug>  Template yang dipakai (wajib pakai tanda =)
@@ -99,6 +102,40 @@ Setiap clone didahului security audit (jawab No bila ingin lewati, butuh CLI 0.3
     for (const line of result.report) console.log(line);
     process.exit(result.ok ? 0 : 1);
     return;
+  }
+
+  // Subcommand audit read-only tanpa clone (dipakai admission/CI).
+  if (args[0] === "audit-repo") {
+    const target = args[1];
+    if (!target) {
+      console.error("Penggunaan: scaffdev audit-repo <repo-url> [--ref=<sha>] [--json]");
+      process.exit(1);
+    }
+    const refArg = args.find((a) => a.startsWith("--ref="));
+    const refIdx = args.indexOf("--ref");
+    const ref =
+      refArg?.slice("--ref=".length) ||
+      (refIdx !== -1 && args[refIdx + 1] ? args[refIdx + 1] : undefined);
+    const asJson = args.includes("--json");
+    try {
+      const result = await auditRemoteRepo(target, ref ? { ref } : undefined);
+      const top = highestSeverity(result.report.findings);
+      if (asJson) {
+        console.log(JSON.stringify({
+          ...result.report,
+          remoteInspectable: result.remoteInspectable,
+          highestSeverity: top,
+        }, null, 2));
+      } else {
+        for (const line of renderAuditReport(result.report)) console.log(line);
+      }
+      process.exit(top === "HIGH" || top === "CRITICAL" ? 2 : 0);
+    } catch (err) {
+      const message = (err as Error).message || "Audit gagal.";
+      if (asJson) console.error(JSON.stringify({ error: message }, null, 2));
+      else console.error(message);
+      process.exit(1);
+    }
   }
 
   // Subcommand standalone: suntik 1 modul ke project yang sedang dibuka.

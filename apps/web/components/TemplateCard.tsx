@@ -50,6 +50,11 @@ export function TemplateCard({ template }: TemplateCardProps) {
             <span className="bg-[#8B5CF6]/20 backdrop-blur px-2 py-0.5 rounded-md text-[11px] font-medium text-[#8B5CF6] border border-[#8B5CF6]/30 uppercase">
               {template.kategori}
             </span>
+            {template.is_community ? (
+              <span className="bg-sky-500/20 backdrop-blur px-2 py-0.5 rounded-md text-[11px] font-semibold text-sky-300 border border-sky-500/30 uppercase">
+                Community
+              </span>
+            ) : null}
             {/* {template.is_premium === true && (
               <span className="bg-amber-400/20 backdrop-blur px-2 py-0.5 rounded-md text-[11px] font-bold text-amber-300 border border-amber-400/40 uppercase">
                 Premium

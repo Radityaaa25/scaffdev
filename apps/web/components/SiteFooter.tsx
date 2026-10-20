@@ -14,6 +14,7 @@ const HELP_LINKS = [
   { href: "/docs/troubleshooting", label: "Troubleshooting" },
   { href: "/docs/faq", label: "FAQ" },
   { href: "/lapor", label: "Lapor Bug / Pengaduan" },
+  { href: "/kontribusi", label: "Kontribusi Template" },
 ];
 
 export function SiteFooter() {

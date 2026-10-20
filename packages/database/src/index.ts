@@ -62,12 +62,44 @@ export interface Template {
   repo_url: string;
   deskripsi?: string | null;
   screenshot_url?: string | null;
+  preview_url?: string | null;
   opsi_integrasi: string[];
   is_published: boolean;
   is_premium: boolean;
+  is_community?: boolean;
+  author_name?: string | null;
+  author_url?: string | null;
+  source_url?: string | null;
+  audited_commit?: string | null;
+  audited_at?: string | null;
   downloads_count: number;
   builder_hidden_kategoris: string[];
   builder_hidden: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Submission {
+  id: string;
+  nama: string;
+  framework: string;
+  kategori: string;
+  repo_url: string;
+  preview_url: string | null;
+  screenshot_url: string | null;
+  deskripsi: string | null;
+  author_name: string;
+  author_url: string | null;
+  contact_email: string;
+  opsi_integrasi: string[];
+  cla_accepted_at: string;
+  status: "pending" | "auditing" | "needs_revision" | "accepted" | "rejected" | "published";
+  audit_commit: string | null;
+  audit_severity: "INFO" | "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" | null;
+  audit_report: unknown | null;
+  reviewed_by: string | null;
+  review_note: string | null;
+  template_slug: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -85,6 +117,13 @@ export interface TemplateDetailResponse {
   deskripsi?: string;
   kategori?: string;
   screenshot_url?: string;
+  preview_url?: string;
+  is_community?: boolean;
+  author_name?: string | null;
+  author_url?: string | null;
+  source_url?: string | null;
+  audited_commit?: string | null;
+  audited_at?: string | null;
   builder_hidden_kategoris: string[];
   builder_hidden: boolean;
   integrasi: Array<{
