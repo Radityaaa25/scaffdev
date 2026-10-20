@@ -1,0 +1,59 @@
+name: Audit template submission
+
+on:
+  workflow_dispatch:
+    inputs:
+      repo_url:
+        description: "URL repo GitHub publik"
+        required: true
+        type: string
+      ref:
+        description: "Commit SHA / tag / branch yang diaudit"
+        required: true
+        type: string
+      slug:
+        description: "Slug kandidat (untuk nama artifact)"
+        required: false
+        default: "submission"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies (repo tepercaya, bukan repo submission)
+        run: pnpm install --frozen-lockfile
+
+      - name: Build CLI
+        run: pnpm --filter scaffdev build
+
+      - name: Run static audit on pinned commit
+        shell: bash
+        env:
+          REPO_URL: ${{ inputs.repo_url }}
+          REF: ${{ inputs.ref }}
+        run: |
+          set -o pipefail
+          node packages/cli/dist/index.js audit-repo "$REPO_URL" --ref="$REF" --json | tee audit.json
+
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-${{ inputs.slug }}
+          path: audit.json
+          if-no-files-found: warn

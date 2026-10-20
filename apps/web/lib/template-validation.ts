@@ -22,6 +22,10 @@ const HTTPS_URL_RE = /^https:\/\/[^\s/$.?#].[^\s]*$/i;
 const MAX_NAMA = 200;
 const MAX_DESKRIPSI = 2000;
 const MAX_SCREENSHOT_URL = 500;
+const MAX_PREVIEW_URL = 500;
+const MAX_AUTHOR_NAME = 120;
+const MAX_AUTHOR_URL = 500;
+const MAX_AUDITED_COMMIT = 80;
 
 export interface NormalizedTemplateInput {
   nama: string;
@@ -31,11 +35,18 @@ export interface NormalizedTemplateInput {
   repo_url: string;
   deskripsi: string | null;
   screenshot_url: string | null;
+  preview_url: string | null;
   opsi_integrasi: string[];
   builder_hidden_kategoris: string[];
   builder_hidden: boolean;
   is_published: boolean;
   is_premium: boolean;
+  is_community: boolean;
+  author_name: string | null;
+  author_url: string | null;
+  source_url: string | null;
+  audited_commit: string | null;
+  audited_at: string | null;
 }
 
 export function slugify(nama: string, framework: string): string {
@@ -140,6 +151,20 @@ export function validateTemplateInput(
     out.screenshot_url = null;
   }
 
+  // preview_url (demo statis/live yang di-embed di halaman detail)
+  if ("preview_url" in b) {
+    if (b.preview_url != null && typeof b.preview_url !== "string") {
+      return { ok: false, error: "Field 'preview_url' harus string URL." };
+    }
+    const s = asString(b.preview_url);
+    if (s && (s.length > MAX_PREVIEW_URL || !HTTPS_URL_RE.test(s))) {
+      return { ok: false, error: "Field 'preview_url' harus URL https yang valid." };
+    }
+    out.preview_url = s && s.length > 0 ? s : null;
+  } else if (!opts.partial) {
+    out.preview_url = null;
+  }
+
   // opsi_integrasi
   if ("opsi_integrasi" in b) {
     if (!Array.isArray(b.opsi_integrasi)) {
@@ -202,6 +227,58 @@ export function validateTemplateInput(
     out.is_published = b.is_published;
   } else if (!opts.partial) {
     out.is_published = false;
+  }
+
+  // is_community + kredit/jejak audit (diisi admin / accept submission)
+  if ("is_community" in b) {
+    if (typeof b.is_community !== "boolean") {
+      return { ok: false, error: "Field 'is_community' harus boolean." };
+    }
+    out.is_community = b.is_community;
+  } else if (!opts.partial) {
+    out.is_community = false;
+  }
+
+  if ("author_name" in b) {
+    const v = asString(b.author_name);
+    if (v && v.length > MAX_AUTHOR_NAME) {
+      return { ok: false, error: "Field 'author_name' maksimal 120 karakter." };
+    }
+    out.author_name = v && v.length > 0 ? v : null;
+  } else if (!opts.partial) {
+    out.author_name = null;
+  }
+
+  for (const field of ["author_url", "source_url"] as const) {
+    if (field in b) {
+      const v = asString(b[field]);
+      if (v && (v.length > MAX_AUTHOR_URL || !HTTPS_URL_RE.test(v))) {
+        return { ok: false, error: `Field '${field}' harus URL https yang valid.` };
+      }
+      out[field] = v && v.length > 0 ? v : null;
+    } else if (!opts.partial) {
+      out[field] = null;
+    }
+  }
+
+  if ("audited_commit" in b) {
+    const v = asString(b.audited_commit);
+    if (v && (v.length > MAX_AUDITED_COMMIT || !/^[a-f0-9]{7,64}$/i.test(v))) {
+      return { ok: false, error: "Field 'audited_commit' harus SHA commit (7-64 karakter heksadesimal)." };
+    }
+    out.audited_commit = v && v.length > 0 ? v : null;
+  } else if (!opts.partial) {
+    out.audited_commit = null;
+  }
+
+  if ("audited_at" in b) {
+    const v = asString(b.audited_at);
+    if (v && Number.isNaN(Date.parse(v))) {
+      return { ok: false, error: "Field 'audited_at' harus tanggal ISO yang valid." };
+    }
+    out.audited_at = v && v.length > 0 ? new Date(v).toISOString() : null;
+  } else if (!opts.partial) {
+    out.audited_at = null;
   }
 
   // is_premium (template berbayar: repo privat, unduh via kunci lisensi)

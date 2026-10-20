@@ -1,0 +1,85 @@
+import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/supabase-server";
+import { isRateLimited, ADMIN_WRITE_LIMIT, ADMIN_WRITE_WINDOW_MS } from "@/lib/rate-limit";
+import { logActivity } from "@/lib/activity";
+
+const STATUSES = ["pending", "auditing", "needs_revision", "accepted", "rejected", "published"] as const;
+const SEVERITIES = ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"] as const;
+
+interface RouteParams {
+  params: Promise<{ id: string }>;
+}
+
+/** Update status/catatan/audit submission. Admin only. */
+export async function PUT(request: NextRequest, { params }: RouteParams) {
+  const { id } = await params;
+  const auth = await requireAdmin(request);
+  if (!auth.ok) return auth.response;
+  const { supabase, email, userId } = auth.ctx;
+
+  if (isRateLimited(`admin-write:${userId}`, ADMIN_WRITE_LIMIT, ADMIN_WRITE_WINDOW_MS)) {
+    return NextResponse.json({ error: "Terlalu banyak perubahan. Tunggu ±10 menit." }, { status: 429 });
+  }
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Body harus berupa JSON yang valid." }, { status: 400 });
+  }
+  if (typeof body !== "object" || body === null) {
+    return NextResponse.json({ error: "Body harus berupa JSON object." }, { status: 400 });
+  }
+  const b = body as Record<string, unknown>;
+  const patch: Record<string, unknown> = { reviewed_by: email ?? userId };
+
+  if ("status" in b) {
+    const status = typeof b.status === "string" ? b.status.trim().toLowerCase() : "";
+    if (!(STATUSES as readonly string[]).includes(status)) {
+      return NextResponse.json({ error: "Status submission tidak valid." }, { status: 400 });
+    }
+    patch.status = status;
+  }
+  if ("review_note" in b) {
+    const note = typeof b.review_note === "string" ? b.review_note.trim() : "";
+    if (note.length > 2000) {
+      return NextResponse.json({ error: "Catatan maksimal 2000 karakter." }, { status: 400 });
+    }
+    patch.review_note = note || null;
+  }
+  if ("audit_commit" in b) {
+    const commit = typeof b.audit_commit === "string" ? b.audit_commit.trim() : "";
+    if (commit && !/^[a-f0-9]{7,64}$/i.test(commit)) {
+      return NextResponse.json({ error: "Commit harus SHA heksadesimal 7-64 karakter." }, { status: 400 });
+    }
+    patch.audit_commit = commit || null;
+  }
+  if ("audit_severity" in b) {
+    const severity = typeof b.audit_severity === "string" ? b.audit_severity.trim().toUpperCase() : "";
+    if (severity && !(SEVERITIES as readonly string[]).includes(severity)) {
+      return NextResponse.json({ error: "Severity audit tidak valid." }, { status: 400 });
+    }
+    patch.audit_severity = severity || null;
+  }
+  if ("audit_report" in b) {
+    patch.audit_report = b.audit_report ?? null;
+  }
+
+  if (Object.keys(patch).length === 1) {
+    return NextResponse.json({ error: "Tidak ada field yang diubah." }, { status: 400 });
+  }
+
+  const { data, error } = await supabase
+    .from("submissions")
+    .update(patch)
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error || !data) {
+    return NextResponse.json({ error: "Gagal memperbarui submission." }, { status: 500 });
+  }
+
+  await logActivity(supabase, email, "submission.update", "submission", id, data.nama);
+  return NextResponse.json({ submission: data });
+}

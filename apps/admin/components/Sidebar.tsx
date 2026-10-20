@@ -71,6 +71,16 @@ const NAV_ITEMS = [
     ),
   },
   {
+    href: "/submissions",
+    label: "Submission",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-5 w-5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4 4h16v12H7l-3 3V4z" />
+        <path strokeLinecap="round" d="M8 8h8M8 12h5" />
+      </svg>
+    ),
+  },
+  {
     href: "/aktivitas",
     label: "Aktivitas",
     icon: (

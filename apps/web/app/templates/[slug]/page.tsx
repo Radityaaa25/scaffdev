@@ -10,6 +10,7 @@ import { SecurityTrustBox } from "@/components/SecurityTrustBox";
 import { TemplateCard } from "@/components/TemplateCard";
 import { AskAI } from "@/components/AskAI";
 import { JsonLd } from "@/components/JsonLd";
+import { TemplatePreview } from "@/components/TemplatePreview";
 import { BoltIcon } from "@/components/DocsIcons";
 import {
   absoluteUrl,
@@ -120,6 +121,11 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
             <span className="px-2.5 py-0.5 rounded-md text-xs font-mono bg-[#3F3F4C] text-zinc-300 border border-[#3F3F4C]">
               Framework: {template.framework}
             </span>
+            {template.is_community ? (
+              <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold uppercase tracking-wider bg-sky-500/15 text-sky-300 border border-sky-500/30">
+                Community
+              </span>
+            ) : null}
             {template.integrasi.length > 0 ? (
               <span className="px-2.5 py-0.5 rounded-md text-xs font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
                 {template.integrasi.length} integrasi • {totalEnvVars} env var
@@ -138,6 +144,31 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
               {template.deskripsi}
             </p>
           )}
+          {template.is_community && (template.author_name || template.source_url) ? (
+            <p className="mt-2 text-xs text-zinc-500">
+              Kontribusi komunitas
+              {template.author_name ? (
+                <>
+                  {" oleh "}
+                  {template.author_url ? (
+                    <a href={template.author_url} target="_blank" rel="noreferrer" className="font-medium text-[#A78BFA] hover:underline">
+                      {template.author_name}
+                    </a>
+                  ) : (
+                    <span className="font-medium text-zinc-300">{template.author_name}</span>
+                  )}
+                </>
+              ) : null}
+              {template.source_url ? (
+                <>
+                  {" · "}
+                  <a href={template.source_url} target="_blank" rel="noreferrer" className="hover:text-zinc-300 hover:underline">
+                    Repo asli ↗
+                  </a>
+                </>
+              ) : null}
+            </p>
+          ) : null}
         </div>
 
         <div className="flex flex-wrap items-center gap-2 self-start md:self-auto shrink-0">
@@ -167,25 +198,13 @@ export default async function TemplateDetailPage({ params }: TemplateDetailPageP
         </div>
       </div>
 
-      {/* Large Screenshot Preview (16:9) */}
-      <div className="relative aspect-video w-full rounded-2xl overflow-hidden border border-[#3F3F4C] bg-[#24242C] shadow-2xl mb-2">
-        {template.screenshot_url ? (
-          <img
-            src={template.screenshot_url}
-            alt={template.nama || template.slug}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-zinc-600 font-mono text-sm bg-gradient-to-br from-[#24242C] to-[#1B1B21]">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="h-10 w-10 opacity-50">
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <circle cx="8.5" cy="8.5" r="1.5" />
-              <path d="M21 15l-5-5L5 21" />
-            </svg>
-            Preview Screenshot Belum Tersedia
-          </div>
-        )}
-      </div>
+      {/* Preview: screenshot poster + live demo opsional */}
+      <TemplatePreview
+        name={template.nama || template.slug}
+        slug={template.slug}
+        screenshotUrl={template.screenshot_url}
+        previewUrl={template.preview_url}
+      />
 
       {/* Action Box: Pakai Template Ini */}
       <TemplateActionBox slug={template.slug} framework={template.framework} />

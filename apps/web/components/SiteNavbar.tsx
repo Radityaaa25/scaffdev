@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { href: "/templates", label: "Templates" },
   { href: "/builder", label: "Builder" },
   { href: "/docs", label: "Docs" },
+  { href: "/kontribusi", label: "Kontribusi" },
 ];
 
 /** Floating pill navbar global. Disembunyikan di /docs (sudah ada DocsTopbar sendiri). */
