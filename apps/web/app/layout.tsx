@@ -48,6 +48,11 @@ export const metadata: Metadata = baseMetadata({
     title: `${SITE_NAME}: Starter Kit Next.js & Laravel Siap Jalan`,
     description: DEFAULT_OG_DESCRIPTION,
   },
+  verification: {
+    google:
+      process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ||
+      process.env.GOOGLE_SITE_VERIFICATION,
+  },
 });
 
 export default function RootLayout({
