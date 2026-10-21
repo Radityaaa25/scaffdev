@@ -632,9 +632,60 @@ Setiap clone didahului security audit (jawab No bila ingin lewati, butuh CLI 0.3
   const allIntegrasi: IntegrasiDetail[] = [...templateDetail.integrasi, ...extraIntegrasi];
 
   // ---- Install dependency (prompt default Ya) ----
+  // Untuk Next.js, tanyakan dulu mau pakai npm atau pnpm
+  let preferPnpm = false;
+  const isNextJs = templateDetail.framework.toLowerCase() === "nextjs";
+  
+  if (isNextJs && !skipInstall && !forceInstall) {
+    const pkgManager = await p.select({
+      message: "Pilih package manager untuk install dependencies:",
+      options: [
+        { 
+          value: "npm", 
+          label: "npm (default)", 
+          hint: "Package manager bawaan Node.js"
+        },
+        { 
+          value: "pnpm", 
+          label: "pnpm (recommended)", 
+          hint: "3-5x lebih cepat dari npm, hemat disk space"
+        },
+      ],
+    });
+    
+    if (p.isCancel(pkgManager)) {
+      p.cancel("Operasi dibatalkan oleh pengguna.");
+      process.exit(0);
+      return;
+    }
+    
+    preferPnpm = pkgManager === "pnpm";
+    
+    // Auto-install pnpm jika dipilih tapi belum ada
+    if (preferPnpm) {
+      const { ensurePnpm } = await import("./lib/install");
+      const pnpmCheck = await ensurePnpm();
+      if (!pnpmCheck.ok) {
+        p.log.warn(`⚠️  ${pnpmCheck.message}`);
+        const fallbackToNpm = await p.confirm({
+          message: "pnpm gagal diinstall. Lanjut pakai npm?",
+          initialValue: true,
+        });
+        if (p.isCancel(fallbackToNpm) || !fallbackToNpm) {
+          p.cancel("Operasi dibatalkan oleh pengguna.");
+          process.exit(0);
+          return;
+        }
+        preferPnpm = false;
+      } else if (pnpmCheck.message !== "pnpm sudah terinstall") {
+        p.log.success(`✅ ${pnpmCheck.message}`);
+      }
+    }
+  }
+
   let installPlan;
   try {
-    installPlan = resolveInstallPlan(targetDir, templateDetail.framework);
+    installPlan = await resolveInstallPlan(targetDir, templateDetail.framework, preferPnpm);
   } catch (err) {
     p.cancel((err as Error).message);
     process.exit(1);
@@ -745,7 +796,7 @@ Setiap clone didahului security audit (jawab No bila ingin lewati, butuh CLI 0.3
     `🎉 Project "${targetFolder}" berhasil dibuat!\n\n` +
     "Langkah selanjutnya:\n" +
     `${nextSteps}\n\n` +
-    "Dokumentasi lengkap: https://scaffdev.vercel.app/docs"
+    "Dokumentasi lengkap: https://scaffdev.my.id/docs"
   );
 }
 
