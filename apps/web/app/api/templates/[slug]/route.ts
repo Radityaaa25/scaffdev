@@ -4,6 +4,7 @@ import { createSupabaseServerClient, requireAdmin } from "@/lib/supabase-server"
 import { isRateLimited, ADMIN_WRITE_LIMIT, ADMIN_WRITE_WINDOW_MS, STATS_LIMIT, STATS_WINDOW_MS } from "@/lib/rate-limit";
 import { validateTemplateInput } from "@/lib/template-validation";
 import { logActivity } from "@/lib/activity";
+import { notifySubmissionEvent } from "@/lib/email/submission-notifications";
 
 interface RouteParams {
   params: Promise<{ slug: string }>;
@@ -122,8 +123,44 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: "Gagal memperbarui template." }, { status: 500 });
   }
 
+  // Transisi draft → live untuk template komunitas: tandai submission terkait
+  // sebagai published lalu kirim email. Kegagalan email tidak membatalkan publish.
+  let notification;
+  if (
+    existing.is_published === false &&
+    data.is_published === true &&
+    data.is_community === true
+  ) {
+    const { data: submission } = await supabase
+      .from("submissions")
+      .select("*")
+      .eq("template_slug", data.slug)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (submission && submission.status !== "published") {
+      const { error: submissionError } = await supabase
+        .from("submissions")
+        .update({ status: "published", reviewed_by: email ?? auth.ctx.userId })
+        .eq("id", submission.id);
+
+      if (submissionError) {
+        console.error("[email] Gagal menandai submission sebagai published.");
+      } else {
+        notification = await notifySubmissionEvent(
+          { ...submission },
+          "published"
+        );
+      }
+    }
+  }
+
   await logActivity(supabase, email, "template.update", "template", data.slug, data.nama);
-  return NextResponse.json({ template: data });
+  return NextResponse.json({
+    template: data,
+    ...(notification ? { notification } : {}),
+  });
 }
 
 export async function DELETE(request: NextRequest, { params }: RouteParams) {

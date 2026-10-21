@@ -257,12 +257,14 @@ Kamu akan dihubungi lewat email dengan salah satu hasil:
 |---|---|
 | `pending` | Submission diterima dan menunggu antrean. |
 | `auditing` | Sedang diperiksa; commit audit dicatat. |
-| `needs_revision` | Ada yang harus diperbaiki. Perbaiki di repo, lalu balas email. |
+| `needs_revision` | Ada yang harus diperbaiki. Perbaiki di repo, lalu kirim ulang lewat form. |
 | `accepted` | Lolos audit; draft template dibuat dan proses mirror dimulai. |
 | `published` | Template live di katalog dan bisa dipakai lewat CLI. |
 | `rejected` | Tidak lolos. Alasannya akan dijelaskan agar bisa diperbaiki. |
 
 Tidak ada jaminan waktu review. Semakin lengkap materi dan semakin bersih repo, semakin cepat prosesnya.
+
+**Email otomatis:** setiap keputusan dikirim ke alamat kontak yang kamu isi di form — diterima, perlu revisi, ditolak, dan saat template tayang. Email berisi ringkasan submission, catatan review, serta langkah berikutnya. Karena pesan ini transaksional, tidak ada link berhenti berlangganan. Kalau email tidak masuk, cek folder spam. Bila pengiriman otomatis gagal, tim tetap bisa mengirim pesan yang sama secara manual.
 
 ### 7. Mirror dan publish
 
