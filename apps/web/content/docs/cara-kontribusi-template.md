@@ -238,6 +238,8 @@ Buka [halaman Kontribusi Template](/kontribusi), isi data, unggah screenshot, la
 
 Syarat & Ketentuan mencakup kepemilikan template, izin mirror/distribusi, aturan konten terlarang, penggunaan data kontak, dan cara penarikan template. Baca dulu sebelum mencentang, karena persetujuan berlaku sebagai bukti proses review.
 
+Begitu submission tersimpan, email konfirmasi dikirim otomatis ke alamat kontak yang kamu isi. Email itu menjelaskan bahwa template sedang ditinjau; hasil review menyusul ke alamat yang sama.
+
 ### 5. Audit oleh tim
 
 Tim akan:
@@ -264,7 +266,7 @@ Kamu akan dihubungi lewat email dengan salah satu hasil:
 
 Tidak ada jaminan waktu review. Semakin lengkap materi dan semakin bersih repo, semakin cepat prosesnya.
 
-**Email otomatis:** setiap keputusan dikirim ke alamat kontak yang kamu isi di form — diterima, perlu revisi, ditolak, dan saat template tayang. Email berisi ringkasan submission, catatan review, serta langkah berikutnya. Karena pesan ini transaksional, tidak ada link berhenti berlangganan. Kalau email tidak masuk, cek folder spam. Bila pengiriman otomatis gagal, tim tetap bisa mengirim pesan yang sama secara manual.
+**Email otomatis:** konfirmasi saat submission masuk, lalu setiap keputusan dikirim ke alamat kontak yang kamu isi di form — diterima, perlu revisi, ditolak, dan saat template tayang. Email berisi ringkasan submission, catatan review, serta langkah berikutnya. Karena pesan ini transaksional, tidak ada link berhenti berlangganan. Kalau email tidak masuk, cek folder spam. Bila pengiriman otomatis gagal, tim tetap bisa mengirim pesan yang sama secara manual.
 
 ### 7. Mirror dan publish
 

@@ -7,6 +7,7 @@ import { SITE_URL } from "../seo";
  */
 
 export type SubmissionEmailEvent =
+  | "received"
   | "accepted"
   | "needs_revision"
   | "rejected"
@@ -109,6 +110,23 @@ function absolute(path: string): string {
 
 function eventCopy(event: SubmissionEmailEvent, nama: string, slug: string | null): EventCopy {
   switch (event) {
+    case "received":
+      return {
+        badge: "SEDANG DITINJAU",
+        badgeColor: "#1D4ED8",
+        badgeBg: "#EFF6FF",
+        badgeBorder: "#BFDBFE",
+        title: "Submission kamu sudah kami terima",
+        intro: `Terima kasih sudah mengirim "${nama}". Submission kamu sudah masuk antrean review tim Scaffdev.`,
+        body: "Tim akan memeriksa repository, demo, screenshot, dan kelengkapan data. Hasil review — termasuk permintaan revisi bila ada — akan dikirim ke email ini. Kamu tidak perlu mengirim ulang.",
+        ctaLabel: "Baca panduan kontribusi",
+        ctaPath: "/docs/cara-kontribusi-template",
+        steps: [
+          "Submission menunggu antrean review tim.",
+          "Kami kirim hasil review ke email ini.",
+          "Cek folder spam bila email belum terlihat.",
+        ],
+      };
     case "accepted":
       return {
         badge: "DITERIMA",
@@ -209,22 +227,26 @@ export function buildSubmissionStatusEmail(
   const subject = cleanInline(
     input.event === "published"
       ? `Template "${nama}" sudah tayang di Scaffdev`
-      : input.event === "accepted"
-        ? `Submission "${nama}" diterima`
-        : input.event === "needs_revision"
-          ? `Revisi diperlukan untuk "${nama}"`
-          : `Update submission "${nama}"`,
+      : input.event === "received"
+        ? `Submission "${nama}" sudah kami terima`
+        : input.event === "accepted"
+          ? `Submission "${nama}" diterima`
+          : input.event === "needs_revision"
+            ? `Revisi diperlukan untuk "${nama}"`
+            : `Update submission "${nama}"`,
     180
   );
 
   const statusLabel =
-    input.event === "accepted"
-      ? "Diterima"
-      : input.event === "needs_revision"
-        ? "Perlu revisi"
-        : input.event === "rejected"
-          ? "Ditolak"
-          : "Tayang";
+    input.event === "received"
+      ? "Menunggu review"
+      : input.event === "accepted"
+        ? "Diterima"
+        : input.event === "needs_revision"
+          ? "Perlu revisi"
+          : input.event === "rejected"
+            ? "Ditolak"
+            : "Tayang";
 
   const stepsHtml = copy.steps
     .map(
