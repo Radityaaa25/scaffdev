@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { Submission } from "@scaff/database";
 import { apiFetch } from "@/lib/api";
 import { useUI } from "@/components/UIProvider";
+import { ManualEmailDialog, type EmailNotificationPayload } from "@/components/ManualEmailDialog";
 
 const STATUS_META: Record<Submission["status"], { label: string; cls: string }> = {
   pending: { label: "Pending", cls: "bg-amber-500/15 text-amber-400 border-amber-500/30" },
@@ -44,6 +45,8 @@ export function SubmissionsTable({ initial }: { initial: Submission[] }) {
   const [commit, setCommit] = useState("");
   const [severity, setSeverity] = useState<string>("");
   const [note, setNote] = useState("");
+  const [manualEmail, setManualEmail] = useState<EmailNotificationPayload | null>(null);
+  const [redirectAfterEmail, setRedirectAfterEmail] = useState<string | null>(null);
 
   const filtered = filter === "semua" ? rows : rows.filter((r) => r.status === filter);
   const pendingCount = rows.filter((r) => r.status === "pending" || r.status === "auditing").length;
@@ -57,10 +60,13 @@ export function SubmissionsTable({ initial }: { initial: Submission[] }) {
 
   async function update(row: Submission, patch: Record<string, unknown>, successMsg: string) {
     setPending(row.id);
-    const res = await apiFetch<{ submission: Submission }>(
-      `/api/submissions/${encodeURIComponent(row.id)}`,
-      { method: "PUT", body: JSON.stringify(patch) }
-    );
+    const res = await apiFetch<{
+      submission: Submission;
+      notification?: EmailNotificationPayload;
+    }>(`/api/submissions/${encodeURIComponent(row.id)}`, {
+      method: "PUT",
+      body: JSON.stringify(patch),
+    });
     setPending(null);
     if (!res.ok || !res.data) {
       toast.error(res.error || "Gagal memperbarui submission.");
@@ -68,6 +74,10 @@ export function SubmissionsTable({ initial }: { initial: Submission[] }) {
     }
     setRows((prev) => prev.map((r) => (r.id === row.id ? res.data!.submission : r)));
     toast.success(successMsg);
+    if (res.data.notification && res.data.notification.status !== "sent") {
+      setManualEmail(res.data.notification);
+      toast.info("Status tersimpan, tetapi email belum terkirim. Template pesan manual sudah disiapkan.");
+    }
     router.refresh();
     return true;
   }
@@ -97,16 +107,26 @@ export function SubmissionsTable({ initial }: { initial: Submission[] }) {
     });
     if (!ok) return;
     setPending(row.id);
-    const res = await apiFetch<{ ok: boolean; slug: string }>(
-      `/api/submissions/${encodeURIComponent(row.id)}/accept`,
-      { method: "POST", body: JSON.stringify({}) }
-    );
+    const res = await apiFetch<{
+      ok: boolean;
+      slug: string;
+      notification?: EmailNotificationPayload;
+    }>(`/api/submissions/${encodeURIComponent(row.id)}/accept`, {
+      method: "POST",
+      body: JSON.stringify({}),
+    });
     setPending(null);
     if (!res.ok || !res.data?.slug) {
       toast.error(res.error || "Gagal menerima submission.");
       return;
     }
     toast.success("Draft template dibuat.");
+    if (res.data.notification && res.data.notification.status !== "sent") {
+      setManualEmail(res.data.notification);
+      setRedirectAfterEmail(`/templates/${encodeURIComponent(res.data.slug)}/edit`);
+      toast.info("Draft dibuat, tetapi email belum terkirim. Template pesan manual sudah disiapkan.");
+      return;
+    }
     router.push(`/templates/${encodeURIComponent(res.data.slug)}/edit`);
   }
 
@@ -223,6 +243,19 @@ export function SubmissionsTable({ initial }: { initial: Submission[] }) {
           })}
         </div>
       )}
+
+      <ManualEmailDialog
+        key={manualEmail?.subject ?? "none"}
+        notification={manualEmail}
+        onClose={() => {
+          setManualEmail(null);
+          if (redirectAfterEmail) {
+            const target = redirectAfterEmail;
+            setRedirectAfterEmail(null);
+            router.push(target);
+          }
+        }}
+      />
     </div>
   );
 }

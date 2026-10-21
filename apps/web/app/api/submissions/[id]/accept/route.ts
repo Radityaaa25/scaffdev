@@ -4,6 +4,7 @@ import { isRateLimited, ADMIN_WRITE_LIMIT, ADMIN_WRITE_WINDOW_MS } from "@/lib/r
 import { slugify } from "@/lib/template-validation";
 import { normalizeGithubRepoUrl } from "@/lib/submission-validation";
 import { logActivity } from "@/lib/activity";
+import { notifySubmissionEvent } from "@/lib/email/submission-notifications";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -153,6 +154,11 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: `Draft dibuat, tapi status submission gagal diubah: ${updateError.message}` }, { status: 500 });
   }
 
+  const notification = await notifySubmissionEvent(
+    { ...sub, template_slug: template.slug },
+    "accepted"
+  );
+
   await logActivity(supabase, email, "submission.accept", "template", template.slug, template.nama);
-  return NextResponse.json({ ok: true, slug: template.slug });
+  return NextResponse.json({ ok: true, slug: template.slug, notification });
 }

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import type { Template } from "@scaff/database";
 import { apiFetch } from "@/lib/api";
 import { useUI } from "@/components/UIProvider";
+import { ManualEmailDialog, type EmailNotificationPayload } from "@/components/ManualEmailDialog";
 
 type StatusFilter = "all" | "published" | "draft";
 
@@ -18,6 +19,7 @@ export function TemplatesTable({ initial }: { initial: Template[] }) {
   const [status, setStatus] = useState<StatusFilter>("all");
   const [deleting, setDeleting] = useState<string | null>(null);
   const [toggling, setToggling] = useState<string | null>(null);
+  const [manualEmail, setManualEmail] = useState<EmailNotificationPayload | null>(null);
 
   // Opsi framework mengikuti data yang ada. Nilai baru dari form otomatis muncul.
   const frameworkOptions = useMemo(
@@ -40,10 +42,13 @@ export function TemplatesTable({ initial }: { initial: Template[] }) {
     const next = !t.is_published;
     setToggling(t.slug);
     setRows((prev) => prev.map((r) => (r.slug === t.slug ? { ...r, is_published: next } : r)));
-    const res = await apiFetch(
-      `/api/templates/${encodeURIComponent(t.slug)}`,
-      { method: "PUT", body: JSON.stringify({ is_published: next }) }
-    );
+    const res = await apiFetch<{
+      template: Template;
+      notification?: EmailNotificationPayload;
+    }>(`/api/templates/${encodeURIComponent(t.slug)}`, {
+      method: "PUT",
+      body: JSON.stringify({ is_published: next }),
+    });
     setToggling(null);
     if (!res.ok) {
       setRows((prev) => prev.map((r) => (r.slug === t.slug ? { ...r, is_published: t.is_published } : r)));
@@ -51,6 +56,10 @@ export function TemplatesTable({ initial }: { initial: Template[] }) {
       return;
     }
     toast.success(next ? `"${t.nama}" live dan tampil di web & CLI.` : `"${t.nama}" jadi draft dan disembunyikan dari publik.`);
+    if (res.data?.notification && res.data.notification.status !== "sent") {
+      setManualEmail(res.data.notification);
+      toast.info("Status publish tersimpan, tetapi email belum terkirim. Template pesan manual sudah disiapkan.");
+    }
     router.refresh();
   }
 
@@ -264,6 +273,7 @@ export function TemplatesTable({ initial }: { initial: Template[] }) {
           </table>
         </div>
       </div>
+      <ManualEmailDialog key={manualEmail?.subject ?? "none"} notification={manualEmail} onClose={() => setManualEmail(null)} />
     </div>
   );
 }

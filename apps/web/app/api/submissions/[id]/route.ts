@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/supabase-server";
 import { isRateLimited, ADMIN_WRITE_LIMIT, ADMIN_WRITE_WINDOW_MS } from "@/lib/rate-limit";
 import { logActivity } from "@/lib/activity";
+import { notifySubmissionEvent } from "@/lib/email/submission-notifications";
 
 const STATUSES = ["pending", "auditing", "needs_revision", "accepted", "rejected", "published"] as const;
 const SEVERITIES = ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"] as const;
@@ -97,6 +98,16 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: "Tidak ada field yang diubah." }, { status: 400 });
   }
 
+  const { data: existing, error: existingError } = await supabase
+    .from("submissions")
+    .select("id,nama,author_name,framework,kategori,contact_email,status,review_note,template_slug")
+    .eq("id", id)
+    .single();
+
+  if (existingError || !existing) {
+    return NextResponse.json({ error: "Submission tidak ditemukan." }, { status: 404 });
+  }
+
   const { data, error } = await supabase
     .from("submissions")
     .update(patch)
@@ -108,6 +119,22 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: "Gagal memperbarui submission." }, { status: 500 });
   }
 
+  // Email hanya dikirim saat status benar-benar berubah. `accepted` ditangani
+  // oleh route accept karena butuh draft template; `published` oleh route template.
+  const nextStatus = typeof patch.status === "string" ? patch.status : existing.status;
+  const nextNote = "review_note" in patch ? (patch.review_note as string | null) : existing.review_note;
+  const notification =
+    nextStatus !== existing.status &&
+    (nextStatus === "needs_revision" || nextStatus === "rejected")
+      ? await notifySubmissionEvent(
+          { ...existing, review_note: nextNote },
+          nextStatus
+        )
+      : undefined;
+
   await logActivity(supabase, email, "submission.update", "submission", id, data.nama);
-  return NextResponse.json({ submission: data });
+  return NextResponse.json({
+    submission: data,
+    ...(notification ? { notification } : {}),
+  });
 }

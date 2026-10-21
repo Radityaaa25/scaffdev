@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiFetch, getApiBaseUrl, getAccessToken } from "@/lib/api";
 import { useUI } from "@/components/UIProvider";
+import { ManualEmailDialog, type EmailNotificationPayload } from "@/components/ManualEmailDialog";
 
 export interface IntegrasiOption {
   kode: string;
@@ -107,6 +108,8 @@ export function TemplateForm({
   const [pending, setPending] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [manualEmail, setManualEmail] = useState<EmailNotificationPayload | null>(null);
+  const [redirectAfterEmail, setRedirectAfterEmail] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const autoSlug = useMemo(() => slugPreview(nama, framework), [nama, framework]);
@@ -232,7 +235,10 @@ export function TemplateForm({
       // is_premium: isPremium,
     };
 
-    const res = await apiFetch<{ template: { slug: string } }>(
+    const res = await apiFetch<{
+      template: { slug: string };
+      notification?: EmailNotificationPayload;
+    }>(
       mode === "new" ? "/api/templates" : `/api/templates/${encodeURIComponent(slug ?? "")}`,
       { method: mode === "new" ? "POST" : "PUT", body: JSON.stringify(payload) }
     );
@@ -243,6 +249,12 @@ export function TemplateForm({
       return;
     }
     toast.success(mode === "new" ? `Template "${nama.trim()}" tersimpan${isPublished ? " & live." : " sebagai draft."}` : "Perubahan tersimpan.");
+    if (res.data?.notification && res.data.notification.status !== "sent") {
+      setManualEmail(res.data.notification);
+      setRedirectAfterEmail(true);
+      toast.info("Template tersimpan, tetapi email belum terkirim. Template pesan manual sudah disiapkan.");
+      return;
+    }
     router.push("/templates");
     router.refresh();
   }
@@ -550,6 +562,18 @@ export function TemplateForm({
           </div>
         </div>
       </div>
+      <ManualEmailDialog
+        key={manualEmail?.subject ?? "none"}
+        notification={manualEmail}
+        onClose={() => {
+          setManualEmail(null);
+          if (redirectAfterEmail) {
+            setRedirectAfterEmail(false);
+            router.push("/templates");
+            router.refresh();
+          }
+        }}
+      />
     </form>
   );
 }
