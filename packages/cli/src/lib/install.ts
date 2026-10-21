@@ -19,7 +19,7 @@ export interface InstallPlanResult {
  * Tanpa field install → fallback default framework (template lama tetap jalan).
  * Manager BEBAS (npm/pnpm/yarn/bun/composer/...). CLI generik, tidak hardcode.
  */
-export function resolveInstallPlan(projectDir: string, framework: string): InstallPlanResult {
+export async function resolveInstallPlan(projectDir: string, framework: string, preferPnpm?: boolean): Promise<InstallPlanResult> {
   const manifestPath = path.join(projectDir, "scaff.template.json");
   if (fs.existsSync(manifestPath)) {
     try {
@@ -61,13 +61,41 @@ export function resolveInstallPlan(projectDir: string, framework: string): Insta
 
   // Fallback framework (template lama tanpa manifest/sebelumnya).
   const isLaravel = framework.toLowerCase() === "laravel";
+  
+  if (isLaravel) {
+    return {
+      fromManifest: false,
+      steps: [
+        {
+          dir: ".",
+          run: ["composer", "install"],
+          label: "composer install",
+        },
+      ],
+    };
+  }
+  
+  // Default npm, kecuali user prefer pnpm
+  if (preferPnpm) {
+    return {
+      fromManifest: false,
+      steps: [
+        {
+          dir: ".",
+          run: ["pnpm", "install"],
+          label: "pnpm install (3-5x lebih cepat dari npm)",
+        },
+      ],
+    };
+  }
+  
   return {
     fromManifest: false,
     steps: [
       {
         dir: ".",
-        run: isLaravel ? ["composer", "install"] : ["npm", "install"],
-        label: isLaravel ? "composer install" : "npm install",
+        run: ["npm", "install"],
+        label: "npm install",
       },
     ],
   };
@@ -80,6 +108,35 @@ async function binaryExists(bin: string): Promise<boolean> {
     return true;
   } catch {
     return false;
+  }
+}
+
+/**
+ * Install pnpm globally jika belum ada.
+ * Return true jika berhasil install/sudah ada, false jika gagal.
+ */
+export async function ensurePnpm(): Promise<{ ok: boolean; message: string }> {
+  // Cek apakah pnpm sudah terinstall
+  if (await binaryExists("pnpm")) {
+    return { ok: true, message: "pnpm sudah terinstall" };
+  }
+
+  // Auto-install pnpm via npm
+  try {
+    console.log("\n📦 pnpm belum terinstall. Menginstall pnpm secara otomatis...\n");
+    await execa("npm", ["install", "-g", "pnpm"], { stdio: "inherit" });
+    
+    // Verify install success
+    if (await binaryExists("pnpm")) {
+      return { ok: true, message: "pnpm berhasil diinstall" };
+    } else {
+      return { ok: false, message: "pnpm gagal diinstall (binary tidak ditemukan setelah install)" };
+    }
+  } catch (err) {
+    return { 
+      ok: false, 
+      message: `Gagal menginstall pnpm: ${(err as Error).message}` 
+    };
   }
 }
 
