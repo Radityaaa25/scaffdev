@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 
 /** Canonical production URL: ganti di satu tempat bila domain berubah. */
-export const SITE_URL = "https://scaffdev.vercel.app";
+export const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://scaffdev.my.id";
 export const SITE_NAME = "Scaffdev";
 export const SITE_TAGLINE =
   "Scaffolding generator: starter kit Next.js & Laravel siap jalan dengan kurasi integrasi lokal Indonesia.";
