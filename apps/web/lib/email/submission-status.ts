@@ -1,5 +1,7 @@
 import { SITE_URL } from "../seo";
 
+export const EMAIL_LOGO_CONTENT_ID = "scaffdev-logo";
+
 /**
  * Template email notifikasi submission template komunitas.
  * Dipakai oleh route admin (accept / reject / revisi / publish).
@@ -225,7 +227,7 @@ export function buildSubmissionStatusEmail(
   const tanggal = formatTanggal();
   const ctaUrl = absolute(copy.ctaPath);
   const siteUrl = escapeHtml(SITE_URL);
-  const logoUrl = escapeHtml(absolute("/logo-full-email.png"));
+  const logoUrl = `cid:${EMAIL_LOGO_CONTENT_ID}`;
 
   const subject = cleanInline(
     input.event === "published"
