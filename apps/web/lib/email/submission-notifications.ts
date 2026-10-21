@@ -1,4 +1,9 @@
-import { buildSubmissionStatusEmail, type SubmissionEmailEvent } from "./submission-status";
+import { SITE_URL } from "../seo";
+import {
+  buildSubmissionStatusEmail,
+  EMAIL_LOGO_CONTENT_ID,
+  type SubmissionEmailEvent,
+} from "./submission-status";
 import { sendEmail, type EmailDeliveryStatus } from "./transport";
 
 export interface SubmissionEmailSource {
@@ -43,6 +48,13 @@ export async function notifySubmissionEvent(
     subject: built.subject,
     html: built.html,
     text: built.text,
+    attachments: [
+      {
+        filename: "logo-full-email.png",
+        path: `${SITE_URL}/logo-full-email.png`,
+        contentId: EMAIL_LOGO_CONTENT_ID,
+      },
+    ],
   });
 
   return {

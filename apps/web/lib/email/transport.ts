@@ -19,12 +19,19 @@ export interface EmailDelivery {
   reason?: string;
 }
 
+interface EmailAttachmentInput {
+  filename: string;
+  path: string;
+  contentId?: string;
+}
+
 interface SendEmailInput {
   to: string;
   subject: string;
   html: string;
   text: string;
   replyTo?: string;
+  attachments?: EmailAttachmentInput[];
 }
 
 /** Bersihkan header dari CR/LF agar tidak bisa dipakai untuk header injection. */
@@ -88,6 +95,13 @@ export async function sendEmail(input: SendEmailInput): Promise<EmailDelivery> {
     text: input.text,
   };
   if (replyTo && EMAIL_RE.test(replyTo)) payload.reply_to = [replyTo];
+  if (input.attachments?.length) {
+    payload.attachments = input.attachments.map((attachment) => ({
+      filename: attachment.filename,
+      path: attachment.path,
+      ...(attachment.contentId ? { content_id: attachment.contentId } : {}),
+    }));
+  }
 
   try {
     const res = await fetch(RESEND_ENDPOINT, {
