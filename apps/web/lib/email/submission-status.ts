@@ -44,6 +44,8 @@ interface EventCopy {
 
 const MAX_NAME = 120;
 const MAX_NOTE = 1_200;
+const EMAIL_FONT =
+  "'Inter','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif";
 
 function escapeHtml(value: string): string {
   return value.replace(
@@ -202,8 +204,8 @@ function eventCopy(event: SubmissionEmailEvent, nama: string, slug: string | nul
 
 function summaryRow(label: string, value: string): string {
   return `<tr>
-    <td style="padding:7px 0;font-size:13px;line-height:20px;color:#71717a;width:120px;vertical-align:top;">${label}</td>
-    <td style="padding:7px 0;font-size:13px;line-height:20px;color:#27272a;font-weight:600;vertical-align:top;">${value}</td>
+    <td style="padding:9px 0;font-family:${EMAIL_FONT};font-size:13px;line-height:20px;color:#78716C;width:132px;vertical-align:top;">${label}</td>
+    <td style="padding:9px 0;font-family:${EMAIL_FONT};font-size:13px;line-height:20px;color:#1C1917;font-weight:600;vertical-align:top;">${value}</td>
   </tr>`;
 }
 
@@ -223,6 +225,7 @@ export function buildSubmissionStatusEmail(
   const tanggal = formatTanggal();
   const ctaUrl = absolute(copy.ctaPath);
   const siteUrl = escapeHtml(SITE_URL);
+  const logoUrl = escapeHtml(absolute("/logo-full-email.png"));
 
   const subject = cleanInline(
     input.event === "published"
@@ -250,22 +253,27 @@ export function buildSubmissionStatusEmail(
 
   const stepsHtml = copy.steps
     .map(
-      (step) =>
-        `<li style="margin:0 0 8px;font-size:14px;line-height:22px;color:#3f3f46;">${escapeHtml(step)}</li>`
+      (step, index) =>
+        `<tr>
+          <td width="30" valign="top" style="padding:0 10px 12px 0;">
+            <span style="display:inline-block;width:22px;height:22px;line-height:22px;border-radius:6px;background:#F5F3FF;color:#6D28D9;font-family:${EMAIL_FONT};font-size:11px;font-weight:700;text-align:center;">${index + 1}</span>
+          </td>
+          <td valign="top" style="padding:0 0 12px;font-family:${EMAIL_FONT};font-size:14px;line-height:22px;color:#44403C;">${escapeHtml(step)}</td>
+        </tr>`
     )
     .join("");
 
   const noteHtml = note
-    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:22px 0 0;background:#FAF5FF;border:1px solid #E9D5FF;border-left:3px solid #8B5CF6;border-radius:10px;">
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:22px 0 0;border-collapse:collapse;background:#FAF5FF;border:1px solid #E9D5FF;border-left:3px solid #8B5CF6;border-radius:10px;">
         <tr><td style="padding:16px 18px;">
-          <p style="margin:0 0 6px;font-size:11px;line-height:16px;letter-spacing:0.08em;text-transform:uppercase;color:#7E22CE;font-weight:700;">Catatan dari tim</p>
-          <p style="margin:0;font-size:14px;line-height:23px;color:#3F3F46;">${safeNote}</p>
+          <p style="margin:0 0 6px;font-family:${EMAIL_FONT};font-size:11px;line-height:16px;letter-spacing:0.08em;text-transform:uppercase;color:#7E22CE;font-weight:700;">Catatan dari tim</p>
+          <p style="margin:0;font-family:${EMAIL_FONT};font-size:14px;line-height:23px;color:#44403C;">${safeNote}</p>
         </td></tr>
       </table>`
     : input.event === "needs_revision"
-      ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:22px 0 0;background:#FAF5FF;border:1px solid #E9D5FF;border-left:3px solid #8B5CF6;border-radius:10px;">
+      ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:22px 0 0;border-collapse:collapse;background:#FAF5FF;border:1px solid #E9D5FF;border-left:3px solid #8B5CF6;border-radius:10px;">
         <tr><td style="padding:16px 18px;">
-          <p style="margin:0;font-size:14px;line-height:23px;color:#3F3F46;">Belum ada catatan rinci dari tim. Cek kembali kelengkapan repo, demo, screenshot, dan data submission sebelum mengirim ulang.</p>
+          <p style="margin:0;font-family:${EMAIL_FONT};font-size:14px;line-height:23px;color:#44403C;">Belum ada catatan rinci dari tim. Cek kembali kelengkapan repo, demo, screenshot, dan data submission sebelum mengirim ulang.</p>
         </td></tr>
       </table>`
       : "";
@@ -276,64 +284,87 @@ export function buildSubmissionStatusEmail(
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="light" />
+  <meta name="supported-color-schemes" content="light" />
   <title>${escapeHtml(subject)}</title>
+  <style>
+    @media only screen and (max-width: 480px) {
+      .email-outer { padding: 20px 12px !important; }
+      .email-pad { padding-left: 22px !important; padding-right: 22px !important; }
+      .email-logo { width: 140px !important; height: auto !important; }
+      .email-hide { display: none !important; }
+      .email-title { font-size: 23px !important; line-height: 31px !important; }
+    }
+  </style>
 </head>
-<body style="margin:0;padding:0;background:#F4F4F5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#18181B;">
+<body style="margin:0;padding:0;background:#F4F4F2;font-family:${EMAIL_FONT};color:#1C1917;-webkit-text-size-adjust:100%;">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">${escapeHtml(copy.intro)}</div>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F4F4F5;padding:32px 16px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="email-outer" style="border-collapse:collapse;background:#F4F4F2;padding:36px 16px;">
     <tr>
       <td align="center">
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:#FFFFFF;border:1px solid #E4E4E7;border-radius:16px;overflow:hidden;">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;border-collapse:collapse;background:#FFFFFF;border:1px solid #E7E5E4;border-radius:14px;overflow:hidden;">
           <tr>
-            <td style="background:#131316;padding:26px 32px 24px;">
-              <p style="margin:0;font-size:20px;line-height:26px;font-weight:700;letter-spacing:-0.02em;color:#FAFAFA;">Scaffdev</p>
-              <p style="margin:6px 0 0;font-size:12px;line-height:18px;color:#A1A1AA;">Template komunitas &amp; starter kit Indonesia</p>
-              <div style="margin-top:18px;width:44px;height:3px;background:#8B5CF6;border-radius:99px;"></div>
+            <td style="height:4px;background:#8B5CF6;font-size:0;line-height:0;">&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="email-pad" style="padding:26px 36px 22px;border-bottom:1px solid #F0EFED;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+                <tr>
+                  <td align="left" valign="middle">
+                    <img src="${logoUrl}" width="160" height="68" alt="Scaffdev" class="email-logo" style="display:block;width:160px;height:auto;border:0;outline:none;text-decoration:none;" />
+                  </td>
+                  <td align="right" valign="middle" class="email-hide" style="font-family:${EMAIL_FONT};font-size:10px;line-height:14px;letter-spacing:0.12em;text-transform:uppercase;color:#A8A29E;font-weight:600;">
+                    Template komunitas
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
           <tr>
-            <td style="padding:32px;">
-              <span style="display:inline-block;padding:6px 11px;border-radius:999px;background:${copy.badgeBg};border:1px solid ${copy.badgeBorder};color:${copy.badgeColor};font-size:11px;line-height:14px;font-weight:700;letter-spacing:0.08em;">${copy.badge}</span>
-              <h1 style="margin:18px 0 0;font-size:24px;line-height:32px;letter-spacing:-0.02em;color:#18181B;font-weight:700;">${escapeHtml(copy.title)}</h1>
-              <p style="margin:14px 0 0;font-size:15px;line-height:25px;color:#3F3F46;">Halo ${safeAuthor},</p>
-              <p style="margin:10px 0 0;font-size:15px;line-height:25px;color:#3F3F46;">${escapeHtml(copy.intro)}</p>
-              <p style="margin:12px 0 0;font-size:15px;line-height:25px;color:#3F3F46;">${escapeHtml(copy.body)}</p>
+            <td class="email-pad" style="padding:34px 36px 32px;">
+              <span style="display:inline-block;padding:6px 11px;border-radius:999px;background:${copy.badgeBg};border:1px solid ${copy.badgeBorder};color:${copy.badgeColor};font-family:${EMAIL_FONT};font-size:11px;line-height:14px;font-weight:700;letter-spacing:0.08em;">${copy.badge}</span>
+              <h1 class="email-title" style="margin:18px 0 0;font-family:${EMAIL_FONT};font-size:26px;line-height:34px;letter-spacing:-0.02em;color:#18181B;font-weight:700;">${escapeHtml(copy.title)}</h1>
+              <p style="margin:16px 0 0;font-family:${EMAIL_FONT};font-size:15px;line-height:26px;color:#44403C;">Halo ${safeAuthor},</p>
+              <p style="margin:8px 0 0;font-family:${EMAIL_FONT};font-size:15px;line-height:26px;color:#44403C;">${escapeHtml(copy.intro)}</p>
+              <p style="margin:12px 0 0;font-family:${EMAIL_FONT};font-size:15px;line-height:26px;color:#44403C;">${escapeHtml(copy.body)}</p>
 
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0 0;background:#FAFAFA;border:1px solid #E4E4E7;border-radius:12px;">
-                <tr><td style="padding:14px 18px;">
-                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                    ${summaryRow("Template", safeNama)}
-                    ${summaryRow("Framework", safeFramework)}
-                    ${summaryRow("Kategori", safeKategori)}
-                    ${summaryRow("Status", escapeHtml(statusLabel))}
-                    ${summaryRow("Tanggal", escapeHtml(tanggal))}
-                  </table>
-                </td></tr>
-              </table>
-
-              ${noteHtml}
-
-              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:28px 0 0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:26px 0 0;border-collapse:collapse;background:#FAFAF9;border:1px solid #E7E5E4;border-radius:10px;">
                 <tr>
-                  <td style="border-radius:10px;background:#8B5CF6;">
-                    <a href="${ctaUrl}" style="display:inline-block;padding:13px 22px;font-size:14px;line-height:20px;font-weight:600;color:#FFFFFF;text-decoration:none;border-radius:10px;">${escapeHtml(copy.ctaLabel)}</a>
+                  <td style="padding:14px 20px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+                      ${summaryRow("Template", safeNama)}
+                      ${summaryRow("Framework", safeFramework)}
+                      ${summaryRow("Kategori", safeKategori)}
+                      ${summaryRow("Status", escapeHtml(statusLabel))}
+                      ${summaryRow("Tanggal", escapeHtml(tanggal))}
+                    </table>
                   </td>
                 </tr>
               </table>
 
-              <h2 style="margin:30px 0 10px;font-size:13px;line-height:18px;letter-spacing:0.06em;text-transform:uppercase;color:#71717A;font-weight:700;">Langkah berikutnya</h2>
-              <ul style="margin:0;padding:0 0 0 18px;">${stepsHtml}</ul>
+              ${noteHtml}
 
-              <p style="margin:24px 0 0;padding-top:20px;border-top:1px solid #E4E4E7;font-size:13px;line-height:21px;color:#71717A;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:28px 0 0;border-collapse:collapse;">
+                <tr>
+                  <td style="border-radius:8px;background:#7C3AED;">
+                    <a href="${ctaUrl}" style="display:inline-block;padding:13px 24px;font-family:${EMAIL_FONT};font-size:14px;line-height:20px;font-weight:600;color:#FFFFFF;text-decoration:none;border-radius:8px;">${escapeHtml(copy.ctaLabel)}</a>
+                  </td>
+                </tr>
+              </table>
+
+              <h2 style="margin:30px 0 12px;font-family:${EMAIL_FONT};font-size:11px;line-height:16px;letter-spacing:0.1em;text-transform:uppercase;color:#78716C;font-weight:700;">Langkah berikutnya</h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">${stepsHtml}</table>
+
+              <p style="margin:22px 0 0;padding-top:22px;border-top:1px solid #E7E5E4;font-family:${EMAIL_FONT};font-size:12px;line-height:20px;color:#78716C;">
                 Email ini dikirim otomatis karena kamu mengirim submission template ke Scaffdev.
-                Panduan lengkap ada di <a href="${siteUrl}/docs/cara-kontribusi-template" style="color:#7C3AED;text-decoration:underline;">dokumentasi kontribusi</a>.
+                Panduan lengkap ada di <a href="${siteUrl}/docs/cara-kontribusi-template" style="color:#6D28D9;text-decoration:underline;">dokumentasi kontribusi</a>.
               </p>
             </td>
           </tr>
           <tr>
-            <td style="background:#FAFAFA;border-top:1px solid #E4E4E7;padding:18px 32px;">
-              <p style="margin:0;font-size:12px;line-height:18px;color:#A1A1AA;">
-                © ${new Date().getFullYear()} Scaffdev · <a href="${siteUrl}" style="color:#71717A;text-decoration:none;">${siteUrl.replace(/^https?:\/\//, "")}</a>
+            <td class="email-pad" style="background:#FAFAF9;border-top:1px solid #E7E5E4;padding:20px 36px;">
+              <p style="margin:0;font-family:${EMAIL_FONT};font-size:12px;line-height:19px;color:#78716C;font-weight:600;">Scaffdev</p>
+              <p style="margin:3px 0 0;font-family:${EMAIL_FONT};font-size:12px;line-height:19px;color:#A8A29E;">
+                Template komunitas &amp; starter kit Indonesia · <a href="${siteUrl}" style="color:#6D28D9;text-decoration:none;">${siteUrl.replace(/^https?:\/\//, "")}</a>
               </p>
             </td>
           </tr>
