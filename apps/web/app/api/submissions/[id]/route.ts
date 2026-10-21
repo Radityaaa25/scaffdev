@@ -5,6 +5,8 @@ import { logActivity } from "@/lib/activity";
 
 const STATUSES = ["pending", "auditing", "needs_revision", "accepted", "rejected", "published"] as const;
 const SEVERITIES = ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"] as const;
+const MAX_BODY_BYTES = 128 * 1024;
+const MAX_AUDIT_REPORT_BYTES = 100_000;
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -21,9 +23,28 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: "Terlalu banyak perubahan. Tunggu ±10 menit." }, { status: 429 });
   }
 
+  const contentType = request.headers.get("content-type")?.toLowerCase() ?? "";
+  if (!contentType.startsWith("application/json")) {
+    return NextResponse.json({ error: "Content-Type harus application/json." }, { status: 415 });
+  }
+  const declaredLength = request.headers.get("content-length");
+  if (declaredLength) {
+    const bytes = Number(declaredLength);
+    if (!Number.isFinite(bytes) || bytes < 0) {
+      return NextResponse.json({ error: "Content-Length tidak valid." }, { status: 400 });
+    }
+    if (bytes > MAX_BODY_BYTES) {
+      return NextResponse.json({ error: "Body terlalu besar." }, { status: 413 });
+    }
+  }
+
   let body: unknown;
   try {
-    body = await request.json();
+    const raw = await request.text();
+    if (new TextEncoder().encode(raw).length > MAX_BODY_BYTES) {
+      return NextResponse.json({ error: "Body terlalu besar." }, { status: 413 });
+    }
+    body = JSON.parse(raw);
   } catch {
     return NextResponse.json({ error: "Body harus berupa JSON yang valid." }, { status: 400 });
   }
@@ -62,7 +83,14 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     patch.audit_severity = severity || null;
   }
   if ("audit_report" in b) {
-    patch.audit_report = b.audit_report ?? null;
+    const report = b.audit_report ?? null;
+    if (report !== null && (typeof report !== "object" || Array.isArray(report))) {
+      return NextResponse.json({ error: "Audit report harus JSON object." }, { status: 400 });
+    }
+    if (report !== null && JSON.stringify(report).length > MAX_AUDIT_REPORT_BYTES) {
+      return NextResponse.json({ error: "Audit report terlalu besar." }, { status: 413 });
+    }
+    patch.audit_report = report;
   }
 
   if (Object.keys(patch).length === 1) {
