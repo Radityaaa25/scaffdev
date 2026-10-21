@@ -8,7 +8,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@scaff/ui"],
+  transpilePackages: ["@scaff/ui", "@scaff/security-audit"],
   // W3: sembunyikan fingerprint framework dari header respons.
   poweredByHeader: false,
   async headers() {
