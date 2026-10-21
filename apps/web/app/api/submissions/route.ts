@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { isRateLimited } from "@/lib/rate-limit";
 import { validateSubmissionInput } from "@/lib/submission-validation";
+import { notifySubmissionEvent } from "@/lib/email/submission-notifications";
 
 const SUBMISSION_LIMIT = 3;
 const SUBMISSION_WINDOW_MS = 60 * 60 * 1000; // 3 submission / jam / IP.
@@ -87,6 +88,16 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+    // Email konfirmasi ke kontributor. Kegagalan pengiriman tidak membatalkan
+    // submission; admin tetap bisa menghubungi contact_email secara manual.
+    const notification = await notifySubmissionEvent(
+      { ...validated.data, review_note: null, template_slug: null },
+      "received"
+    );
+    if (notification.status !== "sent") {
+      console.warn(`[email] Konfirmasi submission tidak terkirim (${notification.reason ?? "tanpa alasan"}).`);
+    }
+
     return NextResponse.json({ success: true }, { status: 201 });
   } catch {
     return NextResponse.json({ error: "Konfigurasi Supabase belum lengkap." }, { status: 500 });
