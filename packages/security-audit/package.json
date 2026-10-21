@@ -1,0 +1,16 @@
+{
+  "name": "@scaff/security-audit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Mesin audit keamanan statis remote untuk template Scaffdev (dipakai CLI dan admin).",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@scaff/config": "workspace:*",
+    "@types/node": "^22.13.0",
+    "typescript": "^5.9.3"
+  }
+}

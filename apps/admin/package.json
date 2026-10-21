@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@scaff/database": "workspace:*",
+    "@scaff/security-audit": "workspace:*",
     "@scaff/ui": "workspace:*",
     "@supabase/ssr": "0.12.7",
     "@supabase/supabase-js": "2.116.0",

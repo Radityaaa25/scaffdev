@@ -108,6 +108,19 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: "Submission tidak ditemukan." }, { status: 404 });
   }
 
+  const nextStatus = typeof patch.status === "string" ? patch.status : existing.status;
+  const nextNote = "review_note" in patch ? (patch.review_note as string | null) : existing.review_note;
+  if (
+    nextStatus !== existing.status &&
+    (nextStatus === "needs_revision" || nextStatus === "rejected") &&
+    (!nextNote || nextNote.trim().length < 10)
+  ) {
+    return NextResponse.json(
+      { error: "Catatan minimal 10 karakter wajib diisi untuk revisi atau penolakan." },
+      { status: 400 }
+    );
+  }
+
   const { data, error } = await supabase
     .from("submissions")
     .update(patch)
@@ -121,8 +134,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
   // Email hanya dikirim saat status benar-benar berubah. `accepted` ditangani
   // oleh route accept karena butuh draft template; `published` oleh route template.
-  const nextStatus = typeof patch.status === "string" ? patch.status : existing.status;
-  const nextNote = "review_note" in patch ? (patch.review_note as string | null) : existing.review_note;
   const notification =
     nextStatus !== existing.status &&
     (nextStatus === "needs_revision" || nextStatus === "rejected")

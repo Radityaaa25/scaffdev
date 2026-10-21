@@ -27,8 +27,9 @@ export default async function SubmissionsPage() {
     <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
       <div className="animate-admin-enter">
         <h1 className="text-2xl font-extrabold tracking-tight text-white">Submission Komunitas</h1>
-        <p className="mt-1 text-sm text-zinc-400">
-          {rows.length} submission masuk{pending > 0 ? `, ${pending} perlu ditinjau` : ""}. Audit dulu commit-nya sebelum menerima.
+        <p className="mt-1 max-w-2xl text-sm leading-relaxed text-zinc-400">
+          {rows.length} submission masuk{pending > 0 ? `, ${pending} perlu ditinjau` : ""}. Buka
+          submission untuk menjalankan audit otomatis, cek manual, lalu putuskan.
         </p>
       </div>
       <SubmissionsTable initial={rows} />

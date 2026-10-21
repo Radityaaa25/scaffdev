@@ -20,6 +20,9 @@ importers:
       '@scaff/database':
         specifier: workspace:*
         version: link:../../packages/database
+      '@scaff/security-audit':
+        specifier: workspace:*
+        version: link:../../packages/security-audit
       '@scaff/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -148,6 +151,9 @@ importers:
       '@clack/prompts':
         specifier: ^0.9.1
         version: 0.9.1
+      '@scaff/security-audit':
+        specifier: workspace:*
+        version: link:../security-audit
       execa:
         specifier: ^9.5.2
         version: 9.6.1
@@ -191,6 +197,18 @@ importers:
       '@scaff/config':
         specifier: workspace:*
         version: link:../config
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/security-audit:
+    devDependencies:
+      '@scaff/config':
+        specifier: workspace:*
+        version: link:../config
+      '@types/node':
+        specifier: ^22.13.0
+        version: 22.20.3
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
