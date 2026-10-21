@@ -9,6 +9,9 @@ export interface InteractivePromptResult {
 
 export type BuilderMode = "siap-pakai" | "builder" | "ambil";
 
+/** Signal untuk navigasi kembali */
+const BACK_SIGNAL = "__BACK__";
+
 /** Kategori inti: maks 1 pilihan (cermin SINGLE_SELECT web Builder). */
 const SINGLE_SELECT = new Set(["payment", "database", "auth", "shipping"]);
 
@@ -62,7 +65,10 @@ export async function runModeSelect(): Promise<BuilderMode | null> {
   return mode as BuilderMode;
 }
 
-export async function pickKategori(templates: Template[]): Promise<string | null> {
+export async function pickKategori(
+  templates: Template[],
+  options?: { allowBack?: boolean }
+): Promise<string | null> {
   // Extract unique categories available from real-time templates
   const availableCategories = Array.from(
     new Set(templates.map((t) => t.kategori))
@@ -73,6 +79,15 @@ export async function pickKategori(templates: Template[]): Promise<string | null
     label: KATEGORI_LABELS[cat]?.label || cat,
     hint: KATEGORI_LABELS[cat]?.hint,
   }));
+
+  // Tambahkan opsi Kembali di awal jika diizinkan
+  if (options?.allowBack) {
+    categoryOptions.unshift({
+      value: BACK_SIGNAL,
+      label: "← Kembali",
+      hint: undefined,
+    });
+  }
 
   // Prompt 1: Pilih Kategori
   const kategori = await p.select({
@@ -88,7 +103,8 @@ export async function pickKategori(templates: Template[]): Promise<string | null
 }
 
 export async function pickFramework(
-  templatesForCategory: Template[]
+  templatesForCategory: Template[],
+  options?: { allowBack?: boolean }
 ): Promise<string | null> {
   // Extract frameworks available for that category
   const availableFrameworks = Array.from(
@@ -113,6 +129,15 @@ export async function pickFramework(
     });
   }
 
+  // Tambahkan opsi Kembali di awal jika diizinkan
+  if (options?.allowBack) {
+    frameworkOptions.unshift({
+      value: BACK_SIGNAL,
+      label: "← Kembali ke pilihan kategori",
+      hint: undefined,
+    });
+  }
+
   // Prompt 2: Pilih Framework
   const framework = await p.select({
     message: "Pilih framework utama:",
@@ -132,7 +157,8 @@ export async function pickFramework(
 }
 
 async function pickVariant(
-  availableVariants: Template[]
+  availableVariants: Template[],
+  options?: { allowBack?: boolean }
 ): Promise<string | null> {
   const variantOptions = availableVariants.map((v) => {
     const integrationsText =
@@ -147,6 +173,15 @@ async function pickVariant(
     };
   });
 
+  // Tambahkan opsi Kembali di awal jika diizinkan
+  if (options?.allowBack) {
+    variantOptions.unshift({
+      value: BACK_SIGNAL,
+      label: "← Kembali ke pilihan framework",
+      hint: undefined,
+    });
+  }
+
   // Prompt 3: Pilih Varian / Kombinasi
   const selectedSlug = await p.select({
     message: "Pilih varian / kombinasi template:",
@@ -160,8 +195,68 @@ async function pickVariant(
   return selectedSlug as string;
 }
 
-export async function pickFolder(defaultDir: string): Promise<string | null> {
-  // Prompt 4: Nama Folder Project
+export async function pickFolder(
+  defaultDir: string,
+  options?: { allowBack?: boolean }
+): Promise<string | null> {
+  // Jika allowBack enabled, gunakan select dengan opsi custom/kembali
+  if (options?.allowBack) {
+    const choice = await p.select({
+      message: "Nama folder project tujuan:",
+      options: [
+        {
+          value: BACK_SIGNAL,
+          label: "← Kembali ke pilihan varian",
+          hint: undefined,
+        },
+        {
+          value: defaultDir,
+          label: `Gunakan: ${defaultDir}`,
+          hint: "Pakai nama folder default",
+        },
+        {
+          value: "__CUSTOM__",
+          label: "Masukkan nama folder custom",
+          hint: "Ketik nama folder sendiri",
+        },
+      ],
+    });
+
+    if (p.isCancel(choice)) {
+      p.cancel("Operasi dibatalkan.");
+      return null;
+    }
+
+    if (choice === BACK_SIGNAL) {
+      return BACK_SIGNAL;
+    }
+
+    if (choice === "__CUSTOM__") {
+      const customFolder = await p.text({
+        message: "Masukkan nama folder project tujuan:",
+        placeholder: defaultDir,
+        defaultValue: defaultDir,
+        validate: (val) => {
+          if (!val || val.trim().length === 0) {
+            return "Nama folder tidak boleh kosong.";
+          }
+          if (/[<>:"/\\|?*]/.test(val)) {
+            return "Nama folder mengandung karakter yang tidak valid.";
+          }
+        },
+      });
+
+      if (p.isCancel(customFolder)) {
+        p.cancel("Operasi dibatalkan.");
+        return null;
+      }
+      return (customFolder as string).trim();
+    }
+
+    return choice as string;
+  }
+
+  // Behavior lama: langsung text input tanpa back
   const targetFolder = await p.text({
     message: "Masukkan nama folder project tujuan:",
     placeholder: defaultDir,
@@ -186,31 +281,85 @@ export async function pickFolder(defaultDir: string): Promise<string | null> {
 export async function runInteractivePrompt(
   templates: Template[]
 ): Promise<InteractivePromptResult | null> {
-  const kategori = await pickKategori(templates);
-  if (!kategori) return null;
+  // State untuk tracking pilihan user
+  type Step = "kategori" | "framework" | "variant" | "folder";
+  let currentStep: Step = "kategori";
+  
+  let selectedKategori: string | null = null;
+  let selectedFramework: string | null = null;
+  let selectedSlug: string | null = null;
+  let selectedFolder: string | null = null;
 
-  // Filter templates based on category
-  const templatesForCategory = templates.filter((t) => t.kategori === kategori);
+  // Loop utama untuk navigasi dengan back support
+  while (true) {
+    switch (currentStep) {
+      case "kategori": {
+        const kategori = await pickKategori(templates, { allowBack: false });
+        if (!kategori) return null; // User cancel (Ctrl+C)
+        
+        selectedKategori = kategori;
+        currentStep = "framework";
+        break;
+      }
 
-  const framework = await pickFramework(templatesForCategory);
-  if (!framework) return null;
+      case "framework": {
+        // Filter templates based on category
+        const templatesForCategory = templates.filter(
+          (t) => t.kategori === selectedKategori
+        );
 
-  // Filter templates based on category & framework
-  const availableVariants = templatesForCategory.filter(
-    (t) => t.framework === framework
-  );
+        const framework = await pickFramework(templatesForCategory, { allowBack: true });
+        if (!framework) return null; // User cancel
+        
+        if (framework === BACK_SIGNAL) {
+          currentStep = "kategori";
+          break;
+        }
 
-  const selectedSlug = await pickVariant(availableVariants);
-  if (!selectedSlug) return null;
+        selectedFramework = framework;
+        currentStep = "variant";
+        break;
+      }
 
-  const defaultDir = selectedSlug.toString().split("-")[0] + "-app";
-  const targetFolder = await pickFolder(defaultDir);
-  if (!targetFolder) return null;
+      case "variant": {
+        // Filter templates based on category & framework
+        const availableVariants = templates.filter(
+          (t) => t.kategori === selectedKategori && t.framework === selectedFramework
+        );
 
-  return {
-    slug: selectedSlug as string,
-    targetFolder,
-  };
+        const slug = await pickVariant(availableVariants, { allowBack: true });
+        if (!slug) return null; // User cancel
+        
+        if (slug === BACK_SIGNAL) {
+          currentStep = "framework";
+          break;
+        }
+
+        selectedSlug = slug;
+        currentStep = "folder";
+        break;
+      }
+
+      case "folder": {
+        const defaultDir = (selectedSlug?.toString().split("-")[0] || "my") + "-app";
+        const folder = await pickFolder(defaultDir, { allowBack: true });
+        if (!folder) return null; // User cancel
+        
+        if (folder === BACK_SIGNAL) {
+          currentStep = "variant";
+          break;
+        }
+
+        selectedFolder = folder;
+        
+        // Semua step selesai, return hasil
+        return {
+          slug: selectedSlug as string,
+          targetFolder: selectedFolder,
+        };
+      }
+    }
+  }
 }
 
 export interface BuilderBase {
